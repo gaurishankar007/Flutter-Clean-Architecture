@@ -2,7 +2,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "flutter: Clean Build",
+      "label": "Flutter: Clean build",
       "detail": "",
       "type": "flutter",
       "command": "flutter",
@@ -11,7 +11,7 @@
       "problemMatcher": []
     },
     {
-      "label": "flutter: Get Dependencies",
+      "label": "Flutter: Get dependencies",
       "detail": "",
       "type": "flutter",
       "command": "flutter",
@@ -20,7 +20,7 @@
       "problemMatcher": []
     },
     {
-      "label": "flutter: Builder Runner Build",
+      "label": "Flutter: Build build-runner",
       "detail": "",
       "type": "dart",
       "command": "dart",
@@ -29,7 +29,7 @@
       "problemMatcher": []
     },
     {
-      "label": "flutter: Builder Runner Watch",
+      "label": "Flutter: Watch builder-runner",
       "detail": "",
       "type": "dart",
       "command": "dart",
@@ -38,7 +38,7 @@
       "problemMatcher": []
     },
     {
-      "label": "flutter: Build Release Staging Apk",
+      "label": "Flutter: build release staging APK",
       "detail": "",
       "type": "flutter",
       "command": "flutter",
@@ -55,7 +55,7 @@
       "problemMatcher": []
     },
     {
-      "label": "flutter: Build Release Production Apk",
+      "label": "Flutter: Build release production APK",
       "detail": "",
       "type": "flutter",
       "command": "flutter",
@@ -72,7 +72,7 @@
       "problemMatcher": []
     },
     {
-      "label": "flutter: Build Release Production App Bundle",
+      "label": "Flutter: Build release production app bundle",
       "detail": "",
       "type": "flutter",
       "command": "flutter",
@@ -89,7 +89,7 @@
       "problemMatcher": []
     },
     {
-      "label": "mason: Make Feature Template",
+      "label": "Mason: Make a feature",
       "detail": "",
       "type": "shell",
       "command": "mason",
@@ -98,7 +98,7 @@
       "problemMatcher": []
     },
     {
-      "label": "mason: Make Cubit Page Template",
+      "label": "Mason: Make a cubit page",
       "detail": "",
       "type": "shell",
       "command": "mason",

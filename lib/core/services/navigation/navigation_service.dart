@@ -22,6 +22,7 @@ abstract class NavigationService {
   Future<T?> pushPlatformRoute<T>({
     PageRouteInfo<dynamic>? androidRoute,
     PageRouteInfo<dynamic>? iOSRoute,
+    PageRouteInfo<dynamic>? androidIOSRoute,
     PageRouteInfo<dynamic>? webRoute,
   });
   Future<T?> replaceRoute<T>(PageRouteInfo<dynamic> route);
@@ -117,6 +118,7 @@ class NavigationServiceImpl implements NavigationService {
   Future<T?> pushPlatformRoute<T>({
     PageRouteInfo<dynamic>? androidRoute,
     PageRouteInfo<dynamic>? iOSRoute,
+    PageRouteInfo<dynamic>? androidIOSRoute,
     PageRouteInfo<dynamic>? webRoute,
     String? platform,
   }) async {
@@ -129,14 +131,15 @@ class NavigationServiceImpl implements NavigationService {
           ? 'ios'
           : null;
 
-      if (webRoute != null && platform == 'web') {
-        return await _appRouter.push(webRoute);
-      } else if (androidRoute != null && platform == 'android') {
-        return await _appRouter.push(androidRoute);
-      } else if (iOSRoute != null && platform == 'ios') {
-        return await _appRouter.push(iOSRoute);
-      }
-      return null;
+      final routeToPush = switch (platform) {
+        'web' => webRoute,
+        'android' => androidRoute ?? androidIOSRoute,
+        'ios' => iOSRoute ?? androidIOSRoute,
+        _ => null,
+      };
+
+      if (routeToPush == null) return null;
+      return await _appRouter.push(routeToPush);
     } catch (error, stackTrace) {
       ErrorHandler.debugError(error, stackTrace);
       return null;

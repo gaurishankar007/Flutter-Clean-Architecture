@@ -11,14 +11,28 @@ mixin ServiceMixin {
   final _imagePickerService = ImagePickerUtil.I;
 
   /// Navigation Service
-  Future popTop<T extends Object?>([T? result]) async =>
-      await _navigationService.maybePopTop(result);
+  Future<bool> popPage<T extends Object?>([T? result]) =>
+      _navigationService.maybePopTop(result);
 
-  Future<void> replaceAllRoute(PageRouteInfo<dynamic> route) async =>
-      await _navigationService.replaceAllRoute(route);
+  Future<void> replaceAllRoute(PageRouteInfo<dynamic> route) =>
+      _navigationService.replaceAllRoute(route);
 
-  Future<T?> pushRoute<T>(PageRouteInfo<dynamic> route) async =>
-      await _navigationService.pushRoute(route);
+  Future<T?> pushRoute<T>(PageRouteInfo<dynamic> route) =>
+      _navigationService.pushRoute(route);
+
+  Future<T?> pushPlatformRoute<T>({
+    PageRouteInfo<dynamic>? androidRoute,
+    PageRouteInfo<dynamic>? iOSRoute,
+    PageRouteInfo<dynamic>? androidIOSRoute,
+    PageRouteInfo<dynamic>? webRoute,
+  }) => _navigationService.pushPlatformRoute(
+    androidRoute: androidRoute,
+    iOSRoute: iOSRoute,
+    androidIOSRoute: androidIOSRoute,
+    webRoute: webRoute,
+  );
+
+  String get currentPath => _navigationService.currentPath;
 
   /// Toast Message Service
   void showSuccessToast(String message) => ToastUtil.showSuccess(message);

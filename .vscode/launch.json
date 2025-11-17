@@ -79,8 +79,7 @@
       "type": "dart",
       "program": "lib/main_dev.dart",
       "deviceId": "chrome",
-      "flutterMode": "debug",
-      "args": ["--web-hostname", "localhost", "--web-port 5000"]
+      "flutterMode": "debug"
     },
     {
       "name": "Debug-Web (Chrome with CORS Disabled)",
@@ -89,13 +88,7 @@
       "program": "lib/main_dev.dart",
       "deviceId": "chrome",
       "flutterMode": "debug",
-      "args": [
-        "--web-browser-flag=--disable-web-security",
-        "--web-hostname",
-        "localhost",
-        "--web-port",
-        "5000"
-      ]
+      "args": ["--web-browser-flag=--disable-web-security"]
     }
   ]
 }

@@ -25,9 +25,6 @@ enum Space {
 class UIHelpers {
   UIHelpers._();
 
-  static const spaceEmpty = SizedBox.shrink();
-  static const paddingZero = EdgeInsets.zero;
-
   //<========== Horizontal Spacing ==========>
   static final spaceH2 = SizedBox(width: Space.xxxSmall.value);
   static final spaceH4 = SizedBox(width: Space.xxSmall.value);

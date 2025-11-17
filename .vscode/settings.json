@@ -1,11 +1,19 @@
 {
-    "cSpell.words": [
-        "appbundle",
-        "datawedge",
-        "flutterfire",
-        "partcode",
-        "picklist",
-        "pubspec",
-        "rxdart"
-    ]
+  "cSpell.words": [
+    "appbundle",
+    "datawedge",
+    "flutterfire",
+    "partcode",
+    "picklist",
+    "pubspec",
+    "rxdart"
+  ],
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "pubspec.yaml": ".flutter-plugins-dependencies, .flutter-plugins, .metadata, analysis_options.yaml, devtools_options.yaml, web_dev_config.yaml, pubspec.lock",
+    "mason.yaml": "config.json, mason-lock.json",
+    ".env": ".env.example",
+    "development.xctestplan": "production.xctestplan, staging.xctestplan",
+    "main.dart": "main_dev.dart, main_stg.dart"
+  }
 }

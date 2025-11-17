@@ -79,30 +79,23 @@ class ScreenUtil {
     return _limitedNumber(width, min: min, max: max);
   }
 
-  /// Resolve a value for the current screen type.
-  ///
-  /// The keys in [screens] can be:
-  /// - a single [ScreenType]
-  /// - an [Iterable&lt;ScreenType&gt;] (e.g. Set&lt;ScreenType&gt;)
-  ///
-  /// The first matching entry's value is returned. If none match, [base] value is returned.
-  T getResponsiveValue<T>({required T base, required Map<Object, T> screens}) {
+  /// The first matching screen type value is returned otherwise use [base].
+  T getResponsiveValue<T>({
+    required T base,
+    required Map<Set<ScreenType>, T> screens,
+  }) {
     for (final entry in screens.entries) {
-      final key = entry.key;
-      final value = entry.value;
-
-      if (key is ScreenType && key == _type) return value;
-      if (key is Iterable<ScreenType> && key.contains(_type)) return value;
+      if (entry.key.contains(_type)) return entry.value;
     }
     return base;
   }
 
   /// Get adapted values for compact and small screens otherwise use [base]
-  T valueForCompactOrPhone<T>({required T base, required T screen12}) =>
+  T getMobileValue<T>({required T base, required T screen12}) =>
       getResponsiveValue(
         base: base,
         screens: {
-          {COMPACT, PHONE}: screen12,
+          {.compact, .phone}: screen12,
         },
       );
 

@@ -1,5 +1,3 @@
-// ignore_for_file: constant_identifier_names
-
 part of 'screen_util.dart';
 
 /// Enum for categorizing device screen types based on logical screen width.
@@ -17,9 +15,3 @@ part of 'screen_util.dart';
 /// - [desktop]        : > 1024 dp — desktop or very large screen.
 
 enum ScreenType { unknown, compact, phone, tablet, largeTablet, desktop }
-
-const COMPACT = ScreenType.compact;
-const PHONE = ScreenType.phone;
-const TABLET = ScreenType.tablet;
-const LARGE_TABLET = ScreenType.largeTablet;
-const DESKTOP = ScreenType.desktop;
