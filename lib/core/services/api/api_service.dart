@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'package:alice/alice.dart';
 import 'package:alice/model/alice_configuration.dart';
 import 'package:alice_dio/alice_dio_adapter.dart';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
@@ -13,8 +12,8 @@ import 'package:injectable/injectable.dart';
 
 import '../../../config/app_config.dart';
 import '../../constants/api_endpoints.dart';
-import '../../data/models/responses/api_response.dart';
 import '../../data/models/requests/refresh_token_request.dart';
+import '../../data/models/responses/api_response.dart';
 import '../../data/models/responses/refresh_token_response.dart';
 import '../../utils/type_defs.dart';
 import '../navigation/navigation_service.dart';

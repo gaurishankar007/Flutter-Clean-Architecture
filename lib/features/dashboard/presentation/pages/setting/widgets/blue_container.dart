@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../../../core/constants/app_colors.dart';
-import '../../../../../../shared_ui/utils/ui_helpers.dart';
 import '../../../../../../shared_ui/ui/base/text/base_text.dart';
+import '../../../../../../shared_ui/utils/ui_helpers.dart';
 
 class BlueContainer extends StatelessWidget {
   const BlueContainer({super.key});
@@ -15,7 +15,7 @@ class BlueContainer extends StatelessWidget {
       padding: UIHelpers.paddingHSV16,
       decoration: BoxDecoration(
         color: AppColors.primary,
-        borderRadius: UIHelpers.radiusC24,
+        borderRadius: UIHelpers.radiusB12,
       ),
       child: BaseText.headline(
         "Settings",

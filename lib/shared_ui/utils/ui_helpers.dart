@@ -177,6 +177,10 @@ class UIHelpers {
   static final radiusC12 = BorderRadius.circular(Space.small.value);
   static final radiusC16 = BorderRadius.circular(Space.sMedium.value);
   static final radiusC24 = BorderRadius.circular(Space.large.value);
+  static final radiusB12 = BorderRadius.only(
+    bottomRight: Radius.circular(Space.small.value),
+    bottomLeft: Radius.circular(Space.small.value),
+  );
   static final radiusTR4BR4 = BorderRadius.only(
     topRight: Radius.circular(Space.xxSmall.value),
     bottomRight: Radius.circular(Space.xxSmall.value),

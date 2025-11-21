@@ -1,4 +1,4 @@
-import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';
+import '../models/requests/authentication_request.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../../../core/data_handling/data_handler.dart';

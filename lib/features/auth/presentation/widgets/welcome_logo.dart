@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_colors.dart';
-import '../../../../shared_ui/utils/ui_helpers.dart';
 import '../../../../shared_ui/ui/base/text/base_text.dart';
+import '../../../../shared_ui/utils/ui_helpers.dart';
 
 class WelcomeLogo extends StatelessWidget {
   final String title;

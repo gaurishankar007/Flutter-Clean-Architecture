@@ -74,7 +74,7 @@ class BaseScaffold extends StatelessWidget {
     Widget? bottomNavigationWidget = bottomNavigationBar;
     if (bottomNavigationBar != null && useBottomNavigationPadding) {
       bottomNavigationWidget = Padding(
-        padding: ScreenUtil.I.pagePadding().copyWith(top: 0),
+        padding: (padding ?? ScreenUtil.I.pagePadding()).copyWith(top: 0),
         child: bottomNavigationWidget,
       );
     }

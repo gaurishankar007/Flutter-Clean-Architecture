@@ -1,12 +1,12 @@
-# Flutter Architecture & SOLID Principles 🚀
+# Flutter Clean Architecture with SOLID Principles 🚀
 
-A comprehensive guide to building scalable and maintainable Flutter applications using **Architecture** patterns and design **Principles**.
+A comprehensive guide to building scalable and maintainable Flutter applications using **Clean Architecture** pattern and **Solid Principle**.
 
 ---
 
 ## Table of Contents 📌
 
-- [Flutter Architecture \& SOLID Principles 🚀](#flutter-architecture--solid-principles-)
+- [Flutter Clean Architecture with SOLID Principles 🚀](#flutter-clean-architecture-with-solid-principles-)
   - [Table of Contents 📌](#table-of-contents-)
   - [Introduction](#introduction)
   - [What is Clean Architecture?](#what-is-clean-architecture)
@@ -14,33 +14,33 @@ A comprehensive guide to building scalable and maintainable Flutter applications
     - [Dependency rules that must be enforced](#dependency-rules-that-must-be-enforced)
     - [Benefits](#benefits)
   - [SOLID Principles](#solid-principles)
+  - [Visual Representation](#visual-representation)
   - [Project Features](#project-features)
   - [Getting Started 🚀](#getting-started-)
     - [Prerequisites](#prerequisites)
     - [Installation \& Setup](#installation--setup)
-    - [Running the Application](#running-the-application)
   - [Project Structure](#project-structure)
+  - [State Management with Bloc (Cubit)](#state-management-with-bloc-cubit)
+  - [App Flavors](#app-flavors)
+  - [Responsiveness](#responsiveness)
+  - [Core Services](#core-services)
+    - [API](#api)
+    - [Internet Status](#internet-status)
+    - [Navigation](#navigation)
+    - [Session and LocalDatabase](#session-and-localdatabase)
+  - [Data Handling](#data-handling)
+  - [Data States](#data-states)
+  - [API Workflow Overview](#api-workflow-overview)
+    - [Data Flow Summary](#data-flow-summary)
+    - [Core Components](#core-components)
+    - [Example: Login Flow](#example-login-flow)
+      - [Internal Flow](#internal-flow)
+    - [Debugging Tools](#debugging-tools)
   - [Feature Template Generation with Mason](#feature-template-generation-with-mason)
     - [How to Generate a Feature](#how-to-generate-a-feature)
     - [What Do `cubit_feature` \& `cubit_page` Do?](#what-do-cubit_feature--cubit_page-do)
     - [Configuration](#configuration)
-  - [Visual Representation](#visual-representation)
-  - [API Workflow Overview](#api-workflow-overview)
-    - [Data Flow Summary](#data-flow-summary)
-    - [Core Components](#core-components)
-      - [1. `Repository`](#1-repository)
-      - [2. `RemoteDataSource`](#2-remotedatasource)
-      - [3. `ApiService`](#3-apiservice)
-      - [4. `Interceptor`](#4-interceptor)
-      - [5. `LocalDataSource`](#5-localdatasource)
-      - [6. `DataHandler`](#6-datahandler)
-      - [7. `ErrorHandler`](#7-errorhandler)
-      - [8. `DataState<T>`](#8-datastatet)
-    - [Example: Login Flow](#example-login-flow)
-      - [Internal Flow](#internal-flow)
-    - [Benefits](#benefits-1)
-    - [Debugging Tools](#debugging-tools)
-    - [Testing](#testing)
+  - [Testing](#testing)
     - [Running Tests](#running-tests)
       - [Unit \& Widget Tests](#unit--widget-tests)
       - [Integration Tests (Patrol)](#integration-tests-patrol)
@@ -114,6 +114,14 @@ For more detailed information and real-world examples, see the [**SOLID Principl
 
 ---
 
+## Visual Representation
+
+![Clean Architecture With SOLID Principle](https://miro.medium.com/v2/resize:fit:720/format:webp/0*1w080Y72qaOdoC3W.png)
+
+> This diagram highlights the modular and scalable structure of Clean Architecture, aligning with **SOLID principles** to ensure best development practices.
+
+---
+
 ## Project Features
 
 - 🛡️ **SOLID Principles**: Ensures scalable, maintainable, and testable code.
@@ -133,7 +141,7 @@ Follow these steps to get the project up and running on your local machine.
 
 ### Prerequisites
 
-- Flutter SDK (version 3.x.x or higher)
+- Flutter SDK (version 3.38.1 or higher)
 - An editor like VS Code or Android Studio
 - An emulator or a physical device
 
@@ -150,14 +158,6 @@ Follow these steps to get the project up and running on your local machine.
    ```bash
    flutter pub get
    ```
-
-### Running the Application
-
-This project is configured with multiple build flavors (Development, Staging, Production). You can run them using the following commands:
-
-- **Development**: `flutter run --flavor dev -t lib/main_dev.dart`
-- **Staging**: `flutter run --flavor stg -t lib/main_stg.dart`
-- **Production**: `flutter run --flavor prod -t lib/main.dart`
 
 ---
 
@@ -208,65 +208,95 @@ lib/
 ├── main_stg.dart
 ```
 
----
+- **`config/`**: Environment and platform setup (flavor configs), dependency injection (`injector/`), Firebase options, and any Pigeon-generated platform bindings. `app_config.dart` holds flavor-specific values (base URLs, feature flags).
+- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core services (API client, navigation service, session/local storage, connectivity/InternetService, notification service), and general-purpose utilities.
+- **`features/`**: Each feature follows Clean Architecture and is self-contained with three layers:
+  - **`data/`**: Remote and local data sources, DTOs/models, and concrete repository implementations that map to domain entities.
+  - **`domain/`**: Pure business logic (entities, use cases/interactors, and abstract repository interfaces). No Flutter or external deps here.
+  - **`presentation/`**: Uses **Bloc (Cubit)** for state management. Contains `cubit/` (Cubit classes and their `State` classes), `views/` (pages/screens), and feature-specific `widgets/`.
+- **`routing/`**: Centralized navigation and route declarations (for example, `auto_route`), route guards, and route-based DI if required.
+- **`shared_ui/`**: Shared presentation primitives — reusable widgets, UI models, themes, and optional global cubits (e.g., `ScreenObserverCubit`, `ThemeCubit`). `application.dart` composes the `MaterialApp`, provides global dependencies, and wires routing.
+- **Entry Points**:
+  - `main.dart` → Production entry that initializes DI and runs `application.dart`.
+  - `main_dev.dart` → Development entry (dev flags, debug tools enabled).
+  - `main_stg.dart` → Staging entry (staging config and Firebase options).
 
-## Feature Template Generation with Mason
+Notes:
 
-This project uses **Mason** to generate feature templates for consistent and efficient development.
-
-### How to Generate a Feature
-
-1. **Activate the `mason_cli` globally**:
-
-   ```bash
-   dart pub global activate mason_cli
-   ```
-
-2. **Fetch the bricks for the project**:
-
-   ```bash
-   mason get
-   ```
-
-3. **Generate a new feature using the `cubit_feature` brick**:
-
-   ```bash
-   mason make cubit_feature -c config.json
-   ```
-
-4. **Generate a new cubit and page using the `cubit_page` brick**:
-
-   ```bash
-   mason make cubit_page -c config.json
-   ```
-
-### What Do `cubit_feature` & `cubit_page` Do?
-
-- **`cubit_feature`**: Generates a feature template following Clean Architecture, including:
-
-  - **Data Layer**: Data Sources, Models, Repositories
-  - **Domain Layer**: Entities, Repositories, Use Cases
-  - **Presentation Layer**: Cubits, Pages, Widgets
-
-- **`cubit_page`**: Generates a cubit and page template inside the specified feature's presentation layer.
-
-### Configuration
-
-The generation process relies on a `config.json` file, which includes details such as feature, cubit, and page names, as well as entity names and their variable types. Ensure that `config.json` is correctly defined before running the generation command.
+- Dependency injection typically uses `get_it` + `injectable` and is wired in `config/injector` and `app_initializer.dart`.
+- Presentation layer (Cubits) should only depend on domain use cases and core services (not on feature data implementations). Data layer implements domain repository interfaces.
+ - Presentation layer (Cubits) should only depend on domain use cases and core services (not on feature data implementations). Data layer implements domain repository interfaces.
 
 ---
 
-## Visual Representation
+## State Management with Bloc (Cubit)
 
-![Clean Architecture With SOLID Principle](https://miro.medium.com/v2/resize:fit:720/format:webp/0*1w080Y72qaOdoC3W.png)
+- The app uses **Bloc** (specifically Cubit) for state management within the Presentation Layer of its Clean Architecture.
+- Every Cubit extends `BaseCubit`, and its state extends `BaseState`.
+- `BaseCubit` includes shared functionality (e.g., navigation, showing toasts) via `ServiceMixin`.
+- `BaseState` provides `StateStatus` (for UI state like `initial`, `loading`, `loaded`).
+- The UI can use `showDataStateToast` from the `ServiceMixin` to display messages based on the `DataState` returned from use cases.
 
-> This diagram highlights the modular and scalable structure of Clean Architecture, aligning with **SOLID principles** to ensure best development practices.
+---
+
+## App Flavors
+
+The app supports three flavors: `production`, `staging`, and `development` for both Android and iOS.
+
+- Uses `get_it` and `injectable` for dependency injection.
+- Flavor-specific configuration (e.g., API base URL) is managed via `AppConfig`.
+- Firebase is configured per flavor (different options for Android/iOS).
+ - See `Project Structure` for entry points (`main.dart`, `main_stg.dart`, `main_dev.dart`).
+
+## Responsiveness
+
+- **`screen_util`**: Manages screen size, types, and responsive values (e.g., width, padding).
+
+- **`ScreenObserverCubit`**: A `Cubit` that enhances responsiveness by observing screen size changes within a `LayoutBuilder`.
+
+  - It leverages `ScreenUtil` to determine the current screen type (e.g., mobile, tablet, desktop).
+  - To prevent unnecessary widget rebuilds during the build cycle, it employs `WidgetsBinding.instance.addPostFrameCallback` to update its state only after the current frame has been rendered.
+  - This ensures that listeners are notified of screen type or desktop layout changes (e.g., switching from mobile to desktop view) efficiently, allowing widgets to rebuild selectively for optimized responsive UI adjustments.
+
+- **`LayoutBuilder`**: The `MaterialApp` is wrapped in a `LayoutBuilder` to update screen configuration via the `ScreenObserverCubit` and trigger rebuilds as needed when the screen size changes.
+
+---
+
+## Core Services
+
+### API
+
+- `APIService` (using Dio) handles HTTP requests.
+- `AuthInterceptor` adds authentication tokens and can be extended for caching or retries.
+
+### Internet Status
+
+- `InternetService` tracks connectivity and exposes a stream for UI updates.
+- API calls are blocked and return a network `FailureState` if offline.
+
+### Navigation
+
+- **Navigation**: Managed by `NavigationService` (context-free navigation).
+- **Routing**: Uses `auto_route` for declarative routing and guards to manage access based on user state.
+
+### Session and LocalDatabase
+
+- `SessionService` manages user session and persists data using `LocalDatabase` (backed by `shared_preferences`).
+- Sensitive data, such as user details, is encrypted using AES-256 before being persisted. The `LocalDatabaseService` handles this by using `EncryptionUtils` to ensure that data at rest on the device is secure.
+- The `LocalDatabase` can be extended to use Hive, Isar, or SQLite for more complex data needs.
+
+## Data Handling
+
+- **DataHandler**: A utility for making safe API calls, handling response validation, and parsing JSON. It wraps results in a `DataState`.
+- **ErrorHandler**: Catches various exceptions (e.g., Dio, Firebase, Format) and converts them into a standardized `FailureState` with user-friendly messages.
+
+## Data States
+
+- **DataState<T>**: A sealed class representing the state of a data operation. It has three main states: `SuccessState<T>`, `FailureState<T>`, and `LoadingState<T>`, which allows the UI to react consistently to different outcomes.
 
 ---
 
 ## API Workflow Overview
-
-### Data Flow Summary
 
 ```mermaid
 graph TD
@@ -286,6 +316,8 @@ graph TD
     LocalDatabaseService -->|sends| LocalDB
 ```
 
+### Data Flow Summary
+
 1. **UI calls Cubit, which calls UseCase**
 2. **UseCase calls Repository**
 3. **Repository checks Internet availability** using `InternetService`
@@ -303,56 +335,20 @@ graph TD
 
 ### Core Components
 
-#### 1. `Repository`
+- **Use Case**: Represents a single business action (e.g., `LoginUseCase`). It is called by the Presentation layer (Cubit) and orchestrates the flow of data by interacting with one or more Repositories. This encapsulates a specific piece of business logic, making it reusable and decoupled from the UI state management.
 
-- Acts as the single source of truth for the domain layer.
-- Decides when to fetch from remote or local sources.
-- Uses `fetchWithFallback()` from `DataHandler` for connectivity handling.
+- **Repository**: Acts as the single source of truth for the domain layer. It coordinates data from one or more data sources (remote, local) and decides where to fetch data from, often using `DataHandler.fetchWithFallback` to check for internet connectivity. It is also responsible for mapping Data Transfer Objects (DTOs) from the data layer into clean domain models for the UI layer.
 
-#### 2. `RemoteDataSource`
+- **Data Sources (`Remote`, `Local`)**:
 
-- Contains remote API methods.
-- Makes network calls via `ApiService`.
+  - **RemoteDataSource**: Handles communication with the backend REST API. It uses the `ApiService` to make HTTP requests. Each method is wrapped in `DataHandler.safeApiCall` to safely parse responses and handle API-specific errors.
+  - **LocalDataSource**: Manages data persistence on the device (e.g., user session, cached data). It uses `LocalDatabaseService` (an abstraction over `shared_preferences`) and wraps its methods in `ErrorHandler.handleException` to ensure consistent error handling.
 
-#### 3. `ApiService`
+- **ApiService**: An abstraction over the `Dio` HTTP client. It is configured with the base URL from `AppConfig` and includes interceptors. It provides standard methods like `get`, `post`, `put`, and `delete` for making API calls.
 
-- Abstracts over Dio for HTTP requests.
-- Simplifies request methods and adds debugging/interception.
-
-#### 4. `Interceptor`
-
-- Intercepts and modifies requests/responses.
-- Appends access tokens and handles token refresh on 401 responses.
-
-#### 5. `LocalDataSource`
-
-- Manages local data using `LocalDatabaseService`.
-- Used for fallback or offline storage.
-
-#### 6. `DataHandler`
-
-- Wraps remote calls in `safeApiCall()`.
-- Validates and parses API responses.
-- Handles `SuccessState`, `FailureState`, and JSON parsing.
-
-#### 7. `ErrorHandler`
-
-- Catches various error types and converts them into `FailureState` with meaningful messages.
-
-#### 8. `DataState<T>`
-
-- Represents UI state as a sealed class:
-  - `SuccessState<T>`
-  - `FailureState<T>`
-  - `LoadingState<T>`
-
-```dart
-state.when(
-  success: (data) => print("Got data"),
-  failure: (msg, type) => print("Error: $msg"),
-  loading: () => print("Loading..."),
-);
-```
+- **DataHandler & ErrorHandler**: These two classes form the backbone of the application's error handling and data flow strategy.
+  - **DataHandler**: Provides high-level utility methods like `safeApiCall` (to execute API requests, parse JSON, and wrap results in a `DataState`) and `fetchWithFallback` (to implement the offline-first strategy).
+  - **ErrorHandler**: A centralized utility that catches specific exceptions (`DioException`, `FormatException`, etc.) and converts them into a standardized `FailureState` with a user-friendly error message. This ensures that the UI layer receives consistent error objects regardless of the error's origin.
 
 ---
 
@@ -426,12 +422,7 @@ graph TD
 
 ---
 
-### Benefits
-
-- **Decoupled Layers**: Easier testing and maintenance.
-- **Unified Error Handling**: All API and type errors are gracefully caught.
-- **Clean Network Management**: Internet checks, retries, and fallback handled centrally.
-- **Consistent UI State**: Always returns `DataState` for safe rendering.
+ 
 
 ---
 
@@ -441,7 +432,53 @@ graph TD
 
 ---
 
-### Testing
+## Feature Template Generation with Mason
+
+This project uses **Mason** to generate feature templates for consistent and efficient development.
+
+### How to Generate a Feature
+
+1. **Activate the `mason_cli` globally**:
+
+   ```bash
+   dart pub global activate mason_cli
+   ```
+
+2. **Fetch the bricks for the project**:
+
+   ```bash
+   mason get
+   ```
+
+3. **Generate a new feature using the `cubit_feature` brick**:
+
+   ```bash
+   mason make cubit_feature -c config.json
+   ```
+
+4. **Generate a new cubit and page using the `cubit_page` brick**:
+
+   ```bash
+   mason make cubit_page -c config.json
+   ```
+
+### What Do `cubit_feature` & `cubit_page` Do?
+
+- **`cubit_feature`**: Generates a feature template following Clean Architecture, including:
+
+  - **Data Layer**: Data Sources, Models, Repositories
+  - **Domain Layer**: Entities, Repositories, Use Cases
+  - **Presentation Layer**: Cubits, Pages, Widgets
+
+- **`cubit_page`**: Generates a cubit and page template inside the specified feature's presentation layer.
+
+### Configuration
+
+The generation process relies on a `config.json` file, which includes details such as feature, cubit, and page names, as well as entity names and their variable types. Ensure that `config.json` is correctly defined before running the generation command.
+
+---
+
+## Testing
 
 This project uses a multi-layered testing strategy to ensure robustness and maintainability.
 

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_icons.dart';
-import '../../../../../../shared_ui/utils/ui_helpers.dart';
 import '../../../../../../shared_ui/ui/base/text/base_text.dart';
+import '../../../../../../shared_ui/utils/ui_helpers.dart';
 
 class SettingItems extends StatelessWidget {
   const SettingItems({super.key});

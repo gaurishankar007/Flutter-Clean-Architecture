@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/widgets.dart';
 
 part 'screen_type.dart';
@@ -99,14 +100,16 @@ class ScreenUtil {
         },
       );
 
-  /// Whether the screen is small or medium
+  /// Whether the screen is smartphone screen
   bool get _isPhoneScreen => _type.index <= ScreenType.phone.index;
+
+  /// Whether the screen is desktop screen in web view
+  bool get isWebDesktopScreen => kIsWeb && _type == ScreenType.desktop;
 
   /// Spacing between the items in the grid view
   double gridViewSpace = 20;
 
   /// View horizontal padding
-  ///
   double get horizontalSpace => _isPhoneScreen ? widthPart(5.55, max: 20) : 24;
 
   /// View vertical padding

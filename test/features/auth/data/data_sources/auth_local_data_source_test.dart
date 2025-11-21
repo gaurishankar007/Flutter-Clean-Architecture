@@ -85,7 +85,7 @@ void main() {
         // Arrange
         when(
           () => mockLocalDatabase.getString(tStorageKey),
-        ).thenAnswer((_) async => tUserDataJson);
+        ).thenAnswer((_) => tUserDataJson);
 
         // Act
         final result = await dataSource.getUserData();
@@ -103,7 +103,7 @@ void main() {
       // Arrange
       when(
         () => mockLocalDatabase.getString(tStorageKey),
-      ).thenAnswer((_) async => null);
+      ).thenAnswer((_) => null);
 
       // Act
       final result = await dataSource.getUserData();

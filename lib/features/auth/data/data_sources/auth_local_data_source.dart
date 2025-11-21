@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:clean_architecture/core/constants/local_db_keys.dart';
-import 'package:clean_architecture/core/data_handling/data_handler.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
-import 'package:clean_architecture/core/services/database/local_database_service.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
-import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
+import '../../../../core/constants/local_db_keys.dart';
+import '../../../../core/data_handling/data_handler.dart';
+import '../../../../core/data_states/data_state.dart';
+import '../../../../core/services/database/local_database_service.dart';
+import '../../../../core/utils/type_defs.dart';
+import '../models/responses/user_data_response.dart';
 import 'package:injectable/injectable.dart';
 
 abstract class AuthLocalDataSource {
@@ -35,8 +35,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   FutureData<UserDataResponse> getUserData() async {
     return ErrorHandler.handleException(() async {
-      String userData =
-          await _localDatabase.getString(LocalDbKeys.userData) ?? "";
+      String userData = _localDatabase.getString(LocalDbKeys.userData) ?? "";
 
       if (userData.isNotEmpty) {
         final userDataModel = UserDataResponse.fromJson(jsonDecode(userData));

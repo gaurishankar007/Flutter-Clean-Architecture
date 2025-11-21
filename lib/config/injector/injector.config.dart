@@ -46,8 +46,8 @@ import 'package:clean_architecture/features/dashboard/presentation/cubits/dashbo
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit_use_cases.dart'
     as _i134;
 import 'package:clean_architecture/routing/routes.dart' as _i671;
-import 'package:clean_architecture/shared_ui/cubits/rebuild_cubit.dart'
-    as _i699;
+import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart'
+    as _i640;
 import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:image_picker/image_picker.dart' as _i183;
@@ -67,17 +67,17 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
-    final localDatabaseModule = _$LocalDatabaseModule();
+    final localDatabaseServiceModule = _$LocalDatabaseServiceModule();
     final apiServiceModule = _$ApiServiceModule();
     final navigationServiceModule = _$NavigationServiceModule();
     final imagePickerServiceModule = _$ImagePickerServiceModule();
     final internetServiceModule = _$InternetServiceModule();
+    gh.factory<_i640.ScreenObserverCubit>(() => _i640.ScreenObserverCubit());
     await gh.factoryAsync<_i460.SharedPreferences>(
-      () => localDatabaseModule.sharedPreferences,
+      () => localDatabaseServiceModule.sharedPreferences,
       preResolve: true,
     );
     gh.factory<bool>(() => apiServiceModule.addInterceptors);
-    gh.factory<_i699.RebuildCubit>(() => _i699.RebuildCubit());
     gh.lazySingleton<_i671.AppRouter>(() => navigationServiceModule.appRouter);
     gh.lazySingleton<_i183.ImagePicker>(
       () => imagePickerServiceModule.imagePicker,
@@ -186,7 +186,7 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
-class _$LocalDatabaseModule extends _i87.LocalDatabaseModule {}
+class _$LocalDatabaseServiceModule extends _i87.LocalDatabaseServiceModule {}
 
 class _$ApiServiceModule extends _i885.ApiServiceModule {}
 

@@ -3,8 +3,8 @@ import 'dart:developer' show log;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 
-import '../data_states/data_state.dart';
 import '../data/models/domain_convertible.dart';
+import '../data_states/data_state.dart';
 import '../utils/type_defs.dart';
 
 part 'error_handler.dart';

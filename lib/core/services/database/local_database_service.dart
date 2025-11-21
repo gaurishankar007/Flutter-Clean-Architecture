@@ -1,15 +1,21 @@
+import 'dart:convert' show jsonEncode, jsonDecode;
+
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../utils/encryption/encryption_utils.dart';
+
 abstract class LocalDatabaseService {
-  Future<String?> getString(String key);
   Future<void> setString(String key, String value);
+  Future<void> setStringWithEncryption(String key, String value);
+  String? getString(String key);
+  String? getEncryptedString(String key);
   Future<void> remove(String key);
   Future<void> clear();
 }
 
 @module
-abstract class LocalDatabaseModule {
+abstract class LocalDatabaseServiceModule {
   @preResolve
   Future<SharedPreferences> get sharedPreferences =>
       SharedPreferences.getInstance();
@@ -22,22 +28,30 @@ class LocalDatabaseServiceImpl implements LocalDatabaseService {
   const LocalDatabaseServiceImpl({required this.sharedPreferences});
 
   @override
-  Future<String?> getString(String key) async {
-    return sharedPreferences.getString(key);
+  Future<void> setString(String key, String value) =>
+      sharedPreferences.setString(key, value);
+
+  @override
+  Future<void> setStringWithEncryption(String key, String value) async {
+    final encryptedData = EncryptionUtils.encrypt(value);
+    final encodedEncryption = jsonEncode(encryptedData.toJson());
+    await sharedPreferences.setString(key, encodedEncryption);
   }
 
   @override
-  Future<void> setString(String key, String value) async {
-    await sharedPreferences.setString(key, value);
+  String? getString(String key) => sharedPreferences.getString(key);
+
+  @override
+  String? getEncryptedString(String key) {
+    final encodedEncryption = sharedPreferences.getString(key);
+    if (encodedEncryption == null) return null;
+    final encryptedData = EncryptedData.fromJson(jsonDecode(encodedEncryption));
+    return EncryptionUtils.decrypt(encryptedData);
   }
 
   @override
-  Future<void> remove(String key) async {
-    await sharedPreferences.remove(key);
-  }
+  Future<void> remove(String key) => sharedPreferences.remove(key);
 
   @override
-  Future<void> clear() async {
-    await sharedPreferences.clear();
-  }
+  Future<void> clear() => sharedPreferences.clear();
 }

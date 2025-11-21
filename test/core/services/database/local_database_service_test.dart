@@ -20,7 +20,7 @@ void main() {
     test('getString returns value from SharedPreferences', () async {
       when(() => mockSharedPreferences.getString('key')).thenReturn('value');
 
-      final result = await localDatabaseService.getString('key');
+      final result = localDatabaseService.getString('key');
 
       expect(result, 'value');
       verify(() => mockSharedPreferences.getString('key')).called(1);
@@ -29,7 +29,7 @@ void main() {
     test('getString returns null if key does not exist', () async {
       when(() => mockSharedPreferences.getString('missing')).thenReturn(null);
 
-      final result = await localDatabaseService.getString('missing');
+      final result = localDatabaseService.getString('missing');
 
       expect(result, isNull);
       verify(() => mockSharedPreferences.getString('missing')).called(1);
