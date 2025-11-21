@@ -1,5 +1,5 @@
 name: clean_architecture
-description: Clean Architecture && SOLID Principle
+description: A comprehensive guide to building scalable and maintainable Flutter applications using Architecture patterns and design Principles.
 publish_to: "none"
 
 version: 1.0.0+1

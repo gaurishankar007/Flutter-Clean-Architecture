@@ -1,12 +1,12 @@
-# Flutter Clean Architecture & SOLID Principles 🚀
+# Flutter Architecture & SOLID Principles 🚀
 
-A comprehensive guide to building scalable and maintainable Flutter applications using **Clean Architecture** and **SOLID Principles**.
+A comprehensive guide to building scalable and maintainable Flutter applications using **Architecture** patterns and design **Principles**.
 
 ---
 
 ## Table of Contents 📌
 
-- [Flutter Clean Architecture \& SOLID Principles 🚀](#flutter-clean-architecture--solid-principles-)
+- [Flutter Architecture \& SOLID Principles 🚀](#flutter-architecture--solid-principles-)
   - [Table of Contents 📌](#table-of-contents-)
   - [Introduction](#introduction)
   - [What is Clean Architecture?](#what-is-clean-architecture)
