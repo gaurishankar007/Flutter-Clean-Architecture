@@ -2,16 +2,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
-class Flavor {
-  Flavor._();
-
+abstract final class Flavor {
   static const production = 'production';
   static const staging = 'staging';
   static const development = 'development';
 }
 
 /// App configuration for different app flavors.
-class AppConfig {
+sealed class AppConfig {
   final String appTitle;
   final String apiBaseUrl;
   final String flavor;
@@ -26,34 +24,35 @@ class AppConfig {
 @LazySingleton(as: AppConfig, env: [Flavor.production])
 class AppConfigProd extends AppConfig {
   AppConfigProd()
-      : super(
-          appTitle: "Clean Architecture App",
-          apiBaseUrl: dotenv.maybeGet("BASE_PRODUCTION") ??
-              "https://development.com.np/",
-          flavor: Flavor.production,
-        );
+    : super(
+        appTitle: "Clean Architecture App",
+        apiBaseUrl:
+            dotenv.maybeGet("BASE_PRODUCTION") ?? "https://development.com.np/",
+        flavor: Flavor.production,
+      );
 }
 
 @LazySingleton(as: AppConfig, env: [Flavor.staging])
 class AppConfigStg extends AppConfig {
   AppConfigStg()
-      : super(
-          appTitle: "Clean Architecture App Staging",
-          apiBaseUrl:
-              dotenv.maybeGet("BASE_STAGING") ?? "https://development.com.np/",
-          flavor: Flavor.staging,
-        );
+    : super(
+        appTitle: "Clean Architecture App Staging",
+        apiBaseUrl:
+            dotenv.maybeGet("BASE_STAGING") ?? "https://development.com.np/",
+        flavor: Flavor.staging,
+      );
 }
 
 @LazySingleton(as: AppConfig, env: [Flavor.development])
 class AppConfigDev extends AppConfig {
   AppConfigDev()
-      : super(
-          appTitle: "Clean Architecture App Development",
-          apiBaseUrl: dotenv.maybeGet("BASE_DEVELOPMENT") ??
-              "https://development.com.np/",
-          flavor: Flavor.development,
-        );
+    : super(
+        appTitle: "Clean Architecture App Development",
+        apiBaseUrl:
+            dotenv.maybeGet("BASE_DEVELOPMENT") ??
+            "https://development.com.np/",
+        flavor: Flavor.development,
+      );
 }
 
 /// A util class for accessing [AppConfig]

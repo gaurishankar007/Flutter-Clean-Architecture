@@ -2,6 +2,7 @@ import 'package:clean_architecture/config/app_config.dart';
 import 'package:clean_architecture/core/services/api/api_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -15,15 +16,13 @@ void main() {
   late ApiServiceImpl apiService;
   late AppConfig appConfig;
 
-  setUpAll(() {
+  setUpAll(() async {
+    await dotenv.load(fileName: ".env");
+
     mockDio = MockDio();
     mockAuthInterceptor = MockAuthInterceptor();
     mockNavigationService = MockNavigationService();
-    appConfig = AppConfig(
-      apiBaseUrl: 'https://api.example.com',
-      appTitle: "Testing",
-      flavor: Flavor.development,
-    );
+    appConfig = AppConfigDev();
   });
 
   setUp(() {

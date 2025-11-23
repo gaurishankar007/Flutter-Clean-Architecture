@@ -14,9 +14,7 @@ part 'error_handler.dart';
 ///
 /// Wraps all operations in a [DataState] to consistently represent
 /// success, failure, or loading states across the application.
-class DataHandler {
-  DataHandler._();
-
+abstract final class DataHandler {
   /// Execute an HTTP request safely and normalize the result into a [DataState].
   ///
   /// This method centralizes common API response handling and error mapping.

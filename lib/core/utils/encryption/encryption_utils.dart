@@ -3,9 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 part 'encrypted_data.dart';
 
-class EncryptionUtils {
-  EncryptionUtils._();
-
+abstract final class EncryptionUtils {
   /// Takes string and returns encryption data with
   /// encrypted content and initialization vector.
   static EncryptedData encrypt(String data) {

@@ -1,8 +1,6 @@
 part of 'data_handler.dart';
 
-class ErrorHandler {
-  ErrorHandler._();
-
+abstract final class ErrorHandler {
   /// Catches exceptions and logs the error.
   static Future<void> catchException(Function() callBack) async {
     try {
