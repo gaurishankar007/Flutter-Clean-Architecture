@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/widgets.dart' show WidgetsBinding, BoxConstraints;
+import 'package:flutter/widgets.dart' show WidgetsBinding;
 import 'package:injectable/injectable.dart';
 
 import '../../utils/screen_util/screen_util.dart';
@@ -16,12 +16,12 @@ class ScreenObserverCubit extends BaseCubit<ScreenObserverState> {
   /// Tracks build calls to avoid updating state on the initial build.
   int _buildCount = 0;
 
-  void update(BoxConstraints constraints) {
+  void update(ScreenDetails screenDetails) {
     final oldScreenType = ScreenUtil.I.type;
     final wasDesktop = ScreenUtil.I.isWebDesktopScreen;
 
     // Update screen dimensions and type
-    ScreenUtil.I.configureScreen(constraints.biggest);
+    ScreenUtil.I.configureScreen(screenDetails);
 
     final newScreenType = ScreenUtil.I.type;
     final isDesktop = ScreenUtil.I.isWebDesktopScreen;

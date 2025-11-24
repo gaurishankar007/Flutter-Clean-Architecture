@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/widgets.dart';
 
 part 'screen_type.dart';
+part 'screen_details.dart';
 
 /// Provides screen size measurements
 class ScreenUtil {
@@ -13,15 +14,12 @@ class ScreenUtil {
 
   double _width = 0;
   double _height = 0;
-  double _statusBarHeight = 0;
   double _devicePixelRatio = 0;
+  double _statusBarHeight = 0;
   ScreenType _type = ScreenType.unknown;
 
   double get height => _height;
   double get width => _width;
-
-  /// Height of the system top status bar
-  double get statusBarHeight => _statusBarHeight;
 
   /// Physical pixels on the screen ↔️ Logical (Flutter) pixels you work with.
   ///
@@ -33,19 +31,18 @@ class ScreenUtil {
   /// - Then the devicePixelRatio = 1080 / 360 = 3.0
   double get devicePixelRatio => _devicePixelRatio;
 
+  /// Height of the system top status bar
+  double get statusBarHeight => _statusBarHeight;
+
   ScreenType get type => _type;
 
   /// Set screen dimensions, orientation, screen type, etc.
-  void configureScreen(Size size) {
-    _height = size.height;
-    _width = size.width;
+  void configureScreen(ScreenDetails details) {
+    _height = details.logicalSize.height;
+    _width = details.logicalSize.width;
+    _devicePixelRatio = details.devicePixelRatio;
     _statusBarHeight = 0;
     _type = _checkScreenType();
-
-    /// Don't reassign device pixel multiple times
-    if (_devicePixelRatio != 0) return;
-    _devicePixelRatio =
-        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
   }
 
   /// Check screen size according to the width

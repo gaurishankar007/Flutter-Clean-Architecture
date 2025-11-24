@@ -71,8 +71,12 @@ void main() {
         ),
       ),
     );
-
-    ScreenUtil.I.configureScreen(Size(1030, 1280));
+    final screenDetails = ScreenDetails(
+      logicalSize: Size(1030, 1280),
+      physicalSize: Size(1030, 1280),
+      devicePixelRatio: 1,
+    );
+    ScreenUtil.I.configureScreen(screenDetails);
   });
 
   tearDown(() {
