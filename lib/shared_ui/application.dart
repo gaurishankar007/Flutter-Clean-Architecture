@@ -39,6 +39,8 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
     super.didChangeMetrics();
     // Schedule the screen size update to happen after the current frame is built.
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Don't update if this context is already unmounted.
+      if (!mounted) return;
       _screenObserverCubit.update(_getScreenDetails());
     });
   }
@@ -60,7 +62,7 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
   }
 
   ScreenDetails _getScreenDetails() {
-    final view = View.of(context);
+    final view = WidgetsBinding.instance.platformDispatcher.views.first;
     final physicalSize = view.physicalSize;
     final devicePixelRatio = view.devicePixelRatio;
     final logicalSize = Size(
