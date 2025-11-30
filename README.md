@@ -2,8 +2,6 @@
 
 A comprehensive guide to building scalable and maintainable Flutter applications using **Clean Architecture** pattern and **Solid Principle**.
 
----
-
 ## Table of Contents 📌
 
 - [Flutter Clean Architecture with SOLID Principles 🚀](#flutter-clean-architecture-with-solid-principles-)
@@ -46,13 +44,9 @@ A comprehensive guide to building scalable and maintainable Flutter applications
       - [Integration Tests (Patrol)](#integration-tests-patrol)
   - [Developer Resources](#developer-resources)
 
----
-
 ## Introduction
 
 This project demonstrates how to structure Flutter applications using **Clean Architecture** and **SOLID Principles**. The goal is to create modular, testable, and maintainable codebases that scale with your application's growth.
-
----
 
 ## What is Clean Architecture?
 
@@ -89,8 +83,6 @@ This project demonstrates how to structure Flutter applications using **Clean Ar
 - **Modularity**: Enables easier testing and maintenance.
 - **Scalability**: Supports flexible and future-proof feature additions.
 
----
-
 ## SOLID Principles
 
 **SOLID Principles** complement Clean Architecture by providing guidelines for writing clean, maintainable, and extensible code:
@@ -112,15 +104,11 @@ This project demonstrates how to structure Flutter applications using **Clean Ar
 
 For more detailed information and real-world examples, see the [**SOLID Principles documentation**](documentation/solid_principles.md).
 
----
-
 ## Visual Representation
 
 ![Clean Architecture With SOLID Principle](https://miro.medium.com/v2/resize:fit:720/format:webp/0*1w080Y72qaOdoC3W.png)
 
 > This diagram highlights the modular and scalable structure of Clean Architecture, aligning with **SOLID principles** to ensure best development practices.
-
----
 
 ## Project Features
 
@@ -132,8 +120,6 @@ For more detailed information and real-world examples, see the [**SOLID Principl
 - 📡 **Core Services**: Navigation, Internet, Local Database, Toast Messages, and User Credential management.
 - 🎨 **Reusable UI Components**: Customizable themes and reusable widgets.
 - ⚙️ **Utilities**: Screen size handling, extensions, mixins, generics, and form validation utilities.
-
----
 
 ## Getting Started 🚀
 
@@ -158,8 +144,6 @@ Follow these steps to get the project up and running on your local machine.
    ```bash
    flutter pub get
    ```
-
----
 
 ## Project Structure
 
@@ -225,9 +209,7 @@ Notes:
 
 - Dependency injection typically uses `get_it` + `injectable` and is wired in `config/injector` and `app_initializer.dart`.
 - Presentation layer (Cubits) should only depend on domain use cases and core services (not on feature data implementations). Data layer implements domain repository interfaces.
- - Presentation layer (Cubits) should only depend on domain use cases and core services (not on feature data implementations). Data layer implements domain repository interfaces.
-
----
+- Presentation layer (Cubits) should only depend on domain use cases and core services (not on feature data implementations). Data layer implements domain repository interfaces.
 
 ## State Management with Bloc (Cubit)
 
@@ -237,8 +219,6 @@ Notes:
 - `BaseState` provides `StateStatus` (for UI state like `initial`, `loading`, `loaded`).
 - The UI can use `showDataStateToast` from the `ServiceMixin` to display messages based on the `DataState` returned from use cases.
 
----
-
 ## App Flavors
 
 The app supports three flavors: `production`, `staging`, and `development` for both Android and iOS.
@@ -246,21 +226,13 @@ The app supports three flavors: `production`, `staging`, and `development` for b
 - Uses `get_it` and `injectable` for dependency injection.
 - Flavor-specific configuration (e.g., API base URL) is managed via `AppConfig`.
 - Firebase is configured per flavor (different options for Android/iOS).
- - See `Project Structure` for entry points (`main.dart`, `main_stg.dart`, `main_dev.dart`).
+- See `Project Structure` for entry points (`main.dart`, `main_stg.dart`, `main_dev.dart`).
 
 ## Responsiveness
 
-- **`screen_util`**: Manages screen size, types, and responsive values (e.g., width, padding).
-
-- **`ScreenObserverCubit`**: A `Cubit` that enhances responsiveness by observing screen size changes within a `LayoutBuilder`.
-
-  - It leverages `ScreenUtil` to determine the current screen type (e.g., mobile, tablet, desktop).
-  - To prevent unnecessary widget rebuilds during the build cycle, it employs `WidgetsBinding.instance.addPostFrameCallback` to update its state only after the current frame has been rendered.
-  - This ensures that listeners are notified of screen type or desktop layout changes (e.g., switching from mobile to desktop view) efficiently, allowing widgets to rebuild selectively for optimized responsive UI adjustments.
-
-- **`LayoutBuilder`**: The `MaterialApp` is wrapped in a `LayoutBuilder` to update screen configuration via the `ScreenObserverCubit` and trigger rebuilds as needed when the screen size changes.
-
----
+- Uses `screen_util` to manage screen size, types, and responsive values (e.g., width, padding).
+- `ScreenObserverCubit`: A Bloc `cubit` that enhances responsiveness by observing screen size changes. It leverages `ScreenUtil` to determine the current screen type (e.g., mobile, tablet, desktop). To prevent unnecessary widget rebuilds during the build cycle, it updates its state only after the current frame has been rendered. This ensures that listeners are notified of screen type or desktop layout changes (e.g., switching from mobile to desktop view) efficiently, allowing widgets to rebuild selectively for optimized responsive UI adjustments.
+- The root widget, `CleanArchitectureSample`, uses `WidgetsBindingObserver` to listen for `didChangeMetrics`. When the screen size changes, it schedules an update to the `ScreenObserverCubit` using `WidgetsBinding.instance.addPostFrameCallback`, ensuring the UI is rebuilt safely and efficiently in response to layout changes.
 
 ## Core Services
 
@@ -293,8 +265,6 @@ The app supports three flavors: `production`, `staging`, and `development` for b
 ## Data States
 
 - **DataState<T>**: A sealed class representing the state of a data operation. It has three main states: `SuccessState<T>`, `FailureState<T>`, and `LoadingState<T>`, which allows the UI to react consistently to different outcomes.
-
----
 
 ## API Workflow Overview
 
@@ -331,8 +301,6 @@ graph TD
 6. **Repository may also call `LocalDataSource`** directly
 7. **All outcomes are returned as `DataState<T>`**: `SuccessState`, or `FailureState`
 
----
-
 ### Core Components
 
 - **Use Case**: Represents a single business action (e.g., `LoginUseCase`). It is called by the Presentation layer (Cubit) and orchestrates the flow of data by interacting with one or more Repositories. This encapsulates a specific piece of business logic, making it reusable and decoupled from the UI state management.
@@ -349,8 +317,6 @@ graph TD
 - **DataHandler & ErrorHandler**: These two classes form the backbone of the application's error handling and data flow strategy.
   - **DataHandler**: Provides high-level utility methods like `safeApiCall` (to execute API requests, parse JSON, and wrap results in a `DataState`) and `fetchWithFallback` (to implement the offline-first strategy).
   - **ErrorHandler**: A centralized utility that catches specific exceptions (`DioException`, `FormatException`, etc.) and converts them into a standardized `FailureState` with a user-friendly error message. This ensures that the UI layer receives consistent error objects regardless of the error's origin.
-
----
 
 ### Example: Login Flow
 
@@ -420,17 +386,9 @@ graph TD
     N -->|failure| P[FailureState]
 ```
 
----
-
- 
-
----
-
 ### Debugging Tools
 
 - **Alice** integrated into `ApiService` for easy request/response inspection.
-
----
 
 ## Feature Template Generation with Mason
 
@@ -476,8 +434,6 @@ This project uses **Mason** to generate feature templates for consistent and eff
 
 The generation process relies on a `config.json` file, which includes details such as feature, cubit, and page names, as well as entity names and their variable types. Ensure that `config.json` is correctly defined before running the generation command.
 
----
-
 ## Testing
 
 This project uses a multi-layered testing strategy to ensure robustness and maintainability.
@@ -494,8 +450,6 @@ This project uses a multi-layered testing strategy to ensure robustness and main
   - When testing a `UseCase`, the `Repository` is mocked.
   - When testing a `Cubit`, the `UseCase`s are mocked.
   - When testing a `DataSource`, the `ApiService` or `LocalDatabaseService` is mocked.
-
----
 
 ### Running Tests
 
@@ -527,8 +481,6 @@ Ensure an emulator or physical device is running before executing these tests.
   patrol test --target path/to/your/integration_test.dart
   ```
 
----
-
 ## Developer Resources
 
 For more details on specific commands and guidelines, refer to the following documents:
@@ -536,4 +488,5 @@ For more details on specific commands and guidelines, refer to the following doc
 - [**Docker Commands**](docs/docker_commands.md): Essential Docker and Docker Compose commands for development environments.
 - [**Flutter Commands Cheat Sheet**](docs/flutter_commands_cheat_sheet.md): A collection of essential and frequently used Flutter commands to boost your productivity.
 - [**Flutter Configuration Guidelines**](docs/flutter_configuration_guidelines.md): Guidelines for setting up the Flutter environment, including activating pub commands, configuring Firebase CLI, and managing the Java SDK location.
+- [**Flutter Tips**](docs/flutter_tips.md): A collection of best practices for writing efficient, readable, and performant Flutter code.
 - [**Git Commands Cheat Sheet**](docs/git_commands_cheat_sheet.md): A collection of essential and frequently used git commands to boost your productivity.

@@ -61,7 +61,7 @@ Follow these guidelines to keep your app fast and your codebase clean.
 
 - **Keep the `build` Method Pure**: The `build` method should be free of side effects and heavy computations. Its only job is to return a widget tree based on the current state and properties.
 
-- **Isolates:** Use isolates for CPU-bound, heavy work (large JSON parsing, image processing, encryption, or complex computations) to keep the UI thread responsive and avoid jank. For short-lived tasks prefer `compute()`. For long-running or reusable background workers use `Isolate.spawn`, or consider packages like `flutter_isolate`.
+- **Isolates:** Use isolates for CPU-bound, heavy work (large JSON parsing, image processing, encryption, or complex computations) to keep the UI thread responsive and avoid jank. For short-lived tasks prefer `compute()` or `Isolate.run`. For long-running or reusable background workers use `Isolate.spawn`, or consider packages like `flutter_isolate`.
 
 - **Use `ValueKey` for list items:** When building lists (for example with `ListView.builder`), give each item a stable key such as `ValueKey(item.id)` to preserve widget identity across updates, reorders, or insertions/removals. This reduces unnecessary rebuilds/repaints and preserves the state of stateful child widgets. Avoid non-unique or mutable keys (for example index-based keys) — prefer stable identifiers that reflect the item's identity.
 
