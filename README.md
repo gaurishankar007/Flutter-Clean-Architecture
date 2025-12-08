@@ -2,6 +2,13 @@
 
 A comprehensive guide to building scalable and maintainable Flutter applications using **Clean Architecture** pattern and **Solid Principle**.
 
+For more details on specific commands and guidelines, refer to the following documents:
+
+- [**Flutter Tips**](docs/flutter_tips.md): A collection of best practices for writing efficient, readable, and performant Flutter code.
+- [**Flutter Commands Cheat Sheet**](docs/flutter_commands_cheat_sheet.md): A collection of essential and frequently used Flutter commands to boost your productivity.
+- [**Flutter Configuration Guidelines**](docs/flutter_configuration_guidelines.md): Guidelines for setting up the Flutter environment, including activating pub commands, configuring Firebase CLI, and managing the Java SDK location.
+- [**Git Commands Cheat Sheet**](docs/git_commands_cheat_sheet.md): A collection of essential and frequently used git commands to boost your productivity.
+
 ## Table of Contents 📌
 
 - [Flutter Clean Architecture with SOLID Principles 🚀](#flutter-clean-architecture-with-solid-principles-)
@@ -42,7 +49,6 @@ A comprehensive guide to building scalable and maintainable Flutter applications
     - [Running Tests](#running-tests)
       - [Unit \& Widget Tests](#unit--widget-tests)
       - [Integration Tests (Patrol)](#integration-tests-patrol)
-  - [Developer Resources](#developer-resources)
 
 ## Introduction
 
@@ -480,13 +486,3 @@ Ensure an emulator or physical device is running before executing these tests.
   ```shell
   patrol test --target path/to/your/integration_test.dart
   ```
-
-## Developer Resources
-
-For more details on specific commands and guidelines, refer to the following documents:
-
-- [**Docker Commands**](docs/docker_commands.md): Essential Docker and Docker Compose commands for development environments.
-- [**Flutter Commands Cheat Sheet**](docs/flutter_commands_cheat_sheet.md): A collection of essential and frequently used Flutter commands to boost your productivity.
-- [**Flutter Configuration Guidelines**](docs/flutter_configuration_guidelines.md): Guidelines for setting up the Flutter environment, including activating pub commands, configuring Firebase CLI, and managing the Java SDK location.
-- [**Flutter Tips**](docs/flutter_tips.md): A collection of best practices for writing efficient, readable, and performant Flutter code.
-- [**Git Commands Cheat Sheet**](docs/git_commands_cheat_sheet.md): A collection of essential and frequently used git commands to boost your productivity.
