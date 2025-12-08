@@ -8,13 +8,13 @@ import '../../../../core/utils/type_defs.dart';
 import '../models/requests/authentication_request.dart';
 import '../models/responses/user_data_response.dart';
 
-abstract class AuthRemoteDataSource {
+abstract interface class AuthRemoteDataSource {
   FutureData<UserDataResponse> login(AuthenticationRequest request);
   FutureBool checkAUth();
 }
 
 @LazySingleton(as: AuthRemoteDataSource)
-class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
+final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final ApiService _dioClient;
 
   const AuthRemoteDataSourceImpl({required ApiService dioClient})

@@ -8,14 +8,14 @@ import '../../../../core/utils/type_defs.dart';
 import '../models/responses/user_data_response.dart';
 import 'package:injectable/injectable.dart';
 
-abstract class AuthLocalDataSource {
+abstract interface class AuthLocalDataSource {
   FutureBool saveUserData(UserDataResponse userDataModel);
   FutureData<UserDataResponse> getUserData();
   FutureBool removeUserData();
 }
 
 @LazySingleton(as: AuthLocalDataSource)
-class AuthLocalDataSourceImpl implements AuthLocalDataSource {
+final class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   final LocalDatabaseService _localDatabase;
 
   const AuthLocalDataSourceImpl({required LocalDatabaseService localDatabase})

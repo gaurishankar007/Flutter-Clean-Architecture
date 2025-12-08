@@ -7,9 +7,7 @@ import '../../core/services/navigation/navigation_service.dart';
 import '../ui/base/text/base_text.dart';
 import 'ui_helpers.dart';
 
-class ToastUtil {
-  ToastUtil._();
-
+abstract interface class ToastUtil {
   static final _navigationService = NavigationUtil.I;
   static final _toastSetting = const SlidingToastSetting(
     displayDuration: Duration(milliseconds: 2500),

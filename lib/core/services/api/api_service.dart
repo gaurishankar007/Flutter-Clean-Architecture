@@ -23,7 +23,7 @@ part 'auth_interceptor.dart';
 part 'multipart_service.dart';
 
 /// Convenience methods to make an HTTP PATCH request.
-abstract class ApiService {
+abstract interface class ApiService {
   Future<Response> get<T>(
     String path, {
     final Object? data,
@@ -83,7 +83,7 @@ abstract class ApiServiceModule {
 }
 
 @LazySingleton(as: ApiService)
-class ApiServiceImpl implements ApiService {
+final class ApiServiceImpl implements ApiService {
   final Dio _dio;
 
   ApiServiceImpl({

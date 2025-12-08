@@ -22,7 +22,7 @@ enum ErrorType {
 }
 
 /// A failure data state when error occurs
-class FailureState<T> extends DataState<T> {
+final class FailureState<T> extends DataState<T> {
   const FailureState({String? message, ErrorType? errorType, super.statusCode})
     : super(
         message: message ?? ERROR_MESSAGE,

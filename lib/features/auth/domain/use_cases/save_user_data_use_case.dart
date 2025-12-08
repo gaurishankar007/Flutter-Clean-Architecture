@@ -6,11 +6,11 @@ import '../../../../core/domain/entities/user_data.dart';
 import '../repositories/auth_repository.dart';
 
 @LazySingleton()
-class SaveUserDataUseCase extends UseCase<bool, UserData> {
+class SaveUserDataUseCase implements UseCase<bool, UserData> {
   final AuthRepository _authRepository;
 
   SaveUserDataUseCase({required AuthRepository authRepository})
-      : _authRepository = authRepository;
+    : _authRepository = authRepository;
 
   @override
   FutureBool call(UserData request) => _authRepository.saveUserData(request);

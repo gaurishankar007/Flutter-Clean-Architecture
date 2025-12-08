@@ -1,9 +1,9 @@
 import '../../utils/type_defs.dart';
 
-abstract class UseCase<T, P extends Object?> {
+abstract interface class UseCase<T, P extends Object?> {
   FutureData<T> call(P request);
 }
 
-abstract class UseCaseNoParameter<T> {
+abstract interface class UseCaseNoParameter<T> {
   FutureData<T> call();
 }

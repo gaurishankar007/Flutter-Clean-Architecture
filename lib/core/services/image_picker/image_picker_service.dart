@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 
-abstract class ImagePickerService {
+abstract interface class ImagePickerService {
   Future<String?> pickImage({
     required ImageSource source,
     double? maxWidth,
@@ -23,11 +23,11 @@ abstract class ImagePickerServiceModule {
 
 /// Image picker service class for picking single/multiple images
 @LazySingleton(as: ImagePickerService)
-class ImagePickerServiceImpl implements ImagePickerService {
+final class ImagePickerServiceImpl implements ImagePickerService {
   final ImagePicker _imagePicker;
 
   const ImagePickerServiceImpl({required ImagePicker imagePicker})
-      : _imagePicker = imagePicker;
+    : _imagePicker = imagePicker;
 
   /// Pick single image
   @override

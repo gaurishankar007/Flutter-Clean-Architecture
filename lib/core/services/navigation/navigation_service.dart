@@ -9,7 +9,7 @@ import 'package:injectable/injectable.dart';
 import '../../../routing/routes.dart';
 import '../../data_handling/data_handler.dart';
 
-abstract class NavigationService {
+abstract interface class NavigationService {
   RouterDelegate<Object>? get routerDelegate;
   RouteInformationParser<Object>? get routeInformationParser;
   GlobalKey<NavigatorState> get navigatorKey;
@@ -35,7 +35,7 @@ abstract class NavigationServiceModule {
 }
 
 @LazySingleton(as: NavigationService)
-class NavigationServiceImpl implements NavigationService {
+final class NavigationServiceImpl implements NavigationService {
   final AppRouter _appRouter;
 
   NavigationServiceImpl({required AppRouter appRouter})

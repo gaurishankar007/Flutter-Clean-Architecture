@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
-abstract class InternetService {
+abstract interface class InternetService {
   bool get isConnected;
   Stream<InternetStatus>? get connectivityStream;
   Future<bool> checkConnection();
@@ -20,7 +20,7 @@ abstract class InternetServiceModule {
 
 /// Check whether the device is online or offline
 @LazySingleton(as: InternetService)
-class InternetServiceImpl implements InternetService {
+final class InternetServiceImpl implements InternetService {
   final InternetConnection _internetConnection;
   Stream<InternetStatus>? _connectivityStream;
   StreamSubscription<InternetStatus>? _subscription;

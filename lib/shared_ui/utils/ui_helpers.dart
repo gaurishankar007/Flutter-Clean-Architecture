@@ -22,9 +22,7 @@ enum Space {
   final double value;
 }
 
-class UIHelpers {
-  UIHelpers._();
-
+abstract interface class UIHelpers {
   //<========== Horizontal Spacing ==========>
   static final spaceH2 = SizedBox(width: Space.xxxSmall.value);
   static final spaceH4 = SizedBox(width: Space.xxSmall.value);

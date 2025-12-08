@@ -12,7 +12,7 @@ import '../data_sources/auth_remote_data_source.dart';
 import '../models/responses/user_data_response.dart';
 
 @LazySingleton(as: AuthRepository)
-class AuthRepositoryImpl implements AuthRepository {
+final class AuthRepositoryImpl implements AuthRepository {
   final InternetService _internet;
   final AuthRemoteDataSource _remoteDataSource;
   final AuthLocalDataSource _localDataSource;

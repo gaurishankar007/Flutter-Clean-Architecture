@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/encryption/encryption_utils.dart';
 
-abstract class LocalDatabaseService {
+abstract interface class LocalDatabaseService {
   Future<void> setString(String key, String value);
   Future<void> setStringWithEncryption(String key, String value);
   String? getString(String key);
@@ -22,7 +22,7 @@ abstract class LocalDatabaseServiceModule {
 }
 
 @LazySingleton(as: LocalDatabaseService)
-class LocalDatabaseServiceImpl implements LocalDatabaseService {
+final class LocalDatabaseServiceImpl implements LocalDatabaseService {
   final SharedPreferences sharedPreferences;
 
   const LocalDatabaseServiceImpl({required this.sharedPreferences});

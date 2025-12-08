@@ -6,7 +6,7 @@ import '../../../../core/domain/entities/user_data.dart';
 import '../repositories/auth_repository.dart';
 
 @LazySingleton()
-class GetUserDataUseCase extends UseCaseNoParameter<UserData> {
+class GetUserDataUseCase implements UseCaseNoParameter<UserData> {
   final AuthRepository _authRepository;
 
   GetUserDataUseCase({required AuthRepository authRepository})

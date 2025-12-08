@@ -9,7 +9,7 @@ import '../../../routing/routes.gr.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
-abstract class SessionService {
+abstract interface class SessionService {
   bool get isLoggedIn;
   UserData get userData;
   String get refreshToken;
@@ -23,7 +23,7 @@ abstract class SessionService {
 
 /// A class that stores user data
 @LazySingleton(as: SessionService)
-class SessionServiceImpl implements SessionService {
+final class SessionServiceImpl implements SessionService {
   final LocalDatabaseService _localDatabase;
   final NavigationService _navigationService;
 

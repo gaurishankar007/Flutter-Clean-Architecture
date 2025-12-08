@@ -1,5 +1,5 @@
-// dart format width=80
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format width=80
 
 // **************************************************************************
 // InjectableConfigGenerator
@@ -67,26 +67,26 @@ extension GetItInjectableX on _i174.GetIt {
     _i526.EnvironmentFilter? environmentFilter,
   }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
-    final localDatabaseServiceModule = _$LocalDatabaseServiceModule();
     final apiServiceModule = _$ApiServiceModule();
-    final navigationServiceModule = _$NavigationServiceModule();
+    final localDatabaseServiceModule = _$LocalDatabaseServiceModule();
     final imagePickerServiceModule = _$ImagePickerServiceModule();
     final internetServiceModule = _$InternetServiceModule();
-    gh.factory<_i640.ScreenObserverCubit>(() => _i640.ScreenObserverCubit());
+    final navigationServiceModule = _$NavigationServiceModule();
+    gh.factory<bool>(() => apiServiceModule.addInterceptors);
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => localDatabaseServiceModule.sharedPreferences,
       preResolve: true,
     );
-    gh.factory<bool>(() => apiServiceModule.addInterceptors);
-    gh.lazySingleton<_i671.AppRouter>(() => navigationServiceModule.appRouter);
+    gh.factory<_i640.ScreenObserverCubit>(() => _i640.ScreenObserverCubit());
+    gh.lazySingleton<_i361.Dio>(() => apiServiceModule.dio);
+    gh.lazySingleton<_i885.AuthInterceptor>(() => _i885.AuthInterceptor());
     gh.lazySingleton<_i183.ImagePicker>(
       () => imagePickerServiceModule.imagePicker,
     );
     gh.lazySingleton<_i161.InternetConnection>(
       () => internetServiceModule.internetConnection,
     );
-    gh.lazySingleton<_i361.Dio>(() => apiServiceModule.dio);
-    gh.lazySingleton<_i885.AuthInterceptor>(() => _i885.AuthInterceptor());
+    gh.lazySingleton<_i671.AppRouter>(() => navigationServiceModule.appRouter);
     gh.lazySingleton<_i257.ImagePickerService>(
       () => _i257.ImagePickerServiceImpl(imagePicker: gh<_i183.ImagePicker>()),
     );
@@ -145,22 +145,22 @@ extension GetItInjectableX on _i174.GetIt {
         localDataSource: gh<_i322.AuthLocalDataSource>(),
       ),
     );
-    gh.lazySingleton<_i817.GetUserDataUseCase>(
-      () =>
-          _i817.GetUserDataUseCase(authRepository: gh<_i1003.AuthRepository>()),
-    );
-    gh.lazySingleton<_i661.SaveUserDataUseCase>(
-      () => _i661.SaveUserDataUseCase(
-        authRepository: gh<_i1003.AuthRepository>(),
-      ),
-    );
     gh.lazySingleton<_i481.CheckAuthenticationUseCase>(
       () => _i481.CheckAuthenticationUseCase(
         authRepository: gh<_i1003.AuthRepository>(),
       ),
     );
+    gh.lazySingleton<_i817.GetUserDataUseCase>(
+      () =>
+          _i817.GetUserDataUseCase(authRepository: gh<_i1003.AuthRepository>()),
+    );
     gh.lazySingleton<_i68.LoginUseCase>(
       () => _i68.LoginUseCase(authRepository: gh<_i1003.AuthRepository>()),
+    );
+    gh.lazySingleton<_i661.SaveUserDataUseCase>(
+      () => _i661.SaveUserDataUseCase(
+        authRepository: gh<_i1003.AuthRepository>(),
+      ),
     );
     gh.lazySingleton<_i134.DashboardCubitUseCases>(
       () => _i134.DashboardCubitUseCases(
@@ -186,12 +186,12 @@ extension GetItInjectableX on _i174.GetIt {
   }
 }
 
-class _$LocalDatabaseServiceModule extends _i87.LocalDatabaseServiceModule {}
-
 class _$ApiServiceModule extends _i885.ApiServiceModule {}
 
-class _$NavigationServiceModule extends _i1005.NavigationServiceModule {}
+class _$LocalDatabaseServiceModule extends _i87.LocalDatabaseServiceModule {}
 
 class _$ImagePickerServiceModule extends _i257.ImagePickerServiceModule {}
 
 class _$InternetServiceModule extends _i662.InternetServiceModule {}
+
+class _$NavigationServiceModule extends _i1005.NavigationServiceModule {}

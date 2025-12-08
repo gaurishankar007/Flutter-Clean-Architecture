@@ -4,7 +4,7 @@
 
 // import '../../../features/auth/data/isar_collections/user_collection.dart';
 
-// abstract class IsarDatabaseService {
+// abstract interface class IsarDatabaseService {
 //   Future<void> put<T>(T collection);
 //   Future<void> putAll<T>(List<T> collection);
 //   Future<List<T>> getAll<T>();
@@ -17,25 +17,29 @@
 //   @preResolve
 //   Future<Isar> provideIsar() async {
 //     final directory = await getApplicationDocumentsDirectory();
-//     return await Isar.open([
-//       UserCollectionSchema,
-//     ], directory: directory.path, inspector: true);
+//     return await Isar.open(
+//       [UserCollectionSchema],
+//       directory: directory.path,
+//       inspector: true,
+//     );
 //   }
 // }
 
 // @LazySingleton(as: IsarDatabaseService)
-// class IsarDatabaseServiceImpl implements IsarDatabaseService {
+// final class IsarDatabaseServiceImpl implements IsarDatabaseService {
 //   final Isar _isar;
 
 //   const IsarDatabaseServiceImpl({required Isar isar}) : _isar = isar;
 
 //   @override
-//   Future<void> put<T>(T collection) async => await _isar
-//       .writeTxn(() async => await _isar.collection<T>().put(collection));
+//   Future<void> put<T>(T collection) async => await _isar.writeTxn(
+//     () async => await _isar.collection<T>().put(collection),
+//   );
 
 //   @override
-//   Future<void> putAll<T>(List<T> collection) async => await _isar
-//       .writeTxn(() async => await _isar.collection<T>().putAll(collection));
+//   Future<void> putAll<T>(List<T> collection) async => await _isar.writeTxn(
+//     () async => await _isar.collection<T>().putAll(collection),
+//   );
 
 //   @override
 //   Future<List<T>> getAll<T>() async =>
