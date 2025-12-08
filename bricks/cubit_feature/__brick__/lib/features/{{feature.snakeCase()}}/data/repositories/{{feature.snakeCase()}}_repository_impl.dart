@@ -7,7 +7,7 @@ import '../data_sources/{{feature.snakeCase()}}_remote_data_source.dart';
 
 
 @LazySingleton(as: {{feature.pascalCase()}}Repository)
-class {{feature.pascalCase()}}RepositoryImpl implements {{feature.pascalCase()}}Repository {
+final class {{feature.pascalCase()}}RepositoryImpl implements {{feature.pascalCase()}}Repository {
   final InternetService _internetService;
   final {{feature.pascalCase()}}RemoteDataSource _remoteDataSource;
   final {{feature.pascalCase()}}LocalDataSource _localDataSource;

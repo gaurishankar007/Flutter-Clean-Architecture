@@ -56,9 +56,7 @@ class AppConfigDev extends AppConfig {
 }
 
 /// A util class for accessing [AppConfig]
-class AppConfigUtil {
-  AppConfigUtil._();
-
+abstract final class AppConfigUtil {
   /// Returns the registered instance of [AppConfig] which is always the same.
   static AppConfig get I => GetIt.I<AppConfig>();
 }

@@ -158,9 +158,7 @@ final class NavigationServiceImpl implements NavigationService {
 }
 
 /// A util class for accessing [NavigationService]
-class NavigationUtil {
-  NavigationUtil._();
-
+abstract final class NavigationUtil {
   /// Returns the registered instance of [NavigationService] which is always the same
   static NavigationService get I => GetIt.I<NavigationService>();
 }

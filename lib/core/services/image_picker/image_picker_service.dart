@@ -58,9 +58,7 @@ final class ImagePickerServiceImpl implements ImagePickerService {
 }
 
 /// A util class for accessing [ImagePickerService]
-class ImagePickerUtil {
-  ImagePickerUtil._();
-
+abstract final class ImagePickerUtil {
   /// Returns the registered instance of [ImagePickerService] which is always the same
   static ImagePickerService get I => GetIt.I<ImagePickerService>();
 }

@@ -5,7 +5,7 @@ part of 'api_service.dart';
 /// * Modify data
 /// * Refresh tokens
 @LazySingleton()
-class AuthInterceptor extends Interceptor {
+interface class AuthInterceptor extends Interceptor {
   // Access the session service lazily via the locator to break circular DI.
   SessionService get _sessionManager => SessionUtil.I;
   final Dio _dio = Dio();

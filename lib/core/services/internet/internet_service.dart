@@ -58,9 +58,7 @@ final class InternetServiceImpl implements InternetService {
 }
 
 /// A util class for accessing [InternetService]
-class InternetUtil {
-  InternetUtil._();
-
+abstract final class InternetUtil {
   /// Returns the registered instance of [InternetService] which is always the same
   static InternetService get I => GetIt.I<InternetService>();
 }

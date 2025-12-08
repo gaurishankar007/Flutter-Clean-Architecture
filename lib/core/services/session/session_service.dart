@@ -85,9 +85,7 @@ final class SessionServiceImpl implements SessionService {
 }
 
 /// A util class for accessing [SessionService]
-class SessionUtil {
-  SessionUtil._();
-
+abstract final class SessionUtil {
   /// Returns the registered instance of [SessionService] which is always the same
   static SessionService get I => GetIt.I<SessionService>();
 }
