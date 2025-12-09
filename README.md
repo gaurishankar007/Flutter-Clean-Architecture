@@ -240,6 +240,15 @@ The app supports three flavors: `production`, `staging`, and `development` for b
 - `ScreenObserverCubit`: A Bloc `cubit` that enhances responsiveness by observing screen size changes. It leverages `ScreenUtil` to determine the current screen type (e.g., mobile, tablet, desktop). To prevent unnecessary widget rebuilds during the build cycle, it updates its state only after the current frame has been rendered. This ensures that listeners are notified of screen type or desktop layout changes (e.g., switching from mobile to desktop view) efficiently, allowing widgets to rebuild selectively for optimized responsive UI adjustments.
 - The root widget, `CleanArchitectureSample`, uses `WidgetsBindingObserver` to listen for `didChangeMetrics`. When the screen size changes, it schedules an update to the `ScreenObserverCubit` using `WidgetsBinding.instance.addPostFrameCallback`, ensuring the UI is rebuilt safely and efficiently in response to layout changes.
 
+```mermaid
+flowchart TD
+    A[Main Stateful Widget] -->|init config| B[Screen Util]
+    A -->|notify metrics| C[Screen Observer Notifier]
+    C -->|apply update| B[Screen Util]
+    C -->|trigger rebuild| D[Widget]
+    B -->|provide responsive values| D[Widget]
+```
+
 ## Core Services
 
 ### API
@@ -275,7 +284,7 @@ The app supports three flavors: `production`, `staging`, and `development` for b
 ## API Workflow Overview
 
 ```mermaid
-graph TD
+flowchart TD
     UI -->|calls| Cubit
     Cubit -->|calls| UseCase
     UseCase -->|calls| Repository
@@ -369,7 +378,7 @@ class LoginCubit extends BaseCubit<LoginState> {
 #### Internal Flow
 
 ```mermaid
-graph TD
+flowchart TD
    A[UI] --> B[LoginCubit]
     B --> C[LoginUseCase]
     B --> D[SaveUserDataUseCase]
