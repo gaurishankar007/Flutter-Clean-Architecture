@@ -142,8 +142,8 @@ Follow these steps to get the project up and running on your local machine.
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/gaurishankars/Flutter-Clean-Architecture-SOLID-Principle.git
-   cd Flutter-Clean-Architecture-SOLID-Principle
+   git clone https://github.com/gaurishankar007/Flutter-Clean-Architecture.git
+   cd Flutter-Clean-Architecture
    ```
 
 2. **Install dependencies:**
