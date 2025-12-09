@@ -243,7 +243,7 @@ The app supports three flavors: `production`, `staging`, and `development` for b
 ```mermaid
 flowchart TD
     A[Main Stateful Widget] -->|init config| B[Screen Util]
-    A -->|notify metrics| C[Screen Observer Notifier]
+    A -->|notify metrics| C[Screen Observer Cubit]
     C -->|apply update| B[Screen Util]
     C -->|trigger rebuild| D[Widget]
     B -->|provide responsive values| D[Widget]
