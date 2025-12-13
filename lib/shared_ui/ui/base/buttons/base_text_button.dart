@@ -1,7 +1,6 @@
+import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../core/constants/app_colors.dart';
-import '../text/base_text.dart';
 
 class BaseTextButton extends StatelessWidget {
   final Function() onPressed;

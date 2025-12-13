@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import '../../../../core/constants/local_db_keys.dart';
-import '../../../../core/data_handling/data_handler.dart';
-import '../../../../core/data_states/data_state.dart';
-import '../../../../core/services/database/local_database_service.dart';
-import '../../../../core/utils/type_defs.dart';
-import '../models/responses/user_data_response.dart';
+import 'package:clean_architecture/core/constants/local_db_keys.dart';
+import 'package:clean_architecture/core/data_handling/data_handler.dart';
+import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/services/database/local_database_service.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:injectable/injectable.dart';
 
 abstract interface class AuthLocalDataSource {

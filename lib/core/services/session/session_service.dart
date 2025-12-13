@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import '../../constants/local_db_keys.dart';
-import '../../domain/entities/user_data.dart';
-import '../database/local_database_service.dart';
-import '../navigation/navigation_service.dart';
-import '../../../features/auth/data/models/responses/user_data_response.dart';
-import '../../../routing/routes.gr.dart';
+import 'package:clean_architecture/core/constants/local_db_keys.dart';
+import 'package:clean_architecture/core/domain/entities/user_data.dart';
+import 'package:clean_architecture/core/services/database/local_database_service.dart';
+import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
+import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 

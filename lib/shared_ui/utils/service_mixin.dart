@@ -1,10 +1,9 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/services/image_picker/image_picker_service.dart';
+import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
+import 'package:clean_architecture/shared_ui/utils/toast_util.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../../core/data_states/data_state.dart';
-import '../../core/services/image_picker/image_picker_service.dart';
-import '../../core/services/navigation/navigation_service.dart';
-import 'toast_util.dart';
 
 mixin ServiceMixin {
   final _navigationService = NavigationUtil.I;

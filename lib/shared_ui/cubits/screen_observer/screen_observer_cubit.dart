@@ -1,8 +1,7 @@
+import 'package:clean_architecture/shared_ui/cubits/base/base_cubit.dart';
+import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../utils/screen_util/screen_util.dart';
-import '../base/base_cubit.dart';
 
 part 'screen_observer_state.dart';
 

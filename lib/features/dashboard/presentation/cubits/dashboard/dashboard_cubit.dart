@@ -1,9 +1,8 @@
+import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit_use_cases.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
+import 'package:clean_architecture/shared_ui/cubits/base/base_cubit.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../../../../routing/routes.gr.dart';
-import '../../../../../shared_ui/cubits/base/base_cubit.dart';
-import '../../../../../core/utils/type_defs.dart';
-import 'dashboard_cubit_use_cases.dart';
 
 part 'dashboard_state.dart';
 
@@ -12,10 +11,9 @@ class DashboardCubit extends BaseCubit<DashboardState> {
   final DashboardCubitUseCases _useCases;
   int _activeIndex = 0;
 
-  DashboardCubit({
-    required DashboardCubitUseCases useCases,
-  })  : _useCases = useCases,
-        super(DashboardState.initial());
+  DashboardCubit({required DashboardCubitUseCases useCases})
+    : _useCases = useCases,
+      super(DashboardState.initial());
 
   Future<void> initialize() async {
     /// If token is expired, log out and don't perform other operations

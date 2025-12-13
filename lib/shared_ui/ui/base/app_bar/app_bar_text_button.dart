@@ -1,7 +1,6 @@
+import 'package:clean_architecture/shared_ui/ui/base/buttons/base_text_button.dart';
+import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:flutter/material.dart';
-
-import '../buttons/base_text_button.dart';
-import '../text/base_text.dart';
 
 class AppBarTextButton extends StatelessWidget {
   final Function() onPressed;
@@ -26,10 +25,7 @@ class AppBarTextButton extends StatelessWidget {
     );
 
     if (padding != null) {
-      return Padding(
-        padding: padding!,
-        child: child,
-      );
+      return Padding(padding: padding!, child: child);
     }
 
     return child;

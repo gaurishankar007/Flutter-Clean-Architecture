@@ -1,13 +1,12 @@
 import 'dart:io' show Platform;
 
 import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/core/data_handling/data_handler.dart';
+import 'package:clean_architecture/routing/routes.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../../routing/routes.dart';
-import '../../data_handling/data_handler.dart';
 
 abstract interface class NavigationService {
   RouterDelegate<Object>? get routerDelegate;

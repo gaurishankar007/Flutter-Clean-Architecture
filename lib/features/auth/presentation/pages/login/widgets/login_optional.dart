@@ -1,17 +1,13 @@
+import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
+import 'package:clean_architecture/shared_ui/ui/base/base_checkbox.dart';
+import 'package:clean_architecture/shared_ui/ui/base/buttons/base_text_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../../../shared_ui/ui/base/base_checkbox.dart';
-import '../../../../../../shared_ui/ui/base/buttons/base_text_button.dart';
-import '../../../cubits/login/login_cubit.dart';
 
 class LoginOptional extends StatelessWidget {
   final bool saveUserCredential;
 
-  const LoginOptional({
-    super.key,
-    required this.saveUserCredential,
-  });
+  const LoginOptional({super.key, required this.saveUserCredential});
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +20,7 @@ class LoginOptional extends StatelessWidget {
           onChanged: (value) =>
               context.read<LoginCubit>().toggleUserCredentialSaving(),
         ),
-        BaseTextButton(
-          onPressed: () {},
-          text: "Forget Password?",
-        ),
+        BaseTextButton(onPressed: () {}, text: "Forget Password?"),
       ],
     );
   }

@@ -5,19 +5,18 @@ import 'dart:developer';
 import 'package:alice/alice.dart';
 import 'package:alice/model/alice_configuration.dart';
 import 'package:alice_dio/alice_dio_adapter.dart';
+import 'package:clean_architecture/config/app_config.dart';
+import 'package:clean_architecture/core/constants/api_endpoints.dart';
+import 'package:clean_architecture/core/data/models/requests/refresh_token_request.dart';
+import 'package:clean_architecture/core/data/models/responses/api_response.dart';
+import 'package:clean_architecture/core/data/models/responses/refresh_token_response.dart';
+import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
+import 'package:clean_architecture/core/services/session/session_service.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../../config/app_config.dart';
-import '../../constants/api_endpoints.dart';
-import '../../data/models/requests/refresh_token_request.dart';
-import '../../data/models/responses/api_response.dart';
-import '../../data/models/responses/refresh_token_response.dart';
-import '../../utils/type_defs.dart';
-import '../navigation/navigation_service.dart';
-import '../session/session_service.dart';
 
 part 'auth_interceptor.dart';
 part 'multipart_service.dart';

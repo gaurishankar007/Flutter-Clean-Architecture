@@ -1,6 +1,5 @@
+import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:flutter/material.dart';
-
-import '../../../utils/screen_util/screen_util.dart';
 
 class NetworkTower extends StatelessWidget {
   const NetworkTower({super.key});
@@ -26,10 +25,7 @@ class NetworkTower extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              deepPurple.withAlpha(25),
-              purpleAccent.withAlpha(25),
-            ],
+            colors: [deepPurple.withAlpha(25), purpleAccent.withAlpha(25)],
           ),
           shape: BoxShape.circle,
         ),

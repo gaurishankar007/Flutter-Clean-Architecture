@@ -1,5 +1,5 @@
-import '../../../domain/entities/user.dart';
-import '../domain_convertible.dart';
+import 'package:clean_architecture/core/data/models/domain_convertible.dart';
+import 'package:clean_architecture/core/domain/entities/user.dart';
 
 class UserResponse implements DomainConvertible<User> {
   final int id;

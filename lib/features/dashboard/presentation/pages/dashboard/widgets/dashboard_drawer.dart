@@ -1,12 +1,11 @@
-import '../../../../../../shared_ui/ui/base/text/base_text.dart';
+import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/core/constants/app_icons.dart';
+import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
+import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
+import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
+import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../../../../core/constants/app_colors.dart';
-import '../../../../../../core/constants/app_icons.dart';
-import '../../../../../../shared_ui/utils/screen_util/screen_util.dart';
-import '../../../../../../shared_ui/utils/ui_helpers.dart';
-import '../../../cubits/dashboard/dashboard_cubit.dart';
 
 class DashboardDrawer extends StatelessWidget {
   const DashboardDrawer({super.key});

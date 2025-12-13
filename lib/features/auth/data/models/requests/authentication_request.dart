@@ -1,4 +1,4 @@
-import '../../../domain/entities/authentication.dart';
+import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
 
 class AuthenticationRequest {
   final String username;

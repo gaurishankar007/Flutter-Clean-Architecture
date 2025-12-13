@@ -1,11 +1,10 @@
 import 'dart:developer' show log;
 
+import 'package:clean_architecture/core/data/models/domain_convertible.dart';
+import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
-
-import '../data/models/domain_convertible.dart';
-import '../data_states/data_state.dart';
-import '../utils/type_defs.dart';
 
 part 'error_handler.dart';
 

@@ -1,15 +1,14 @@
-import '../models/requests/authentication_request.dart';
+import 'package:clean_architecture/core/data_handling/data_handler.dart';
+import 'package:clean_architecture/core/domain/entities/user_data.dart';
+import 'package:clean_architecture/core/services/internet/internet_service.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/features/auth/data/data_sources/auth_local_data_source.dart';
+import 'package:clean_architecture/features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';
+import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
+import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
+import 'package:clean_architecture/features/auth/domain/repositories/auth_repository.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../../../core/data_handling/data_handler.dart';
-import '../../../../core/services/internet/internet_service.dart';
-import '../../../../core/utils/type_defs.dart';
-import '../../domain/entities/authentication.dart';
-import '../../../../core/domain/entities/user_data.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../data_sources/auth_local_data_source.dart';
-import '../data_sources/auth_remote_data_source.dart';
-import '../models/responses/user_data_response.dart';
 
 @LazySingleton(as: AuthRepository)
 final class AuthRepositoryImpl implements AuthRepository {

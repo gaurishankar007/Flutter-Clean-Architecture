@@ -1,10 +1,9 @@
+import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/shared_ui/ui/base/loading_circle.dart';
+import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
+import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-
-import '../../../../core/constants/app_colors.dart';
-import '../../../utils/ui_helpers.dart';
-import '../loading_circle.dart';
-import '../text/base_text.dart';
 
 class SecondaryButton extends HookWidget {
   final Function() onTap;
@@ -63,9 +62,7 @@ class SecondaryButton extends HookWidget {
             style: OutlinedButton.styleFrom(
               backgroundColor: AppColors.white,
               side: BorderSide(color: color, width: 1.5),
-              shape: RoundedRectangleBorder(
-                borderRadius: UIHelpers.radiusC8,
-              ),
+              shape: RoundedRectangleBorder(borderRadius: UIHelpers.radiusC8),
               elevation: 0,
               splashFactory: InkRipple.splashFactory,
             ),

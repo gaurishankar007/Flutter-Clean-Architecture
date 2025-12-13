@@ -1,18 +1,17 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
+import 'package:clean_architecture/features/auth/presentation/pages/login/widgets/login_button.dart';
+import 'package:clean_architecture/features/auth/presentation/pages/login/widgets/login_form.dart';
+import 'package:clean_architecture/features/auth/presentation/widgets/welcome_logo.dart';
+import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
+import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
+import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
+import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:get_it/get_it.dart';
-
-import '../../../../../shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
-import '../../../../../shared_ui/ui/base/base_scaffold.dart';
-import '../../../../../shared_ui/utils/screen_util/screen_util.dart';
-import '../../../../../shared_ui/utils/ui_helpers.dart';
-import '../../cubits/login/login_cubit.dart';
-import '../../widgets/welcome_logo.dart';
-import 'widgets/login_button.dart';
-import 'widgets/login_form.dart';
 
 @RoutePage()
 class LoginPage extends HookWidget {

@@ -1,12 +1,11 @@
+import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
+import 'package:clean_architecture/features/auth/presentation/pages/login/widgets/login_optional.dart';
+import 'package:clean_architecture/shared_ui/ui/base/form/base_text_field.dart';
+import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
+import 'package:clean_architecture/shared_ui/utils/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../../../core/constants/app_colors.dart';
-import '../../../../../../shared_ui/utils/ui_helpers.dart';
-import '../../../../../../shared_ui/utils/validators.dart';
-import '../../../../../../shared_ui/ui/base/form/base_text_field.dart';
-import '../../../cubits/login/login_cubit.dart';
-import 'login_optional.dart';
 
 class LoginForm extends StatelessWidget {
   final TextEditingController usernameController;

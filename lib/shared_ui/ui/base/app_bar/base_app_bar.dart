@@ -1,12 +1,11 @@
+import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/core/constants/app_icons.dart';
+import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
+import 'package:clean_architecture/shared_ui/ui/base/buttons/base_icon_button.dart';
+import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
+import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
+import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_icons.dart';
-import '../../../../core/services/navigation/navigation_service.dart';
-import '../../../utils/screen_util/screen_util.dart';
-import '../../../utils/ui_helpers.dart';
-import '../buttons/base_icon_button.dart';
-import '../text/base_text.dart';
 
 class BaseAppBar extends StatelessWidget {
   final bool showLeading;

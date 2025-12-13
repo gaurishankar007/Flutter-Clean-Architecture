@@ -1,9 +1,8 @@
 import 'dart:convert' show jsonEncode, jsonDecode;
 
+import 'package:clean_architecture/core/utils/encryption/encryption_utils.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../utils/encryption/encryption_utils.dart';
 
 abstract interface class LocalDatabaseService {
   Future<void> setString(String key, String value);

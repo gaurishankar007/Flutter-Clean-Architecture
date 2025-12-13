@@ -1,8 +1,7 @@
+import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
+import 'package:clean_architecture/shared_ui/ui/base/buttons/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../../../../shared_ui/ui/base/buttons/primary_button.dart';
-import '../../../cubits/login/login_cubit.dart';
 
 class LoginButton extends StatelessWidget {
   final GlobalKey<FormState> formKey;

@@ -1,6 +1,6 @@
-import '../../../../../core/data/models/domain_convertible.dart';
-import '../../../../../core/data/models/responses/user_response.dart';
-import '../../../../../core/domain/entities/user_data.dart';
+import 'package:clean_architecture/core/data/models/domain_convertible.dart';
+import 'package:clean_architecture/core/data/models/responses/user_response.dart';
+import 'package:clean_architecture/core/domain/entities/user_data.dart';
 
 class UserDataResponse implements DomainConvertible<UserData> {
   final UserResponse user;

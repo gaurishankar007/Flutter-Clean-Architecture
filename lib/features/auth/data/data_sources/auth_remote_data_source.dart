@@ -1,12 +1,11 @@
+import 'package:clean_architecture/core/constants/api_endpoints.dart';
+import 'package:clean_architecture/core/data_handling/data_handler.dart';
+import 'package:clean_architecture/core/services/api/api_service.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';
+import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../../../core/constants/api_endpoints.dart';
-import '../../../../core/data_handling/data_handler.dart';
-import '../../../../core/services/api/api_service.dart';
-import '../../../../core/utils/type_defs.dart';
-import '../models/requests/authentication_request.dart';
-import '../models/responses/user_data_response.dart';
 
 abstract interface class AuthRemoteDataSource {
   FutureData<UserDataResponse> login(AuthenticationRequest request);

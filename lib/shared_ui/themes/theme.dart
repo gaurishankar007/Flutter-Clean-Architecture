@@ -1,8 +1,7 @@
+import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../../core/constants/app_colors.dart';
-import '../utils/ui_helpers.dart';
 
 part 'theme_data.dart';
 

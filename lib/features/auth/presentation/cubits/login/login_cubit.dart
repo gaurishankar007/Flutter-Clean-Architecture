@@ -1,14 +1,13 @@
 // import 'dart:io';
+import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/domain/entities/user.dart';
+import 'package:clean_architecture/core/domain/entities/user_data.dart';
+import 'package:clean_architecture/core/services/session/session_service.dart';
+import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
+import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
+import 'package:clean_architecture/shared_ui/cubits/base/base_cubit.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../../../../core/services/session/session_service.dart';
-import '../../../../../routing/routes.gr.dart';
-import '../../../../../core/data_states/data_state.dart';
-import '../../../../../core/domain/entities/user.dart';
-import '../../../../../shared_ui/cubits/base/base_cubit.dart';
-import '../../../domain/entities/authentication.dart';
-import '../../../../../core/domain/entities/user_data.dart';
-import 'login_cubit_use_cases.dart';
 
 part 'login_state.dart';
 

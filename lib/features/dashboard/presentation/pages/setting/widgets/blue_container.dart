@@ -1,8 +1,7 @@
+import 'package:clean_architecture/core/constants/app_colors.dart';
+import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
+import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../../../core/constants/app_colors.dart';
-import '../../../../../../shared_ui/ui/base/text/base_text.dart';
-import '../../../../../../shared_ui/utils/ui_helpers.dart';
 
 class BlueContainer extends StatelessWidget {
   const BlueContainer({super.key});

@@ -1,4 +1,4 @@
-import '../data_states/data_state.dart';
+import 'package:clean_architecture/core/data_states/data_state.dart';
 
 // Data State Types
 typedef FutureData<T> = Future<DataState<T>>;

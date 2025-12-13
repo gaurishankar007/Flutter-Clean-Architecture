@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
-
-import '../../core/services/session/session_service.dart';
-import '../routes.gr.dart';
+import 'package:clean_architecture/core/services/session/session_service.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
 
 final class AuthenticatedGuard extends AutoRouteGuard {
   const AuthenticatedGuard();
