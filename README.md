@@ -296,7 +296,7 @@ flowchart TD
   C -- calls --> D["Remote DataSource"] & E["Local DataSource"]
   C -- uses --> F["Internet Service"]
   C -- wrapped by --> G["Data Handler"]
-  C -- handles --> H["Data State"]
+  G -- handles --> H["Data State"]
   D -- uses --> I["API Service"]
   D -- wrapped by --> G
   I -- sends --> J["API"]
