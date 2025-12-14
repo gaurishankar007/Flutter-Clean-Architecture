@@ -300,9 +300,10 @@ flowchart TD
   D -- uses --> I["API Service"]
   D -- wrapped by --> G
   I -- sends --> J["API"]
-  G -->|uses| M
+  G -- wrapped by --> M["Error Handler"]
   E -- uses --> K["Local Database Service"]
-  E -- wrapped by --> M["Error Handler"]
+  E -- wrapped by --> M
+  M -- handles --> H
   K -- sends --> L["Local Database"]
 ```
 
@@ -325,7 +326,7 @@ flowchart TD
 
 - **Use Case**: Represents a single business action (e.g., `LoginUseCase`). It is called by the Presentation layer (Cubit) and orchestrates the flow of data by interacting with one or more Repositories. This encapsulates a specific piece of business logic, making it reusable and decoupled from the UI state management.
 
-- **Repository**: Acts as the single source of truth for the domain layer. It coordinates data from one or more data sources (remote, local) and decides where to fetch data from, often using `DataHandler.fetchWithFallback` to check for internet connectivity. It is also responsible for mapping Data Transfer Objects (DTOs) from the data layer into clean domain models for the UI layer.
+- **Repository**: Acts as the single source of truth for the domain layer. It coordinates data from one or more data sources (remote, local) and decides where to fetch data from, often using `DataHandler.fetchWithFallbackAndMap` to check for internet connectivity. It is also responsible for mapping Data Transfer Objects (DTOs) from the data layer into clean domain models for the UI layer.
 
 - **Data Sources (`Remote`, `Local`)**:
 
@@ -335,7 +336,7 @@ flowchart TD
 - **ApiService**: An abstraction over the `Dio` HTTP client. It is configured with the base URL from `AppConfig` and includes interceptors. It provides standard methods like `get`, `post`, `put`, and `delete` for making API calls.
 
 - **DataHandler & ErrorHandler**: These two classes form the backbone of the application's error handling and data flow strategy.
-  - **DataHandler**: Provides high-level utility methods like `safeApiCall` (to execute API requests, parse JSON, and wrap results in a `DataState`) and `fetchWithFallback` (to implement the offline-first strategy).
+  - **DataHandler**: Provides high-level utility methods like `safeApiCall` (to execute API requests, parse JSON, and wrap results in a `DataState`) and `fetchWithFallbackAndMap` (to implement the offline-first strategy).
   - **ErrorHandler**: A centralized utility that catches specific exceptions (`DioException`, `FormatException`, etc.) and converts them into a standardized `FailureState` with a user-friendly error message. This ensures that the UI layer receives consistent error objects regardless of the error's origin.
 
 ### Example: Login Flow
@@ -390,9 +391,9 @@ flowchart TD
     D --> E
 
     subgraph "Remote Flow (Login)"
-        E -- "uses DataHandler.fetchWithFallback" --> F{Has Internet?}
+        E -- "uses Data Handler" --> F{Has Internet?}
         F -- Yes --> G[Auth Remote DataSource]
-        G -- "calls DataHandler.safeApiCall" --> H[ErrorHandler.handleException]
+        G -- "calls" --> H[Data Handler]
         H -- "1. executes" --> I[Api Service]
         I -- "sends HTTP Request" --> J[API]
         H -- "2. parses & returns" --> K{Success?}
@@ -403,7 +404,7 @@ flowchart TD
 
     subgraph "Local Flow (Save User)"
         E -- saveUserData --> N[Auth Local DataSource]
-        N -- "calls" --> O[ErrorHandler.handleException]
+        N -- "calls" --> O[Error Handler]
         O -- "1. executes" --> P[Local Database Service]
         P -- "Write/Read" --> Q[(Local Database)]
         O -- "2. returns" --> K
