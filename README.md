@@ -41,8 +41,6 @@ For more details on specific commands and guidelines, refer to the following doc
     - [Example: Login Flow](#example-login-flow)
       - [Internal Flow](#internal-flow)
     - [Debugging Tools](#debugging-tools)
-  - [Feature Template Generation with Mason](#feature-template-generation-with-mason)
-    - [How to Generate a Feature](#how-to-generate-a-feature)
     - [What Do `cubit_feature` \& `cubit_page` Do?](#what-do-cubit_feature--cubit_page-do)
     - [Configuration](#configuration)
   - [Testing](#testing)
@@ -241,12 +239,19 @@ The app supports three flavors: `production`, `staging`, and `development` for b
 - The root widget, `CleanArchitectureSample`, uses `WidgetsBindingObserver` to listen for `didChangeMetrics`. When the screen size changes, it schedules an update to the `ScreenObserverCubit` using `WidgetsBinding.instance.addPostFrameCallback`, ensuring the UI is rebuilt safely and efficiently in response to layout changes.
 
 ```mermaid
-flowchart TD
-    A[Main Stateful Widget] -->|init config| B[Screen Util]
-    A -->|notify metrics| C[Screen Observer Cubit]
-    C -->|apply update| B[Screen Util]
-    C -->|trigger rebuild| D[Widget]
-    B -->|provide responsive values| D[Widget]
+graph TD
+    subgraph Initialization
+        A[Main Stateful Widget] -- initializes --> B[Screen Util]
+    end
+
+    subgraph "Runtime Update Cycle"
+        A -- "on didChangeMetrics" --> C["addPostFrameCallback"]
+        C -- "safely notifies" --> D[Screen Observer Cubit]
+        D -- "1. updates" --> B
+        D -- "2. emits new state" --> E((Rebuild UI))
+        E -- triggers rebuild of --> F[Responsive Widget]
+        B -- provides updated values --> F
+    end
 ```
 
 ## Core Services
@@ -285,20 +290,20 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    UI -->|calls| Cubit
-    Cubit -->|calls| UseCase
-    UseCase -->|calls| Repository
-    Repository -->|calls| RemoteDataSource
-    Repository -->|calls| LocalDataSource
-    Repository -->|uses| InternetService
-    Repository -->|wrapped by| DataHandler
-    Repository -->|handles| DataState
-    RemoteDataSource -->|uses| ApiService
-    RemoteDataSource -->|wrapped by| DataHandler
-    ApiService -->|sends| API
-    LocalDataSource -->|uses| LocalDatabaseService
-    LocalDataSource -->|wrapped by| ErrorHandler
-    LocalDatabaseService -->|sends| LocalDB
+  Z["UI"] -- calls --> A["Cubit"]
+  A -- calls --> B["UseCase"]
+  B -- calls --> C["Repository"]
+  C -- calls --> D["Remote DataSource"] & E["Local DataSource"]
+  C -- uses --> F["Internet Service"]
+  C -- wrapped by --> G["Data Handler"]
+  C -- handles --> H["Data State"]
+  D -- uses --> I["API Service"]
+  D -- wrapped by --> G
+  I -- sends --> J["API"]
+  G -->|uses| M
+  E -- uses --> K["Local Database Service"]
+  E -- wrapped by --> M["Error Handler"]
+  K -- sends --> L["Local Database"]
 ```
 
 ### Data Flow Summary
@@ -379,27 +384,35 @@ class LoginCubit extends BaseCubit<LoginState> {
 
 ```mermaid
 flowchart TD
-   A[UI] --> B[LoginCubit]
-    B --> C[LoginUseCase]
-    B --> D[SaveUserDataUseCase]
-    C --> E[AuthRepository]
-    D --> E[AuthRepository]
+    A[UI] --> B[Login Cubit]
+    B --> C[Login UseCase] & D[Save UserData UseCase]
+    C --> E[Auth Repository]
+    D --> E
 
-    %% Remote Data Flow
-    E -->|check internet| F[InternetService]
-    E -->|calls| G[AuthRemoteDataSource.login]
-    G --> H[Request API via ApiService]
-    H --> I[Handles API Response]
-    I -->|success| J[SuccessState]
-    I -->|failure| K[FailureState]
+    subgraph "Remote Flow (Login)"
+        E -- "uses DataHandler.fetchWithFallback" --> F{Has Internet?}
+        F -- Yes --> G[Auth Remote DataSource]
+        G -- "calls DataHandler.safeApiCall" --> H[ErrorHandler.handleException]
+        H -- "1. executes" --> I[Api Service]
+        I -- "sends HTTP Request" --> J[API]
+        H -- "2. parses & returns" --> K{Success?}
+        K -- Yes --> L((Success State))
+        K -- No --> M((Failure State))
+        F -- No --> M
+    end
 
-    %% Local Data Flow
-    E -->|calls| L[AuthLocalDataSource.saveUserData]
-    L --> M[Request LocalDB via LocalDatabaseService]
-    M --> N[Handles LocalDB Response]
-    N -->|success| O[SuccessState]
-    N -->|failure| P[FailureState]
+    subgraph "Local Flow (Save User)"
+        E -- saveUserData --> N[Auth Local DataSource]
+        N -- "calls" --> O[ErrorHandler.handleException]
+        O -- "1. executes" --> P[Local Database Service]
+        P -- "Write/Read" --> Q[(Local Database)]
+        O -- "2. returns" --> K
+    end
 ```
+
+### Debugging Tools
+
+````
 
 ### Debugging Tools
 
@@ -415,7 +428,7 @@ This project uses **Mason** to generate feature templates for consistent and eff
 
    ```bash
    dart pub global activate mason_cli
-   ```
+````
 
 2. **Fetch the bricks for the project**:
 
