@@ -131,9 +131,14 @@ Follow these steps to get the project up and running on your local machine.
 
 ### Prerequisites
 
-- Flutter SDK (version 3.38.1 or higher)
-- An editor like VS Code or Android Studio
-- An emulator or a physical device
+Ensure you have the following software installed:
+
+- Flutter SDK (version `3.38.1`)
+- Dart SDK (version `3.10.0`)
+- Android Studio (for Android development)
+- Xcode (for iOS development)
+- Java 17 (Recommended, but optional)
+- Add Flutter's pub cache to your shell's `PATH`. For Zsh, add this to your `~/.zshrc` file: `export PATH="$PATH":"$HOME/.pub-cache/bin"`.
 
 ### Installation & Setup
 

@@ -47,8 +47,8 @@ dev_dependencies:
     sdk: flutter
   mocktail: ^1.0.4
   bloc_test: ^10.0.0
-  patrol: ^3.20.0
-  patrol_finders: ^2.9.0
+  patrol: ^4.0.1
+  patrol_finders: ^3.0.0
   build_runner: ^2.10.4
   auto_route_generator: ^10.2.6
   injectable_generator: ^2.9.1

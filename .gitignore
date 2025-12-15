@@ -48,3 +48,7 @@ app.*.map.json
 /.mason
 /mason-lock.json
 .env
+
+# Patrol Testing
+/playwright-report
+/test-results

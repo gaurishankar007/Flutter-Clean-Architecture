@@ -1,5 +1,5 @@
 import 'package:clean_architecture/core/constants/app_icons.dart';
-import 'package:clean_architecture/shared_ui/ui/base/buttons/base_icon_button.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -19,8 +19,8 @@ void main() {
       await $.pumpAndSettle();
 
       // Grant notification permission if the dialog is shown
-      if (await $.native.isPermissionDialogVisible()) {
-        await $.native.grantPermissionWhenInUse();
+      if (!kIsWeb && await $.platform.mobile.isPermissionDialogVisible()) {
+        await $.platform.mobile.grantPermissionWhenInUse();
       }
 
       // Enter username and password
@@ -39,7 +39,7 @@ void main() {
       await $("Home Page").waitUntilVisible();
 
       // Navigate to setting page
-      await $((BaseIconButton)).$(AppIcons.setting).tap();
+      await $(AppIcons.setting).tap();
       await $("Logout").waitUntilVisible();
     },
   );
