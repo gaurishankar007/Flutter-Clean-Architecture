@@ -37,16 +37,34 @@ class ScreenUtil {
   ScreenType get type => _type;
 
   /// Set screen dimensions, orientation, screen type, etc.
-  void configureScreen(ScreenDetails details) {
-    _height = details.logicalSize.height;
-    _width = details.logicalSize.width;
-    _devicePixelRatio = details.devicePixelRatio;
+  void configureScreen([ScreenDetails? screenDetails]) {
+    screenDetails ??= _getScreenDetails();
+
+    _height = screenDetails.logicalSize.height;
+    _width = screenDetails.logicalSize.width;
+    _devicePixelRatio = screenDetails.devicePixelRatio;
     _statusBarHeight = 0;
-    _type = _checkScreenType();
+    _type = _getScreenType();
+  }
+
+  ScreenDetails _getScreenDetails() {
+    final view = WidgetsBinding.instance.platformDispatcher.views.first;
+    final physicalSize = view.physicalSize;
+    final devicePixelRatio = view.devicePixelRatio;
+    final logicalSize = Size(
+      physicalSize.width / devicePixelRatio,
+      physicalSize.height / devicePixelRatio,
+    );
+
+    return ScreenDetails(
+      logicalSize: logicalSize,
+      physicalSize: physicalSize,
+      devicePixelRatio: devicePixelRatio,
+    );
   }
 
   /// Check screen size according to the width
-  ScreenType _checkScreenType() {
+  ScreenType _getScreenType() {
     if (width <= 360) return ScreenType.compact;
     if (width <= 600) return ScreenType.phone;
     if (width <= 840) return ScreenType.tablet;

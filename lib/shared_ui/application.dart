@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import '../core/services/internet/internet_service.dart';
+
 class CleanArchitectureSample extends StatefulWidget {
   const CleanArchitectureSample({super.key});
 
@@ -24,6 +26,10 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
     super.initState();
     _screenObserverCubit = GetIt.I<ScreenObserverCubit>();
     WidgetsBinding.instance.addObserver(this);
+    // Listen for internet connectivity changes.
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => InternetUtil.I.subscribeConnectivity(),
+    );
   }
 
   @override
@@ -40,14 +46,14 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Don't update if this context is already unmounted.
       if (!mounted) return;
-      _screenObserverCubit.update(_getScreenDetails());
+      _screenObserverCubit.update();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     // Perform initial configuration.
-    ScreenUtil.I.configureScreen(_getScreenDetails());
+    ScreenUtil.I.configureScreen();
     return BlocProvider.value(
       value: _screenObserverCubit,
       child: MaterialApp.router(
@@ -57,22 +63,6 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
         routerDelegate: NavigationUtil.I.routerDelegate,
         routeInformationParser: NavigationUtil.I.routeInformationParser,
       ),
-    );
-  }
-
-  ScreenDetails _getScreenDetails() {
-    final view = WidgetsBinding.instance.platformDispatcher.views.first;
-    final physicalSize = view.physicalSize;
-    final devicePixelRatio = view.devicePixelRatio;
-    final logicalSize = Size(
-      physicalSize.width / devicePixelRatio,
-      physicalSize.height / devicePixelRatio,
-    );
-
-    return ScreenDetails(
-      logicalSize: logicalSize,
-      physicalSize: physicalSize,
-      devicePixelRatio: devicePixelRatio,
     );
   }
 }

@@ -11,12 +11,12 @@ part 'screen_observer_state.dart';
 class ScreenObserverCubit extends BaseCubit<ScreenObserverState> {
   ScreenObserverCubit() : super(ScreenObserverState.initial());
 
-  void update(ScreenDetails screenDetails) {
+  void update() {
     final oldScreenType = ScreenUtil.I.type;
     final wasDesktop = ScreenUtil.I.isWebDesktopScreen;
 
     // Update screen dimensions and type
-    ScreenUtil.I.configureScreen(screenDetails);
+    ScreenUtil.I.configureScreen();
 
     final newScreenType = ScreenUtil.I.type;
     final isDesktop = ScreenUtil.I.isWebDesktopScreen;
