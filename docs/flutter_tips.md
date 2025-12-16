@@ -53,6 +53,8 @@ Flutter doesn't just have one tree, but three that work together.
 
 - **Flexible / Expanded:** `Column/Row` doesn't provide constraints to it's child. Use `Flexible` when a child should take a flexible portion of available space and `Expanded` when a child must expand to fill the remaining space in a `Column/Row`.
 
+- **PointerInterceptor:** When using `HtmlElementView` to display web content, it can block interactions with Flutter widgets layered on top (like a `FloatingActionButton` or a dialog). To solve this, wrap the overlapping Flutter widget with `PointerInterceptor` from the `pointer_interceptor` package. This ensures your Flutter widgets remain interactive.
+
 ### General Best Practices
 
 Follow these guidelines to keep your app fast and your codebase clean.
@@ -78,7 +80,7 @@ Follow these guidelines to keep your app fast and your codebase clean.
 
 ### Design System
 
-- **DPI Awareness**: Flutter web has a DPI value of 1, so the text will appear larger compared to mobile platforms. Adjust font sizes and UI elements accordingly to ensure a consistent look and feel across devices.
+- **DPI Awareness**: UI elements can render at different sizes on web versus mobile due to varying DPI. Always test on target browsers and adjust font sizes and layouts for a consistent appearance.
 - **Web Interop**: For platform-specific interactions, use the `web` package to interact with browser APIs. This allows you to access and utilize features unique to the web environment, such as local storage, cookies, and JavaScript functions.
 
 ## Offline Storage Strategies
