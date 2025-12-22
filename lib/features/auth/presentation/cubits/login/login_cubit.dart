@@ -13,17 +13,16 @@ part 'login_state.dart';
 
 @injectable
 class LoginCubit extends BaseCubit<LoginState> {
-  final SessionService _sessionService;
-  final LoginCubitUseCases _useCases;
-  bool _passwordVisibility = false;
-  bool _saveUserCredential = false;
-
   LoginCubit({
     required SessionService sessionService,
     required LoginCubitUseCases useCases,
   }) : _sessionService = sessionService,
        _useCases = useCases,
        super(const LoginState.initial());
+  final SessionService _sessionService;
+  final LoginCubitUseCases _useCases;
+  bool _passwordVisibility = false;
+  bool _saveUserCredential = false;
 
   /// Emits a new State
   void _refreshState() {

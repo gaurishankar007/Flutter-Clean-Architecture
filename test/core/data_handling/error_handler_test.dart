@@ -1,8 +1,8 @@
 import 'package:clean_architecture/core/data_handling/data_handler.dart';
 import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:dio/dio.dart';
 
 class MockDioException extends Mock implements DioException {}
 
@@ -12,7 +12,7 @@ void main() {
   group('ErrorHandler.handleException', () {
     test('returns result when no exception thrown', () async {
       final result = await ErrorHandler.handleException<int>(
-        () async => SuccessState(data: 1),
+        () async => const SuccessState(data: 1),
       );
       expect(result, isA<SuccessState<int>>());
       expect(result.data, 1);
@@ -205,7 +205,7 @@ void main() {
 
     test('handles FormatException as FailureState.formatError', () async {
       final result = await ErrorHandler.handleException<int>(() async {
-        throw FormatException('bad format');
+        throw const FormatException('bad format');
       });
 
       expect(result, isA<FailureState<int>>());

@@ -6,6 +6,7 @@ part of 'api_service.dart';
 /// * Refresh tokens
 @LazySingleton()
 interface class AuthInterceptor extends Interceptor {
+  AuthInterceptor();
   // Access the session service lazily via the locator to break circular DI.
   SessionService get _sessionManager => SessionUtil.I;
   final Dio _dio = Dio();
@@ -18,8 +19,6 @@ interface class AuthInterceptor extends Interceptor {
   /// So that even if simultaneously multiple requests are made and
   /// token is expired, each requests are retried after refreshing token
   final List<DioRequestData> _pendingRequests = [];
-
-  AuthInterceptor();
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -34,7 +33,10 @@ interface class AuthInterceptor extends Interceptor {
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) async {
+  Future<void> onError(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
     /// If the error contains a status code of 401. That means token is expired.
     if (err.response?.statusCode == 401) {
       _pendingRequests.add(DioRequestData(error: err, handler: handler));
@@ -124,8 +126,7 @@ interface class AuthInterceptor extends Interceptor {
 
 /// Stores failed dio request's data
 class DioRequestData {
+  const DioRequestData({required this.error, required this.handler});
   final DioException error;
   final ErrorInterceptorHandler handler;
-
-  const DioRequestData({required this.error, required this.handler});
 }

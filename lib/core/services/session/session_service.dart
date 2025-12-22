@@ -24,14 +24,13 @@ abstract interface class SessionService {
 /// A class that stores user data
 @LazySingleton(as: SessionService)
 final class SessionServiceImpl implements SessionService {
-  final LocalDatabaseService _localDatabase;
-  final NavigationService _navigationService;
-
   SessionServiceImpl({
     required LocalDatabaseService localDatabase,
     required NavigationService navigationService,
   }) : _localDatabase = localDatabase,
        _navigationService = navigationService;
+  final LocalDatabaseService _localDatabase;
+  final NavigationService _navigationService;
 
   UserData _userData = const UserData.empty();
 

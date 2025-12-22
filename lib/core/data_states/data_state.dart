@@ -7,13 +7,6 @@ part 'success_state.dart';
 
 @immutable
 sealed class DataState<T> extends Equatable {
-  final T? data;
-  final String? message;
-  final ErrorType? errorType;
-  final int? statusCode;
-  final bool hasData;
-  final bool hasError;
-
   const DataState({
     this.data,
     this.message,
@@ -22,6 +15,12 @@ sealed class DataState<T> extends Equatable {
     this.hasData = false,
     this.hasError = false,
   });
+  final T? data;
+  final String? message;
+  final ErrorType? errorType;
+  final int? statusCode;
+  final bool hasData;
+  final bool hasError;
 
   R when<R>({
     required R Function(T data) success,

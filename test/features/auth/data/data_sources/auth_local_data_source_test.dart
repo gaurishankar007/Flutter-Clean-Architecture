@@ -30,7 +30,7 @@ void main() {
   );
 
   // Assuming UserDataModel has a constructor like this and a toJson method.
-  final tUserDataModel = UserDataResponse(
+  const tUserDataModel = UserDataResponse(
     user: userModel,
     accessToken: "access",
     refreshToken: "refresh",

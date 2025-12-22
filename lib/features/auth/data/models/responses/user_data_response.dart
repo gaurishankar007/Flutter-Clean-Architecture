@@ -3,10 +3,6 @@ import 'package:clean_architecture/core/data/models/responses/user_response.dart
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
 
 class UserDataResponse implements DomainConvertible<UserData> {
-  final UserResponse user;
-  final String accessToken;
-  final String refreshToken;
-
   const UserDataResponse({
     required this.user,
     required this.accessToken,
@@ -28,6 +24,9 @@ class UserDataResponse implements DomainConvertible<UserData> {
       refreshToken: domain.refreshToken,
     );
   }
+  final UserResponse user;
+  final String accessToken;
+  final String refreshToken;
 
   Map<String, dynamic> toJson() => {
     'user': user.toJson(),

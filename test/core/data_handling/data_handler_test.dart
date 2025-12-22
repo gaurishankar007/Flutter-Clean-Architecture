@@ -1,15 +1,15 @@
+import 'package:clean_architecture/core/data/models/domain_convertible.dart';
+import 'package:clean_architecture/core/data_handling/data_handler.dart';
+import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:clean_architecture/core/data_handling/data_handler.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
-import 'package:clean_architecture/core/data/models/domain_convertible.dart';
 
 class MockResponse extends Mock implements Response {}
 
 class FakeDto implements DomainConvertible<String> {
-  final int value;
   FakeDto(this.value);
+  final int value;
 
   @override
   String toDomain() => 'Mapped: $value';
@@ -20,7 +20,7 @@ void main() {
     test('returns remote data when online', () async {
       final result = await DataHandler.fetchWithFallback<int>(
         true,
-        remoteCallback: () async => SuccessState(data: 42),
+        remoteCallback: () async => const SuccessState(data: 42),
       );
       expect(result, isA<SuccessState<int>>());
       expect(result.data, 42);
@@ -30,7 +30,7 @@ void main() {
       int? callbackValue;
       await DataHandler.fetchWithFallback<int>(
         true,
-        remoteCallback: () async => SuccessState(data: 99),
+        remoteCallback: () async => const SuccessState(data: 99),
         onRemoteSuccess: (data) => callbackValue = data,
       );
       expect(callbackValue, 99);
@@ -40,7 +40,7 @@ void main() {
       bool wasCalled = false;
       await DataHandler.fetchWithFallback<int>(
         true,
-        remoteCallback: () async => SuccessState(data: null),
+        remoteCallback: () async => const SuccessState(data: null),
         onRemoteSuccess: (data) => wasCalled = true,
       );
       expect(wasCalled, false);
@@ -51,8 +51,8 @@ void main() {
       () async {
         final result = await DataHandler.fetchWithFallback<String>(
           false,
-          remoteCallback: () async => SuccessState(data: 'remote'),
-          localCallback: () async => SuccessState(data: 'local'),
+          remoteCallback: () async => const SuccessState(data: 'remote'),
+          localCallback: () async => const SuccessState(data: 'local'),
         );
         expect(result, isA<SuccessState<String>>());
         expect(result.data, 'local');
@@ -62,7 +62,7 @@ void main() {
     test('returns NoInternetState when offline and no localCallback', () async {
       final result = await DataHandler.fetchWithFallback<double>(
         false,
-        remoteCallback: () async => SuccessState(data: 1.0),
+        remoteCallback: () async => const SuccessState(data: 1.0),
       );
       expect(result.errorType, ErrorType.internetError);
     });
@@ -70,7 +70,7 @@ void main() {
     test('returns remote failure state when remote call fails', () async {
       final result = await DataHandler.fetchWithFallback<String>(
         true,
-        remoteCallback: () async => FailureState(message: 'Remote error'),
+        remoteCallback: () async => const FailureState(message: 'Remote error'),
       );
       expect(result, isA<FailureState<String>>());
       expect(result.message, 'Remote error');
@@ -111,8 +111,8 @@ void main() {
     test('returns failure state when both remote and local fail', () async {
       final result = await DataHandler.fetchWithFallbackAndMap<FakeDto, String>(
         false,
-        remoteCallback: () async => FailureState(message: 'Remote error'),
-        localCallback: () async => FailureState(message: 'Local error'),
+        remoteCallback: () async => const FailureState(message: 'Remote error'),
+        localCallback: () async => const FailureState(message: 'Local error'),
       );
       expect(result, isA<FailureState<String>>());
       expect(result.message, 'Local error');
@@ -160,8 +160,10 @@ void main() {
       final result =
           await DataHandler.fetchWithFallbackAndMapList<FakeDto, String>(
             false,
-            remoteCallback: () async => FailureState(message: 'Remote error'),
-            localCallback: () async => FailureState(message: 'Local error'),
+            remoteCallback: () async =>
+                const FailureState(message: 'Remote error'),
+            localCallback: () async =>
+                const FailureState(message: 'Local error'),
           );
       expect(result, isA<FailureState<List<String>>>());
       expect(result.message, 'Local error');
@@ -179,7 +181,8 @@ void main() {
 
     test('propagates local failure state', () async {
       final result = await DataHandler.fetchFromLocalAndMap<FakeDto, String>(
-        localCallback: () async => FailureState(message: 'Local storage error'),
+        localCallback: () async =>
+            const FailureState(message: 'Local storage error'),
       );
       expect(result, isA<FailureState<String>>());
       expect(result.message, 'Local storage error');
@@ -201,7 +204,7 @@ void main() {
       final result =
           await DataHandler.fetchFromLocalAndMapList<FakeDto, String>(
             localCallback: () async =>
-                FailureState(message: 'Local list error'),
+                const FailureState(message: 'Local list error'),
           );
       expect(result, isA<FailureState<List<String>>>());
       expect(result.message, 'Local list error');

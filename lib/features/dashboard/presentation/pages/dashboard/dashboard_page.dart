@@ -28,15 +28,15 @@ class DashboardPage extends StatelessWidget {
           final isDesktopLargeScreen = ScreenUtil.I.isWebDesktopScreen;
           return Row(
             children: [
-              if (isDesktopLargeScreen) DashboardDrawer(),
+              if (isDesktopLargeScreen) const DashboardDrawer(),
               Flexible(
                 child: Container(
                   color: AppColors.surface,
                   child: Stack(
                     children: [
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.only(bottom: 50),
-                        child: const AutoRouter(),
+                        child: AutoRouter(),
                       ),
                       if (!isDesktopLargeScreen)
                         const Align(

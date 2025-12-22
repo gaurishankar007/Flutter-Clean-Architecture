@@ -8,14 +8,6 @@ import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 
 class BaseAppBar extends StatelessWidget {
-  final bool showLeading;
-  final Widget? leading;
-  final String title;
-  final FontWeight? titleFontWeight;
-  final TextStyle? titleStyle;
-  final bool centerTitle;
-  final List<Widget>? actions;
-
   const BaseAppBar({
     super.key,
     this.showLeading = true,
@@ -26,6 +18,13 @@ class BaseAppBar extends StatelessWidget {
     this.centerTitle = false,
     this.actions,
   });
+  final bool showLeading;
+  final Widget? leading;
+  final String title;
+  final FontWeight? titleFontWeight;
+  final TextStyle? titleStyle;
+  final bool centerTitle;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {

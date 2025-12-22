@@ -1,11 +1,6 @@
 import 'package:dio/dio.dart';
 
 class ApiResponse<T extends Object?> {
-  final T data;
-  final int statusCode;
-  final bool success;
-  final String message;
-
   ApiResponse({
     required this.data,
     required this.statusCode,
@@ -24,4 +19,8 @@ class ApiResponse<T extends Object?> {
       message: data['message'] as String,
     );
   }
+  final T data;
+  final int statusCode;
+  final bool success;
+  final String message;
 }

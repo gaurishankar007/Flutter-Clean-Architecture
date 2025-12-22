@@ -1,11 +1,11 @@
 import 'package:clean_architecture/core/data/models/responses/user_response.dart';
 import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
+import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:clean_architecture/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
-import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -28,10 +28,12 @@ void main() {
       localDataSource: mockAuthLocalDataSource,
     );
 
-    registerFallbackValue(AuthenticationRequest(username: "", password: ""));
-    registerFallbackValue(UserData.empty());
     registerFallbackValue(
-      UserDataResponse(
+      const AuthenticationRequest(username: "", password: ""),
+    );
+    registerFallbackValue(const UserData.empty());
+    registerFallbackValue(
+      const UserDataResponse(
         user: UserResponse(
           id: 1,
           firstName: "",

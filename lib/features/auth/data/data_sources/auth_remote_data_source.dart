@@ -14,10 +14,9 @@ abstract interface class AuthRemoteDataSource {
 
 @LazySingleton(as: AuthRemoteDataSource)
 final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final ApiService _dioClient;
-
   const AuthRemoteDataSourceImpl({required ApiService dioClient})
     : _dioClient = dioClient;
+  final ApiService _dioClient;
 
   @override
   FutureData<UserDataResponse> login(AuthenticationRequest request) {

@@ -35,10 +35,9 @@ abstract class NavigationServiceModule {
 
 @LazySingleton(as: NavigationService)
 final class NavigationServiceImpl implements NavigationService {
-  final AppRouter _appRouter;
-
   NavigationServiceImpl({required AppRouter appRouter})
     : _appRouter = appRouter;
+  final AppRouter _appRouter;
 
   /// A delegate that configures a widget, typically a [Navigator]
   @override

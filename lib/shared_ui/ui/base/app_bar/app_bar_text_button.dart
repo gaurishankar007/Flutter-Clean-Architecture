@@ -3,16 +3,15 @@ import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:flutter/material.dart';
 
 class AppBarTextButton extends StatelessWidget {
-  final Function() onPressed;
-  final String text;
-  final EdgeInsets? padding;
-
   const AppBarTextButton({
     super.key,
     required this.onPressed,
     required this.text,
     this.padding,
   });
+  final Function() onPressed;
+  final String text;
+  final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {

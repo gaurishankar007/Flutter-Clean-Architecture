@@ -4,8 +4,7 @@ import 'package:injectable/injectable.dart';
 
 @LazySingleton()
 class LoginCubitUseCases {
+  const LoginCubitUseCases({required this.login, required this.saveUserData});
   final LoginUseCase login;
   final SaveUserDataUseCase saveUserData;
-
-  const LoginCubitUseCases({required this.login, required this.saveUserData});
 }

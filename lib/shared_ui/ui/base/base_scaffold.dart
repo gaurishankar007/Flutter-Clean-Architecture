@@ -5,19 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class BaseScaffold extends StatelessWidget {
-  final bool showAnnotatedRegion;
-  final Function()? onPopInvokedWithResult;
-  final bool? resizeToAvoidBottomInset;
-  final Widget? appBar;
-  final Future Function()? onRefresh;
-  final bool isScrollable;
-  final ScrollPhysics? scrollPhysics;
-  final EdgeInsets? padding;
-  final bool usePadding;
-  final Widget body;
-  final Widget? bottomNavigationBar;
-  final bool useBottomNavigationPadding;
-
   const BaseScaffold({
     super.key,
     this.showAnnotatedRegion = false,
@@ -33,6 +20,18 @@ class BaseScaffold extends StatelessWidget {
     this.bottomNavigationBar,
     this.useBottomNavigationPadding = true,
   });
+  final bool showAnnotatedRegion;
+  final Function()? onPopInvokedWithResult;
+  final bool? resizeToAvoidBottomInset;
+  final Widget? appBar;
+  final Future Function()? onRefresh;
+  final bool isScrollable;
+  final ScrollPhysics? scrollPhysics;
+  final EdgeInsets? padding;
+  final bool usePadding;
+  final Widget body;
+  final Widget? bottomNavigationBar;
+  final bool useBottomNavigationPadding;
 
   @override
   Widget build(BuildContext context) {

@@ -2,13 +2,6 @@ import 'package:clean_architecture/core/data/models/domain_convertible.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
 
 class UserResponse implements DomainConvertible<User> {
-  final int id;
-  final String firstName;
-  final String lastName;
-  final String username;
-  final String email;
-  final bool isActive;
-
   const UserResponse({
     required this.id,
     required this.firstName,
@@ -39,6 +32,12 @@ class UserResponse implements DomainConvertible<User> {
       isActive: user.isActive,
     );
   }
+  final int id;
+  final String firstName;
+  final String lastName;
+  final String username;
+  final String email;
+  final bool isActive;
 
   Map<String, dynamic> toJson() => {
     'id': id,

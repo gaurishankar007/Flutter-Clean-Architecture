@@ -12,8 +12,8 @@ void main() {
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     ($) async {
       // Inputs
-      final username = "username";
-      final password = "password";
+      const username = "username";
+      const password = "password";
 
       await app.main();
       await $.pumpAndSettle();

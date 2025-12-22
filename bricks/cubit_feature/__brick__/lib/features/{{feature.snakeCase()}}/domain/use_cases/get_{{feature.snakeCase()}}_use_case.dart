@@ -1,18 +1,16 @@
+import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/domain/use_cases/use_case.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/features/{{feature.snakeCase()}}/domain/repositories/test_repository.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../../core/data_states/data_state.dart';
-import '../../../../core/utils/type_defs.dart';
-import '../../../../core/domain/use_cases/use_case.dart';
-import '../repositories/{{feature.snakeCase()}}_repository.dart';
-
 @LazySingleton()
-class Get{{feature.pascalCase()}}UseCase
-    implements UseCase<String, String> {
-  final {{feature.pascalCase()}}Repository _{{feature.camelCase()}}Repository;
-
+class Get{{feature.pascalCase()}}UseCase implements UseCase<String, String> {
   Get{{feature.pascalCase()}}UseCase({required {{feature.pascalCase()}}Repository {{feature.camelCase()}}Repository})
       : _{{feature.camelCase()}}Repository = {{feature.camelCase()}}Repository;
 
+  final {{feature.pascalCase()}}Repository _{{feature.camelCase()}}Repository;
+
   @override
-  FutureData<String> call(String request) async => SuccessState(data: "");
+  FutureData<String> call(String request) async => const SuccessState(data: "");
 }

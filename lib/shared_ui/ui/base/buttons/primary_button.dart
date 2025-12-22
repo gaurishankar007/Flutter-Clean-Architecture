@@ -6,18 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class PrimaryButton extends HookWidget {
-  final Function() onTap;
-  final String text;
-  final TextType? textType;
-  final FontWeight? textFontWeight;
-  final Color? foregroundColor;
-  final double? height;
-  final double? width;
-  final bool loadableButton;
-  final Color? color;
-  final double? elevation;
-  final bool expandWidth;
-
   const PrimaryButton({
     super.key,
     required this.onTap,
@@ -32,6 +20,17 @@ class PrimaryButton extends HookWidget {
     this.elevation,
     this.expandWidth = false,
   });
+  final Function() onTap;
+  final String text;
+  final TextType? textType;
+  final FontWeight? textFontWeight;
+  final Color? foregroundColor;
+  final double? height;
+  final double? width;
+  final bool loadableButton;
+  final Color? color;
+  final double? elevation;
+  final bool expandWidth;
 
   @override
   Widget build(BuildContext context) {

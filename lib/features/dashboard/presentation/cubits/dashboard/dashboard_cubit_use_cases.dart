@@ -3,7 +3,6 @@ import 'package:injectable/injectable.dart';
 
 @LazySingleton()
 class DashboardCubitUseCases {
-  final CheckAuthenticationUseCase checkAuthentication;
-
   const DashboardCubitUseCases({required this.checkAuthentication});
+  final CheckAuthenticationUseCase checkAuthentication;
 }

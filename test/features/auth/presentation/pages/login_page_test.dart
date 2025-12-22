@@ -1,17 +1,17 @@
-import 'package:clean_architecture/shared_ui/themes/theme.dart';
 import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
+import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:clean_architecture/core/services/image_picker/image_picker_service.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
 import 'package:clean_architecture/core/services/session/session_service.dart';
-import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
-import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:clean_architecture/features/auth/domain/use_cases/login_use_case.dart';
 import 'package:clean_architecture/features/auth/domain/use_cases/save_user_data_use_case.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart';
 import 'package:clean_architecture/features/auth/presentation/pages/login/login_page.dart';
+import 'package:clean_architecture/shared_ui/themes/theme.dart';
+import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -33,7 +33,7 @@ void main() {
   late UserData userData;
 
   setUpAll(() {
-    userData = UserData(
+    userData = const UserData(
       user: User(
         id: 0,
         firstName: '',
@@ -45,7 +45,7 @@ void main() {
       accessToken: '',
       refreshToken: '',
     );
-    registerFallbackValue(Authentication(username: '', password: ''));
+    registerFallbackValue(const Authentication(username: '', password: ''));
     registerFallbackValue(MockPageRouteInfo());
     registerFallbackValue(userData);
   });
@@ -71,7 +71,7 @@ void main() {
         ),
       ),
     );
-    final screenDetails = ScreenDetails(
+    const screenDetails = ScreenDetails(
       logicalSize: Size(1030, 1280),
       physicalSize: Size(1030, 1280),
       devicePixelRatio: 1,
@@ -96,7 +96,7 @@ void main() {
     ).thenAnswer((_) async => SuccessState(data: userData));
     when(
       () => mockSaveUserDataUseCase.call(any()),
-    ).thenAnswer((_) async => SuccessState(data: true));
+    ).thenAnswer((_) async => const SuccessState(data: true));
 
     // Render the view
     await $.pumpWidget(MaterialApp(theme: lightTheme, home: const LoginPage()));

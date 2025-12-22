@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('LoadingState', () {
     test('should have hasData and hasError as false', () {
-      final state = LoadingState<int>();
+      const state = LoadingState<int>();
 
       expect(state.hasData, false);
       expect(state.hasError, false);
@@ -14,8 +14,8 @@ void main() {
     });
 
     test('should be equatable', () {
-      final state1 = LoadingState<int>();
-      final state2 = LoadingState<int>();
+      const state1 = LoadingState<int>();
+      const state2 = LoadingState<int>();
 
       expect(state1, equals(state2));
     });

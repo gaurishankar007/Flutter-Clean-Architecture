@@ -4,7 +4,7 @@ description: A new brick for creating clean architecture features based on cubit
 version: 0.1.0+1
 
 environment:
-  mason: ^0.1.0
+  mason: ^0.1.2
 
 vars:
   feature:

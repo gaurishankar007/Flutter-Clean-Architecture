@@ -8,13 +8,13 @@ import 'package:flutter_sliding_toast/flutter_sliding_toast.dart';
 
 abstract interface class ToastUtil {
   static final _navigationService = NavigationUtil.I;
-  static final _toastSetting = const SlidingToastSetting(
+  static const _toastSetting = SlidingToastSetting(
     displayDuration: Duration(milliseconds: 2500),
     toastStartPosition: ToastPosition.top,
     toastAlignment: Alignment.topCenter,
   );
   static final EdgeInsets _padding = UIHelpers.paddingA12;
-  static final BoxShadow _boxShadow = const BoxShadow(
+  static const BoxShadow _boxShadow = BoxShadow(
     color: AppColors.black05,
     spreadRadius: 1,
     blurRadius: 3,

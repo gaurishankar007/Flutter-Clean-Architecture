@@ -3,10 +3,9 @@ import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:flutter/material.dart';
 
 class BaseTitle extends StatelessWidget {
+  const BaseTitle({super.key, required this.title, this.color});
   final String title;
   final Color? color;
-
-  const BaseTitle({super.key, required this.title, this.color});
 
   @override
   Widget build(BuildContext context) {

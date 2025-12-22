@@ -4,16 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginButton extends StatelessWidget {
-  final GlobalKey<FormState> formKey;
-  final TextEditingController usernameController;
-  final TextEditingController passwordController;
-
   const LoginButton({
     super.key,
     required this.formKey,
     required this.usernameController,
     required this.passwordController,
   });
+  final GlobalKey<FormState> formKey;
+  final TextEditingController usernameController;
+  final TextEditingController passwordController;
 
   @override
   Widget build(BuildContext context) {

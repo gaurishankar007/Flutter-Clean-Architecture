@@ -10,15 +10,14 @@ abstract final class Flavor {
 
 /// App configuration for different app flavors.
 sealed class AppConfig {
-  final String appTitle;
-  final String apiBaseUrl;
-  final String flavor;
-
   const AppConfig({
     required this.appTitle,
     required this.apiBaseUrl,
     required this.flavor,
   });
+  final String appTitle;
+  final String apiBaseUrl;
+  final String flavor;
 }
 
 @LazySingleton(as: AppConfig, env: [Flavor.production])

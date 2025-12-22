@@ -1,11 +1,11 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
+import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:clean_architecture/core/services/image_picker/image_picker_service.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
 import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
-import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:clean_architecture/features/auth/domain/use_cases/login_use_case.dart';
 import 'package:clean_architecture/features/auth/domain/use_cases/save_user_data_use_case.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
@@ -30,7 +30,7 @@ void main() {
   late UserData userData;
 
   setUpAll(() {
-    userData = UserData(
+    userData = const UserData(
       user: User(
         id: 0,
         firstName: '',
@@ -42,7 +42,7 @@ void main() {
       accessToken: '',
       refreshToken: '',
     );
-    registerFallbackValue(Authentication(username: '', password: ''));
+    registerFallbackValue(const Authentication(username: '', password: ''));
     registerFallbackValue(MockPageRouteInfo());
     registerFallbackValue(userData);
   });
@@ -136,7 +136,7 @@ void main() {
       ).thenAnswer((_) async => SuccessState(data: userData));
       when(
         () => mockSaveUserDataUseCase.call(any()),
-      ).thenAnswer((_) async => SuccessState(data: true));
+      ).thenAnswer((_) async => const SuccessState(data: true));
 
       return loginCubit;
     },

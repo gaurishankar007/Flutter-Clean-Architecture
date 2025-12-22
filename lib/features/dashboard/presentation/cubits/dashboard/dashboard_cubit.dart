@@ -8,12 +8,11 @@ part 'dashboard_state.dart';
 
 @injectable
 class DashboardCubit extends BaseCubit<DashboardState> {
-  final DashboardCubitUseCases _useCases;
-  int _activeIndex = 0;
-
   DashboardCubit({required DashboardCubitUseCases useCases})
     : _useCases = useCases,
       super(DashboardState.initial());
+  final DashboardCubitUseCases _useCases;
+  int _activeIndex = 0;
 
   Future<void> initialize() async {
     /// If token is expired, log out and don't perform other operations

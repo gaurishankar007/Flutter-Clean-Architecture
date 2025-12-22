@@ -4,23 +4,6 @@ import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 
 class BaseTextField extends StatelessWidget {
-  final String? title;
-  final Color? titleColor;
-  final TextType? titleSize;
-  final FontWeight? titleFontWeight;
-  final TextEditingController? controller;
-  final TextInputType keyboardType;
-  final bool readOnly;
-  final String? initialValue;
-  final Function(String?)? onChanged;
-  final bool obscureText;
-  final String? Function(String?)? validator;
-  final AutovalidateMode? autovalidateMode;
-  final FocusNode? focusNode;
-  final String hintText;
-  final Widget? prefixIcon;
-  final Widget? suffixIcon;
-
   const BaseTextField({
     super.key,
     this.title,
@@ -40,6 +23,22 @@ class BaseTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
   });
+  final String? title;
+  final Color? titleColor;
+  final TextType? titleSize;
+  final FontWeight? titleFontWeight;
+  final TextEditingController? controller;
+  final TextInputType keyboardType;
+  final bool readOnly;
+  final String? initialValue;
+  final Function(String?)? onChanged;
+  final bool obscureText;
+  final String? Function(String?)? validator;
+  final AutovalidateMode? autovalidateMode;
+  final FocusNode? focusNode;
+  final String hintText;
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
 
   @override
   Widget build(BuildContext context) {

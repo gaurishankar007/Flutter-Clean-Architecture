@@ -1,6 +1,5 @@
+import 'package:clean_architecture/shared_ui/cubits/base/base_cubit.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../../../../shared_ui/cubits/base/base_cubit.dart';
 
 part '{{cubit.snakeCase()}}_state.dart';
 

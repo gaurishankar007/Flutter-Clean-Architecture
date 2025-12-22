@@ -83,8 +83,6 @@ abstract class ApiServiceModule {
 
 @LazySingleton(as: ApiService)
 final class ApiServiceImpl implements ApiService {
-  final Dio _dio;
-
   ApiServiceImpl({
     required Dio dio,
     required AppConfig appConfig,
@@ -115,6 +113,7 @@ final class ApiServiceImpl implements ApiService {
       _dio.interceptors.addAll([authInterceptor, aliceDioAdapter]);
     }
   }
+  final Dio _dio;
 
   @override
   Future<Response> get<T>(

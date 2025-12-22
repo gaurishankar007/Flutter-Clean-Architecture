@@ -4,8 +4,8 @@ import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeLogo extends StatelessWidget {
-  final String title;
   const WelcomeLogo({super.key, required this.title});
+  final String title;
 
   @override
   Widget build(BuildContext context) {

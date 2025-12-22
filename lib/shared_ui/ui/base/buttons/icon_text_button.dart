@@ -4,13 +4,6 @@ import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 
 class IconTextButton extends StatelessWidget {
-  final Function() onPressed;
-  final IconData iconData;
-  final String text;
-  final Color? iconColor;
-  final double? iconSize;
-  final Color? textColor;
-
   const IconTextButton({
     super.key,
     required this.onPressed,
@@ -20,6 +13,12 @@ class IconTextButton extends StatelessWidget {
     this.iconSize,
     this.textColor,
   });
+  final Function() onPressed;
+  final IconData iconData;
+  final String text;
+  final Color? iconColor;
+  final double? iconSize;
+  final Color? textColor;
 
   @override
   Widget build(BuildContext context) {

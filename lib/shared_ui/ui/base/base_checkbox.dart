@@ -4,11 +4,6 @@ import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 
 class BaseCheckbox extends StatelessWidget {
-  final double? scale;
-  final bool value;
-  final Function(bool?)? onChanged;
-  final String? title;
-
   const BaseCheckbox({
     super.key,
     this.scale = .85,
@@ -16,6 +11,10 @@ class BaseCheckbox extends StatelessWidget {
     this.onChanged,
     this.title,
   });
+  final double? scale;
+  final bool value;
+  final Function(bool?)? onChanged;
+  final String? title;
 
   @override
   Widget build(BuildContext context) {

@@ -1,8 +1,7 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
+import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
 import 'package:flutter/material.dart';
-
-import '../../../../../shared_ui/ui/base/app_bar/base_app_bar.dart';
-import '../../../../../shared_ui/ui/base/base_scaffold.dart';
 
 @RoutePage()
 class {{page.pascalCase()}}Page extends StatelessWidget {

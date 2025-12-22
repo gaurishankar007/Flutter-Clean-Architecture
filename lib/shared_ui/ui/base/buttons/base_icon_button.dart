@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 
 class BaseIconButton extends StatelessWidget {
-  final Function() onPressed;
-  final Icon icon;
-  final double? splashRadius;
-  final EdgeInsets? padding;
-  final BoxConstraints? boxConstraints;
-  final VisualDensity? visualDensity;
-  final double? targetSize;
-  final bool disableSplash;
-
   const BaseIconButton({
     super.key,
     required this.onPressed,
@@ -21,6 +12,14 @@ class BaseIconButton extends StatelessWidget {
     this.targetSize,
     this.disableSplash = false,
   });
+  final Function() onPressed;
+  final Icon icon;
+  final double? splashRadius;
+  final EdgeInsets? padding;
+  final BoxConstraints? boxConstraints;
+  final VisualDensity? visualDensity;
+  final double? targetSize;
+  final bool disableSplash;
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +28,8 @@ class BaseIconButton extends StatelessWidget {
       onPressed: onPressed,
       padding: padding ?? EdgeInsets.zero,
       constraints: boxConstraints ?? const BoxConstraints(),
-      visualDensity: visualDensity ??
-          const VisualDensity(
-            horizontal: -4,
-            vertical: -4,
-          ),
+      visualDensity:
+          visualDensity ?? const VisualDensity(horizontal: -4, vertical: -4),
       highlightColor: disableSplash ? Colors.transparent : null,
       icon: icon,
     );
@@ -46,11 +42,7 @@ class BaseIconButton extends StatelessWidget {
     }
 
     if (targetSize != null) {
-      child = SizedBox(
-        height: targetSize,
-        width: targetSize,
-        child: child,
-      );
+      child = SizedBox(height: targetSize, width: targetSize, child: child);
     }
 
     return child;

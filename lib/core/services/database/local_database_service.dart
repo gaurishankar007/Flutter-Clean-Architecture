@@ -22,9 +22,8 @@ abstract class LocalDatabaseServiceModule {
 
 @LazySingleton(as: LocalDatabaseService)
 final class LocalDatabaseServiceImpl implements LocalDatabaseService {
-  final SharedPreferences sharedPreferences;
-
   const LocalDatabaseServiceImpl({required this.sharedPreferences});
+  final SharedPreferences sharedPreferences;
 
   @override
   Future<void> setString(String key, String value) =>

@@ -1,4 +1,5 @@
 import 'package:clean_architecture/config/app_config.dart';
+import 'package:clean_architecture/core/services/internet/internet_service.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/themes/theme.dart';
@@ -6,8 +7,6 @@ import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-
-import '../core/services/internet/internet_service.dart';
 
 class CleanArchitectureSample extends StatefulWidget {
   const CleanArchitectureSample({super.key});

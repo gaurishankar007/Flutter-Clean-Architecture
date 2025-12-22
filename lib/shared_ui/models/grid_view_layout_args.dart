@@ -1,15 +1,14 @@
 class GridViewLayoutArgs {
-  final int crossAxisCount;
-  final double childAspectRatio;
-  final double crossAxisSpacing;
-  final double mainAxisSpacing;
-
   const GridViewLayoutArgs({
     this.crossAxisCount = 2,
     this.childAspectRatio = 1,
     required this.crossAxisSpacing,
     required this.mainAxisSpacing,
   });
+  final int crossAxisCount;
+  final double childAspectRatio;
+  final double crossAxisSpacing;
+  final double mainAxisSpacing;
 
   GridViewLayoutArgs copyWith({
     int? crossAxisCount,

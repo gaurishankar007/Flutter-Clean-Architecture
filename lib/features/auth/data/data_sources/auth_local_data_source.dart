@@ -16,10 +16,9 @@ abstract interface class AuthLocalDataSource {
 
 @LazySingleton(as: AuthLocalDataSource)
 final class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  final LocalDatabaseService _localDatabase;
-
   const AuthLocalDataSourceImpl({required LocalDatabaseService localDatabase})
     : _localDatabase = localDatabase;
+  final LocalDatabaseService _localDatabase;
 
   @override
   FutureBool saveUserData(UserDataResponse userDataModel) async {

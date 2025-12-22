@@ -9,9 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 enum StateStatus { initial, loading, loaded, noInternet }
 
 abstract class BaseState extends Equatable {
-  final StateStatus stateStatus;
-
   const BaseState({this.stateStatus = StateStatus.initial});
+  final StateStatus stateStatus;
 
   @override
   List<Object?> get props => [stateStatus];

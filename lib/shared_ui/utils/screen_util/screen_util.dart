@@ -1,15 +1,14 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/widgets.dart';
 
-part 'screen_type.dart';
 part 'screen_details.dart';
+part 'screen_type.dart';
 
 /// Provides screen size measurements
 class ScreenUtil {
+  factory ScreenUtil() => _singleton;
   ScreenUtil._();
   static final ScreenUtil _singleton = ScreenUtil._();
-
-  factory ScreenUtil() => _singleton;
   static ScreenUtil get I => ScreenUtil();
 
   double _width = 0;

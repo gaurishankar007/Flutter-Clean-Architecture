@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
 class LoadingCircle extends StatefulWidget {
-  final double strokeWidth;
-  final double height;
-  final double width;
-  final Color? color;
-  final bool centered;
-
   const LoadingCircle({
     super.key,
     this.strokeWidth = 4,
@@ -16,15 +10,16 @@ class LoadingCircle extends StatefulWidget {
     this.centered = true,
   });
 
+  factory LoadingCircle.small([Color? color]) =>
+      LoadingCircle(strokeWidth: 2, height: 20, width: 20, color: color);
+  final double strokeWidth;
+  final double height;
+  final double width;
+  final Color? color;
+  final bool centered;
+
   @override
   State<LoadingCircle> createState() => _LoadingCircleState();
-
-  factory LoadingCircle.small([Color? color]) => LoadingCircle(
-        strokeWidth: 2,
-        height: 20,
-        width: 20,
-        color: color,
-      );
 }
 
 class _LoadingCircleState extends State<LoadingCircle>
@@ -91,11 +86,7 @@ class _LoadingCircleState extends State<LoadingCircle>
       );
     }
 
-    child = SizedBox(
-      height: widget.height,
-      width: widget.width,
-      child: child,
-    );
+    child = SizedBox(height: widget.height, width: widget.width, child: child);
 
     if (widget.centered) return Center(child: child);
     return child;

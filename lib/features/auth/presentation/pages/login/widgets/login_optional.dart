@@ -5,9 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginOptional extends StatelessWidget {
-  final bool saveUserCredential;
-
   const LoginOptional({super.key, required this.saveUserCredential});
+  final bool saveUserCredential;
 
   @override
   Widget build(BuildContext context) {

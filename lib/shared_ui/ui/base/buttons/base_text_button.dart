@@ -3,16 +3,6 @@ import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:flutter/material.dart';
 
 class BaseTextButton extends StatelessWidget {
-  final Function() onPressed;
-  final String text;
-  final Color? textColor;
-  final TextType? textType;
-  final FontWeight? textFontWeight;
-  final Color? color;
-  final EdgeInsets? padding;
-  final VisualDensity? visualDensity;
-  final double? elevation;
-
   const BaseTextButton({
     super.key,
     required this.onPressed,
@@ -25,6 +15,15 @@ class BaseTextButton extends StatelessWidget {
     this.visualDensity,
     this.elevation,
   });
+  final Function() onPressed;
+  final String text;
+  final Color? textColor;
+  final TextType? textType;
+  final FontWeight? textFontWeight;
+  final Color? color;
+  final EdgeInsets? padding;
+  final VisualDensity? visualDensity;
+  final double? elevation;
 
   @override
   Widget build(BuildContext context) {
