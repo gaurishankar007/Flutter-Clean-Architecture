@@ -22,7 +22,7 @@ sealed class AppConfig {
 }
 
 @LazySingleton(as: AppConfig, env: [Flavor.production])
-class AppConfigProd extends AppConfig {
+final class AppConfigProd extends AppConfig {
   AppConfigProd()
     : super(
         appTitle: "Clean Architecture App",
@@ -33,7 +33,7 @@ class AppConfigProd extends AppConfig {
 }
 
 @LazySingleton(as: AppConfig, env: [Flavor.staging])
-class AppConfigStg extends AppConfig {
+final class AppConfigStg extends AppConfig {
   AppConfigStg()
     : super(
         appTitle: "Clean Architecture App Staging",
@@ -44,7 +44,7 @@ class AppConfigStg extends AppConfig {
 }
 
 @LazySingleton(as: AppConfig, env: [Flavor.development])
-class AppConfigDev extends AppConfig {
+final class AppConfigDev extends AppConfig {
   AppConfigDev()
     : super(
         appTitle: "Clean Architecture App Development",
