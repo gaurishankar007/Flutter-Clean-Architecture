@@ -14,7 +14,7 @@ class WelcomeLogo extends StatelessWidget {
         Container(
           margin: UIHelpers.paddingT4B32,
           child: const BaseText(
-            "Welcome",
+            'Welcome',
             color: AppColors.primary,
             textType: TextType.headlineLarge,
             fontWeight: FontWeight.w900,

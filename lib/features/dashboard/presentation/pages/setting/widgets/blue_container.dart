@@ -17,7 +17,7 @@ class BlueContainer extends StatelessWidget {
         borderRadius: UIHelpers.radiusB12,
       ),
       child: BaseText.headline(
-        "Settings",
+        'Settings',
         color: AppColors.white,
         fontWeight: FontWeight.w500,
       ),

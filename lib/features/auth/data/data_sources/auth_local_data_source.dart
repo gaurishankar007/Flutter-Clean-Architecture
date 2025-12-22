@@ -34,14 +34,14 @@ final class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   @override
   FutureData<UserDataResponse> getUserData() async {
     return ErrorHandler.handleException(() async {
-      String userData = _localDatabase.getString(LocalDbKeys.userData) ?? "";
+      String userData = _localDatabase.getString(LocalDbKeys.userData) ?? '';
 
       if (userData.isNotEmpty) {
         final userDataModel = UserDataResponse.fromJson(jsonDecode(userData));
         return SuccessState(data: userDataModel);
       }
       return const FailureState<UserDataResponse>(
-        message: "User data not found.",
+        message: 'User data not found.',
       );
     });
   }

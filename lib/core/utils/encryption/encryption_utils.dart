@@ -7,7 +7,7 @@ abstract final class EncryptionUtils {
   /// Takes string and returns encryption data with
   /// encrypted content and initialization vector.
   static EncryptedData encrypt(String data) {
-    final keyString = dotenv.get("ENCRYPTION_KEY"); // 32-byte key string
+    final keyString = dotenv.get('ENCRYPTION_KEY'); // 32-byte key string
     final key = Key.fromUtf8(keyString); // 32-byte key for AES-256
     final encrypter = Encrypter(AES(key));
 
@@ -24,7 +24,7 @@ abstract final class EncryptionUtils {
   /// Takes encrypted data and decrypts the encrypted content
   /// based on the provide initialization vector.
   static String decrypt(EncryptedData data) {
-    final keyString = dotenv.get("ENCRYPTION_KEY");
+    final keyString = dotenv.get('ENCRYPTION_KEY');
     final key = Key.fromUtf8(keyString);
     final encrypter = Encrypter(AES(key));
 

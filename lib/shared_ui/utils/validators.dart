@@ -17,21 +17,21 @@ abstract interface class Validators {
   /// A form field is required with given label
   static String? require(String? value, {required String label}) {
     if (value == null || value.isEmpty) {
-      return "$label is required.";
+      return '$label is required.';
     }
     return null;
   }
 
-  static String? username(String? value) => require(value, label: "Username");
+  static String? username(String? value) => require(value, label: 'Username');
 
-  static String? password(String? value) => require(value, label: "Password");
+  static String? password(String? value) => require(value, label: 'Password');
 
-  static String? token(String? value) => require(value, label: "Token");
+  static String? token(String? value) => require(value, label: 'Token');
 
   /// Validate email
   static String? email(String? value) {
     if (value == null || value.isEmpty) {
-      return "Email address is required.";
+      return 'Email address is required.';
     } else if (!emailRegex.hasMatch(value)) {
       return 'Enter a valid email address.';
     }
@@ -46,11 +46,11 @@ abstract interface class Validators {
     bool avoidZeroStart = false,
   }) {
     if (value == null || value.isEmpty) {
-      return "$label is required.";
+      return '$label is required.';
     } else if (double.tryParse(value) == null) {
-      return "Invalid ${label.toLowerCase()}.";
-    } else if (avoidZeroStart && value[0] == "0") {
-      return "$label can not start with 0.";
+      return 'Invalid ${label.toLowerCase()}.';
+    } else if (avoidZeroStart && value[0] == '0') {
+      return '$label can not start with 0.';
     }
     return null;
   }

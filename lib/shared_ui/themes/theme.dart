@@ -9,7 +9,7 @@ ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: AppColors.primary,
   colorScheme: colorScheme,
-  fontFamily: "Poppins",
+  fontFamily: 'Poppins',
   scaffoldBackgroundColor: AppColors.surface,
   appBarTheme: appBarTheme,
   inputDecorationTheme: inputDecorationTheme,

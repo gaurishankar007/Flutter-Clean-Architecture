@@ -12,8 +12,8 @@ void main() {
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     ($) async {
       // Inputs
-      const username = "username";
-      const password = "password";
+      const username = 'username';
+      const password = 'password';
 
       await app.main();
       await $.pumpAndSettle();
@@ -33,14 +33,14 @@ void main() {
 
       // Use the Login cubit's fakeLogin method in the login_button widget.
       // Otherwise the test will fail.
-      await $(ElevatedButton).$("LOGIN").tap();
+      await $(ElevatedButton).$('LOGIN').tap();
 
       // Wait until home page is visible
-      await $("Home Page").waitUntilVisible();
+      await $('Home Page').waitUntilVisible();
 
       // Navigate to setting page
       await $(AppIcons.setting).tap();
-      await $("Logout").waitUntilVisible();
+      await $('Logout').waitUntilVisible();
     },
   );
 }

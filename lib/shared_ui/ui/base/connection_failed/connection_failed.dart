@@ -20,12 +20,12 @@ class ConnectionFailed extends StatelessWidget {
             child: const NetworkTower(),
           ),
           const Text(
-            "Whoops!",
+            'Whoops!',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
           ),
           BaseText.title(
-            "Connection Failure 🛰️",
+            'Connection Failure 🛰️',
             textAlign: TextAlign.center,
             color: AppColors.black,
             fontWeight: FontWeight.w600,
@@ -35,7 +35,7 @@ class ConnectionFailed extends StatelessWidget {
             expandWidth: true,
             onTap: callBack,
             color: Colors.indigo,
-            text: "Try Again",
+            text: 'Try Again',
           ),
         ],
       ),

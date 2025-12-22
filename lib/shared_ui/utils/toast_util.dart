@@ -57,7 +57,7 @@ abstract interface class ToastUtil {
   }
 
   /// Shows success or error message based on success and failure state
-  static void showMessage(DataState dataState, {String message = ""}) {
+  static void showMessage(DataState dataState, {String message = ''}) {
     if (dataState is! SuccessState) {
       showError(dataState.message!);
     } else if (message.isNotEmpty) {

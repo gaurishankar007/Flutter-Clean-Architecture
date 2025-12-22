@@ -10,15 +10,15 @@ void showCloseAppDialog(BuildContext context) {
     builder: (dialogContext) {
       return AlertDialog(
         backgroundColor: AppColors.white,
-        title: const Text("CleanArchitecture App"),
-        content: const Text("Are you sure you want to close the app?"),
+        title: const Text('CleanArchitecture App'),
+        content: const Text('Are you sure you want to close the app?'),
         actionsPadding: UIHelpers.paddingA16,
         actions: [
           PrimaryButton(
             height: 40,
             width: 80,
             onTap: () => Navigator.pop(dialogContext),
-            text: "No",
+            text: 'No',
             foregroundColor: AppColors.white,
           ),
           UIHelpers.spaceH4,
@@ -30,7 +30,7 @@ void showCloseAppDialog(BuildContext context) {
               Navigator.pop(dialogContext);
               SystemChannels.platform.invokeMethod('SystemNavigator.pop');
             },
-            text: "Yes",
+            text: 'Yes',
             foregroundColor: AppColors.white,
           ),
         ],

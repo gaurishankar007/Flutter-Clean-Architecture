@@ -19,7 +19,7 @@ class SettingItems extends StatelessWidget {
       child: ListView(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        children: [settingItemWidget(AppIcons.lock, "Change Password")],
+        children: [settingItemWidget(AppIcons.lock, 'Change Password')],
       ),
     );
   }

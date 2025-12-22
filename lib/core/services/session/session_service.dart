@@ -44,7 +44,7 @@ final class SessionServiceImpl implements SessionService {
   String get accessToken => _userData.accessToken;
   @override
   String get fullName =>
-      "${_userData.user.firstName} ${_userData.user.lastName}";
+      '${_userData.user.firstName} ${_userData.user.lastName}';
 
   /// Check user's logged in credentials and store it before starting the app
   @override

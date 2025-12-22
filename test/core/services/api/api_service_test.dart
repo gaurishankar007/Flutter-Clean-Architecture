@@ -17,7 +17,7 @@ void main() {
   late AppConfig appConfig;
 
   setUpAll(() async {
-    await dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: '.env');
 
     mockDio = MockDio();
     mockAuthInterceptor = MockAuthInterceptor();

@@ -28,7 +28,7 @@ class DashboardDrawer extends StatelessWidget {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      BaseText.headline("Dashboard"),
+                      BaseText.headline('Dashboard'),
                       UIHelpers.spaceV16,
                       ListTile(
                         onTap: () => context.read<DashboardCubit>().setIndex(0),
@@ -42,7 +42,7 @@ class DashboardDrawer extends StatelessWidget {
                               : AppColors.fade.withAlpha(153),
                         ),
                         title: BaseText(
-                          "Home",
+                          'Home',
                           color: state.activeIndex == 0
                               ? AppColors.primary
                               : AppColors.fade.withAlpha(153),
@@ -60,7 +60,7 @@ class DashboardDrawer extends StatelessWidget {
                               : AppColors.fade.withAlpha(153),
                         ),
                         title: BaseText(
-                          "Setting",
+                          'Setting',
                           color: state.activeIndex == 1
                               ? AppColors.primary
                               : AppColors.fade.withAlpha(153),

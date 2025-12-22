@@ -3,12 +3,12 @@ part of 'encryption_utils.dart';
 class EncryptedData {
   const EncryptedData({required this.ivBase64, required this.encryptedBase64});
 
-  const EncryptedData.empty() : ivBase64 = "", encryptedBase64 = "";
+  const EncryptedData.empty() : ivBase64 = '', encryptedBase64 = '';
 
   factory EncryptedData.fromJson(Map<String, dynamic> map) {
     return EncryptedData(
-      ivBase64: map['initializationVector'] ?? "",
-      encryptedBase64: map['encryption'] ?? "",
+      ivBase64: map['initializationVector'] as String? ?? '',
+      encryptedBase64: map['encryption'] as String? ?? '',
     );
   }
 

@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 abstract final class AppInitializer {
   static Future<void> initializeApp({required String environment}) async {
     await ErrorHandler.catchException(() async {
-      await dotenv.load(fileName: ".env");
+      await dotenv.load(fileName: '.env');
       await configureDependencies(environment: environment);
       await SessionUtil.I.checkForUserCredential();
     });

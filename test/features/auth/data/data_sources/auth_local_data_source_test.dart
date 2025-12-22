@@ -24,7 +24,7 @@ void main() {
     id: 1,
     firstName: 'Test',
     lastName: 'User',
-    username: 'testuser',
+    username: 'test user',
     email: 'test@example.com',
     isActive: true,
   );
@@ -32,14 +32,14 @@ void main() {
   // Assuming UserDataModel has a constructor like this and a toJson method.
   const tUserDataModel = UserDataResponse(
     user: userModel,
-    accessToken: "access",
-    refreshToken: "refresh",
+    accessToken: 'access',
+    refreshToken: 'refresh',
   );
 
   final tUserDataJson = jsonEncode({
     'user': userModel.toJson(),
-    'access': "access",
-    'refresh': "refresh",
+    'access': 'access',
+    'refresh': 'refresh',
   });
 
   group('saveUserData', () {
@@ -94,7 +94,7 @@ void main() {
         expect(result, isA<SuccessState<UserDataResponse>>());
         expect(result.data, isNotNull);
         expect(result.data!.user.id, userModel.id);
-        expect(result.data!.accessToken, "access");
+        expect(result.data!.accessToken, 'access');
         verify(() => mockLocalDatabase.getString(tStorageKey)).called(1);
       },
     );

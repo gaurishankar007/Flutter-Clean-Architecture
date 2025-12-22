@@ -19,7 +19,7 @@ class BaseTextField extends StatelessWidget {
     this.autovalidateMode,
     this.obscureText = false,
     this.focusNode,
-    this.hintText = "",
+    this.hintText = '',
     this.prefixIcon,
     this.suffixIcon,
   });
@@ -51,7 +51,7 @@ class BaseTextField extends StatelessWidget {
       readOnly: readOnly,
       autovalidateMode: autovalidateMode,
       obscureText: obscureText,
-      obscuringCharacter: "*",
+      obscuringCharacter: '*',
       style: const TextStyle(color: AppColors.base, fontSize: 16),
       focusNode: focusNode,
       decoration: InputDecoration(

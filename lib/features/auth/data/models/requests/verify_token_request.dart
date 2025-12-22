@@ -8,5 +8,5 @@ class VerifyTokenRequest {
   final String token;
   final String userId;
 
-  Map<String, dynamic> toJson() => {"token": token, "user_id": userId};
+  Map<String, dynamic> toJson() => {'token': token, 'user_id': userId};
 }

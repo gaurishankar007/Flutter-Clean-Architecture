@@ -12,10 +12,10 @@ class User extends Equatable {
 
   const User.empty()
     : id = 0,
-      firstName = "",
-      lastName = "",
-      username = "",
-      email = "",
+      firstName = '',
+      lastName = '',
+      username = '',
+      email = '',
       isActive = false;
   final int id;
   final String firstName;

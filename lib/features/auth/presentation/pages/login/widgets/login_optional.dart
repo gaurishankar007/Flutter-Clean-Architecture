@@ -15,11 +15,11 @@ class LoginOptional extends StatelessWidget {
       children: [
         BaseCheckbox(
           value: saveUserCredential,
-          title: "Stay Logged In",
+          title: 'Stay Logged In',
           onChanged: (value) =>
               context.read<LoginCubit>().toggleUserCredentialSaving(),
         ),
-        BaseTextButton(onPressed: () {}, text: "Forget Password?"),
+        BaseTextButton(onPressed: () {}, text: 'Forget Password?'),
       ],
     );
   }

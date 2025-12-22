@@ -29,17 +29,17 @@ void main() {
     );
 
     registerFallbackValue(
-      const AuthenticationRequest(username: "", password: ""),
+      const AuthenticationRequest(username: '', password: ''),
     );
     registerFallbackValue(const UserData.empty());
     registerFallbackValue(
       const UserDataResponse(
         user: UserResponse(
           id: 1,
-          firstName: "",
-          lastName: "",
-          username: "",
-          email: "",
+          firstName: '',
+          lastName: '',
+          username: '',
+          email: '',
           isActive: true,
         ),
         accessToken: '',
@@ -58,7 +58,7 @@ void main() {
     id: 1,
     firstName: 'Test',
     lastName: 'User',
-    username: 'testuser',
+    username: 'test user',
     email: 'test@example.com',
     isActive: true,
   );

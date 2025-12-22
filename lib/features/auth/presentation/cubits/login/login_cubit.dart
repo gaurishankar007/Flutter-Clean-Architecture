@@ -71,14 +71,14 @@ class LoginCubit extends BaseCubit<LoginState> {
 
     final dataState = SuccessState(
       data: UserData(
-        accessToken: "access",
-        refreshToken: "refresh",
+        accessToken: 'access',
+        refreshToken: 'refresh',
         user: User(
           id: 1,
-          firstName: "Flutter",
-          lastName: "Developers",
+          firstName: 'Flutter',
+          lastName: 'Developers',
           username: username,
-          email: "email",
+          email: 'email',
           isActive: true,
         ),
       ),

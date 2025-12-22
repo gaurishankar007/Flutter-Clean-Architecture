@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
         titleFontWeight: FontWeight.w600,
       ),
       isScrollable: false,
-      body: const Center(child: BaseTitle(title: "Home Page")),
+      body: const Center(child: BaseTitle(title: 'Home Page')),
     );
   }
 }

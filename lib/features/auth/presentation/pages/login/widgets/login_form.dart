@@ -24,17 +24,17 @@ class LoginForm extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             BaseTextField(
-              title: "Username",
+              title: 'Username',
               controller: usernameController,
-              hintText: "Enter your username",
+              hintText: 'Enter your username',
               validator: Validators.username,
               autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
             Container(
               margin: UIHelpers.paddingT20B4,
               child: BaseTextField(
-                title: "Password",
-                hintText: "Enter your password",
+                title: 'Password',
+                hintText: 'Enter your password',
                 controller: passwordController,
                 validator: Validators.password,
                 autovalidateMode: AutovalidateMode.onUserInteraction,

@@ -30,7 +30,7 @@ class LoginButton extends StatelessWidget {
           password: passwordController.text,
         );
       },
-      text: "LOGIN",
+      text: 'LOGIN',
     );
   }
 }

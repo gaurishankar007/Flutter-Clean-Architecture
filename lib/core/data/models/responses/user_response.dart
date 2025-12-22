@@ -13,12 +13,12 @@ class UserResponse implements DomainConvertible<User> {
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
     return UserResponse(
-      id: json['id'] ?? 0,
-      firstName: json['first_name'] ?? "",
-      lastName: json['last_name'] ?? "",
-      username: json['username'] ?? "",
-      email: json['email'] ?? "",
-      isActive: json['is_active'] ?? false,
+      id: json['id'] as int? ?? 0,
+      firstName: json['first_name'] as String? ?? '',
+      lastName: json['last_name'] as String? ?? '',
+      username: json['username'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      isActive: json['is_active'] as bool? ?? false,
     );
   }
 

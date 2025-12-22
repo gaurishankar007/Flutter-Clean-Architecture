@@ -2,9 +2,9 @@
 
 part of 'data_state.dart';
 
-const String CUSTOMER_SUPPORT = "Please contact our customer support.";
-const String ERROR_MESSAGE = "Unexpected error occurred. $CUSTOMER_SUPPORT";
-const String CHECK_INTERNET = "Please check your internet and try again.";
+const String CUSTOMER_SUPPORT = 'Please contact our customer support.';
+const String ERROR_MESSAGE = 'Unexpected error occurred. $CUSTOMER_SUPPORT';
+const String CHECK_INTERNET = 'Please check your internet and try again.';
 
 enum ErrorType {
   unknown,
@@ -32,34 +32,34 @@ final class FailureState<T> extends DataState<T> {
 
   /// A failure data state when type error occurs
   factory FailureState.typeError() => const FailureState(
-    message: "Error occurred. Unsupported data type is assigned.",
+    message: 'Error occurred. Unsupported data type is assigned.',
     errorType: ErrorType.typeError,
   );
 
   /// A failure data state when format exception occurs
   factory FailureState.formatError() => const FailureState(
-    message: "Error occurred. Operation on unsupported data format.",
+    message: 'Error occurred. Operation on unsupported data format.',
     errorType: ErrorType.formatError,
   );
 
   /// A failure data state when invalid data is provided to the server
   factory FailureState.badRequest({String? message, int? statusCode}) =>
       FailureState(
-        message: message ?? "Bad request. Please try again",
+        message: message ?? 'Bad request. Please try again',
         errorType: ErrorType.requestError,
         statusCode: statusCode,
       );
 
   /// A failure data state when the user's token is expired
   factory FailureState.tokenExpired() => const FailureState(
-    message: "Token is expired. Login again.",
+    message: 'Token is expired. Login again.',
     errorType: ErrorType.tokenError,
   );
 
   /// A failure data state when the response of the server is invalid
   factory FailureState.badResponse({String? message, int? statusCode}) =>
       FailureState(
-        message: message ?? "Invalid server response.",
+        message: message ?? 'Invalid server response.',
         errorType: ErrorType.responseError,
         statusCode: statusCode,
       );
@@ -67,14 +67,14 @@ final class FailureState<T> extends DataState<T> {
   /// A failure data state when error occurs in the server
   factory FailureState.serverError({String? message, int? statusCode}) =>
       FailureState(
-        message: message ?? "Server error occurred. $CUSTOMER_SUPPORT",
+        message: message ?? 'Server error occurred. $CUSTOMER_SUPPORT',
         errorType: ErrorType.serverError,
         statusCode: statusCode,
       );
 
   /// A failure data state when there is no internet access
   factory FailureState.noInternet() => const FailureState(
-    message: "No internet access.",
+    message: 'No internet access.',
     errorType: ErrorType.internetError,
   );
 }

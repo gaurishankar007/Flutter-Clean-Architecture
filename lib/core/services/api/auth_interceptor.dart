@@ -25,7 +25,7 @@ interface class AuthInterceptor extends Interceptor {
     /// Add authorization token if the user is logged in
     if (_sessionManager.isLoggedIn) {
       options.headers.addAll({
-        "Authorization": "Bearer ${_sessionManager.accessToken}",
+        'Authorization': 'Bearer ${_sessionManager.accessToken}',
       });
     }
 
@@ -57,12 +57,12 @@ interface class AuthInterceptor extends Interceptor {
             request.handler.resolve(response);
           } on DioException catch (error) {
             if (kDebugMode) {
-              log("Retry request: ${error.response.toString()}");
+              log('Retry request: ${error.response.toString()}');
             }
             request.handler.next(error);
           } catch (error) {
             if (kDebugMode) {
-              log("Retry request: ${error.toString()}");
+              log('Retry request: ${error.toString()}');
             }
           }
         }
@@ -101,7 +101,7 @@ interface class AuthInterceptor extends Interceptor {
     } catch (error) {
       _sessionManager.clearSessionData();
       if (kDebugMode) {
-        log("Token refresh: ${error.toString()}");
+        log('Token refresh: ${error.toString()}');
       }
     }
 
@@ -110,9 +110,9 @@ interface class AuthInterceptor extends Interceptor {
 
   Future<Response> _retryRequest(RequestOptions requestOptions) async {
     /// Reset authorization header
-    requestOptions.headers.remove("Authorization");
+    requestOptions.headers.remove('Authorization');
     requestOptions.headers.addAll({
-      "Authorization": "Bearer ${_sessionManager.accessToken}",
+      'Authorization': 'Bearer ${_sessionManager.accessToken}',
     });
 
     /// RequestOptions with the same method, path, data,

@@ -17,7 +17,7 @@ abstract final class ErrorHandler {
     try {
       return await callBack();
     } on DioException catch (exception, stackTrace) {
-      debugError("Error Response: ${exception.response?.toString()}");
+      debugError('Error Response: ${exception.response?.toString()}');
       debugError(exception, stackTrace);
       return _dioExceptionToFailureState<T>(exception);
     } on TypeError catch (error, stackTrace) {
@@ -72,7 +72,7 @@ abstract final class ErrorHandler {
   static void debugError(Object? error, [StackTrace? stackTrace]) {
     if (kDebugMode) {
       log(
-        "<--------- Caught Exception ---------->",
+        '<--------- Caught Exception ---------->',
         error: error,
         stackTrace: stackTrace,
       );
@@ -80,11 +80,11 @@ abstract final class ErrorHandler {
   }
 
   static const _dioErrorMessages = {
-    "connectionError": "Connection error, host lookup failed.",
-    "cancel": "Request was cancelled",
-    "receiveTimeout": "Receive timeout in connection. $CHECK_INTERNET",
-    "sendTimeout": "Send timeout in connection. $CHECK_INTERNET",
-    "connectionTimeout": "Connection timeout. $CHECK_INTERNET",
-    "badCertificate": "Bad certificate. $CUSTOMER_SUPPORT",
+    'connectionError': 'Connection error, host lookup failed.',
+    'cancel': 'Request was cancelled',
+    'receiveTimeout': 'Receive timeout in connection. $CHECK_INTERNET',
+    'sendTimeout': 'Send timeout in connection. $CHECK_INTERNET',
+    'connectionTimeout': 'Connection timeout. $CHECK_INTERNET',
+    'badCertificate': 'Bad certificate. $CUSTOMER_SUPPORT',
   };
 }

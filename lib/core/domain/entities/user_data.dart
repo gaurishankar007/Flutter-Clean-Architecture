@@ -10,8 +10,8 @@ class UserData extends Equatable {
 
   const UserData.empty()
     : user = const User.empty(),
-      accessToken = "",
-      refreshToken = "";
+      accessToken = '',
+      refreshToken = '';
   final User user;
   final String accessToken;
   final String refreshToken;

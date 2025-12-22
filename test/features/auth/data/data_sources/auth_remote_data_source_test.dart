@@ -32,19 +32,19 @@ void main() {
     final tAuthenticationRequestJson = tAuthenticationRequest.toJson();
 
     final tSuccessResponseJson = {
-      "data": {
-        "user": {
-          "id": 1,
-          "first_name": "Test",
-          "last_name": "User",
-          "username": "testuser",
-          "email": "test@example.com",
-          "is_active": true,
+      'data': {
+        'user': {
+          'id': 1,
+          'first_name': 'Test',
+          'last_name': 'User',
+          'username': 'test user',
+          'email': 'test@example.com',
+          'is_active': true,
         },
-        "access": "access",
-        "refresh": "refresh",
+        'access': 'access',
+        'refresh': 'refresh',
       },
-      "message": "Login successful",
+      'message': 'Login successful',
     };
 
     test(
@@ -93,7 +93,7 @@ void main() {
     test('should return FailureState when API returns 400', () async {
       // Arrange
       // This response is missing the 'data' key, which DataHandler will flag as an error.
-      final tErrorResponseJson = {"message": "Invalid credentials"};
+      final tErrorResponseJson = {'message': 'Invalid credentials'};
       when(
         () => mockApiService.post(
           any(),
@@ -149,7 +149,7 @@ void main() {
           (_) async => Response(
             requestOptions: RequestOptions(path: ApiEndpoints.checkAuth),
             data: {
-              'data': {"ab": true},
+              'data': {'ab': true},
               'message': 'Authenticated',
             },
             statusCode: 200,

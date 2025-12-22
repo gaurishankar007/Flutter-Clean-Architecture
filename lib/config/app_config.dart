@@ -24,9 +24,9 @@ sealed class AppConfig {
 final class AppConfigProd extends AppConfig {
   AppConfigProd()
     : super(
-        appTitle: "Clean Architecture App",
+        appTitle: 'Clean Architecture App',
         apiBaseUrl:
-            dotenv.maybeGet("BASE_PRODUCTION") ?? "https://development.com.np/",
+            dotenv.maybeGet('BASE_PRODUCTION') ?? 'https://development.com.np/',
         flavor: Flavor.production,
       );
 }
@@ -35,9 +35,9 @@ final class AppConfigProd extends AppConfig {
 final class AppConfigStg extends AppConfig {
   AppConfigStg()
     : super(
-        appTitle: "Clean Architecture App Staging",
+        appTitle: 'Clean Architecture App Staging',
         apiBaseUrl:
-            dotenv.maybeGet("BASE_STAGING") ?? "https://development.com.np/",
+            dotenv.maybeGet('BASE_STAGING') ?? 'https://development.com.np/',
         flavor: Flavor.staging,
       );
 }
@@ -46,10 +46,10 @@ final class AppConfigStg extends AppConfig {
 final class AppConfigDev extends AppConfig {
   AppConfigDev()
     : super(
-        appTitle: "Clean Architecture App Development",
+        appTitle: 'Clean Architecture App Development',
         apiBaseUrl:
-            dotenv.maybeGet("BASE_DEVELOPMENT") ??
-            "https://development.com.np/",
+            dotenv.maybeGet('BASE_DEVELOPMENT') ??
+            'https://development.com.np/',
         flavor: Flavor.development,
       );
 }

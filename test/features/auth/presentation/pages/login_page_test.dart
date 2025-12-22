@@ -83,7 +83,7 @@ void main() {
     locator.reset();
   });
 
-  patrolWidgetTest("Login and save the user credential", ($) async {
+  patrolWidgetTest('Login and save the user credential', ($) async {
     // Arrange
     when(
       () => mockSessionService.setUserData = userData,
@@ -102,8 +102,8 @@ void main() {
     await $.pumpWidget(MaterialApp(theme: lightTheme, home: const LoginPage()));
 
     // Expect the login button to be enabled initially
-    expect($("Login"), findsOne);
-    expect($("Password"), findsOne);
+    expect($('Login'), findsOne);
+    expect($('Password'), findsOne);
     final enabledButton = $(
       ElevatedButton,
     ).which<ElevatedButton>((b) => b.enabled);
@@ -112,8 +112,8 @@ void main() {
     expect($(InkWell).$(Icons.visibility_off_outlined), findsOneWidget);
 
     // Enter email and password
-    await $(TextField).at(0).enterText("username");
-    await $(TextField).at(1).enterText("password");
+    await $(TextField).at(0).enterText('username');
+    await $(TextField).at(1).enterText('password');
 
     await $(Checkbox).tap();
 
