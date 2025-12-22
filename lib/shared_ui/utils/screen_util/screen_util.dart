@@ -9,7 +9,7 @@ class ScreenUtil {
   factory ScreenUtil() => _singleton;
   ScreenUtil._();
   static final ScreenUtil _singleton = ScreenUtil._();
-  static ScreenUtil get I => ScreenUtil();
+  static ScreenUtil I = ScreenUtil();
 
   double _width = 0;
   double _height = 0;
@@ -87,7 +87,7 @@ class ScreenUtil {
 
   /// Required percentage of height with limitation
   double heightPart(double percentage, {double? min, double? max}) {
-    double height = percentage / 100 * _height;
+    final double height = percentage / 100 * _height;
     if (min == null && max == null) {
       return height;
     }
@@ -96,7 +96,7 @@ class ScreenUtil {
 
   /// Required percentage of width with limitation
   double widthPart(double percentage, {double? min, double? max}) {
-    double width = percentage / 100 * _width;
+    final double width = percentage / 100 * _width;
     if (min == null && max == null) {
       return width;
     }

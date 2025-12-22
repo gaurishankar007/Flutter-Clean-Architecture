@@ -33,7 +33,7 @@ abstract interface class ToastUtil {
       toastStyle: ToastStyle(
         padding: _padding,
         progressBarColor: AppColors.green500,
-        boxShadow: [_boxShadow],
+        boxShadow: const [_boxShadow],
       ),
     );
   }
@@ -51,13 +51,13 @@ abstract interface class ToastUtil {
       toastStyle: ToastStyle(
         padding: _padding,
         progressBarColor: AppColors.red600,
-        boxShadow: [_boxShadow],
+        boxShadow: const [_boxShadow],
       ),
     );
   }
 
   /// Shows success or error message based on success and failure state
-  static void showMessage(DataState dataState, {String message = ''}) {
+  static void showMessage<T>(DataState<T> dataState, {String message = ''}) {
     if (dataState is! SuccessState) {
       showError(dataState.message!);
     } else if (message.isNotEmpty) {

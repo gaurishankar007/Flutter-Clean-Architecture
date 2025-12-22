@@ -26,7 +26,7 @@ void main() {
       when(() => dioException.type).thenReturn(DioExceptionType.badResponse);
       when(() => dioException.response).thenReturn(response);
 
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.handleException<int>(() {
         throw dioException;
       });
 
@@ -168,7 +168,7 @@ void main() {
       when(() => dioException.type).thenReturn(DioExceptionType.badCertificate);
       when(() => dioException.response).thenReturn(null);
 
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.handleException<int>(() {
         throw dioException;
       });
 
@@ -184,7 +184,7 @@ void main() {
         when(() => dioException.type).thenReturn(DioExceptionType.unknown);
         when(() => dioException.response).thenReturn(null);
 
-        final result = await ErrorHandler.handleException<int>(() async {
+        final result = await ErrorHandler.handleException<int>(() {
           throw dioException;
         });
 
@@ -195,7 +195,7 @@ void main() {
     );
 
     test('handles TypeError as FailureState.typeError', () async {
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.handleException<int>(() {
         throw TypeError();
       });
 
@@ -204,7 +204,7 @@ void main() {
     });
 
     test('handles FormatException as FailureState.formatError', () async {
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.handleException<int>(() {
         throw const FormatException('bad format');
       });
 
@@ -213,7 +213,7 @@ void main() {
     });
 
     test('handles generic Exception as FailureState', () async {
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.handleException<int>(() {
         throw Exception('generic error');
       });
 
@@ -222,8 +222,8 @@ void main() {
     });
 
     test('handles String error as FailureState', () async {
-      final result = await ErrorHandler.handleException<int>(() async {
-        throw 'string error';
+      final result = await ErrorHandler.handleException<int>(() {
+        throw Exception('string error');
       });
 
       expect(result, isA<FailureState<int>>());
@@ -231,7 +231,7 @@ void main() {
     });
 
     test('handles custom error object as FailureState', () async {
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.handleException<int>(() {
         throw ArgumentError('invalid argument');
       });
 
@@ -256,7 +256,7 @@ void main() {
     test('does not interfere with successful execution', () async {
       var executed = false;
 
-      await ErrorHandler.catchException(() {
+      await ErrorHandler.catchException(() async {
         executed = true;
       });
 

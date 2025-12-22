@@ -17,7 +17,7 @@ void main() {
   late AppConfig appConfig;
 
   setUpAll(() async {
-    await dotenv.load(fileName: '.env');
+    await dotenv.load();
 
     mockDio = MockDio();
     mockAuthInterceptor = MockAuthInterceptor();
@@ -35,7 +35,6 @@ void main() {
       authInterceptor: mockAuthInterceptor,
       dio: mockDio,
       navigationService: mockNavigationService,
-      addInterceptors: false,
     );
   });
 
@@ -76,9 +75,7 @@ void main() {
       final result = await apiService.post('/test', data: {'b': 2});
 
       expect(result, response);
-      verify(
-        () => mockDio.post('/test', data: {'b': 2}, queryParameters: null),
-      ).called(1);
+      verify(() => mockDio.post('/test', data: {'b': 2})).called(1);
     });
 
     test('put calls Dio.put with correct arguments', () async {
@@ -98,17 +95,7 @@ void main() {
       final result = await apiService.put('/test', data: {'c': 3});
 
       expect(result, response);
-      verify(
-        () => mockDio.put(
-          '/test',
-          data: {'c': 3},
-          queryParameters: null,
-          options: null,
-          cancelToken: null,
-          onSendProgress: null,
-          onReceiveProgress: null,
-        ),
-      ).called(1);
+      verify(() => mockDio.put('/test', data: {'c': 3})).called(1);
     });
 
     test('patch calls Dio.patch with correct arguments', () async {
@@ -128,17 +115,7 @@ void main() {
       final result = await apiService.patch('/test', data: {'d': 4});
 
       expect(result, response);
-      verify(
-        () => mockDio.patch(
-          '/test',
-          data: {'d': 4},
-          queryParameters: null,
-          options: null,
-          cancelToken: null,
-          onSendProgress: null,
-          onReceiveProgress: null,
-        ),
-      ).called(1);
+      verify(() => mockDio.patch('/test', data: {'d': 4})).called(1);
     });
 
     test('delete calls Dio.delete with correct arguments', () async {
@@ -156,15 +133,7 @@ void main() {
       final result = await apiService.delete('/test', data: {'e': 5});
 
       expect(result, response);
-      verify(
-        () => mockDio.delete(
-          '/test',
-          data: {'e': 5},
-          queryParameters: null,
-          options: null,
-          cancelToken: null,
-        ),
-      ).called(1);
+      verify(() => mockDio.delete('/test', data: {'e': 5})).called(1);
     });
   });
 }

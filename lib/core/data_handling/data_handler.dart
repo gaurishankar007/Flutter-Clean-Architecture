@@ -69,7 +69,7 @@ abstract final class DataHandler {
           );
         }
 
-        responseMessage = rawData['message'];
+        responseMessage = rawData['message'] as String?;
         rawData = rawData[responseDataKey];
       }
 
@@ -82,7 +82,7 @@ abstract final class DataHandler {
         if (rawData is Map<String, dynamic>) {
           data = fromJson(rawData) as T;
         } else if (rawData is List) {
-          data = rawData.map((json) => fromJson(json)).toList() as T;
+          data = rawData.map((e) => fromJson(e as MapDynamic)).toList() as T;
         } else {
           return FailureState(
             message:

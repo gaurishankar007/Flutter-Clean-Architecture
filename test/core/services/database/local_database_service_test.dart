@@ -17,7 +17,7 @@ void main() {
   });
 
   group('LocalDatabaseServiceImplementation', () {
-    test('getString returns value from SharedPreferences', () async {
+    test('getString returns value from SharedPreferences', () {
       when(() => mockSharedPreferences.getString('key')).thenReturn('value');
 
       final result = localDatabaseService.getString('key');
@@ -26,7 +26,7 @@ void main() {
       verify(() => mockSharedPreferences.getString('key')).called(1);
     });
 
-    test('getString returns null if key does not exist', () async {
+    test('getString returns null if key does not exist', () {
       when(() => mockSharedPreferences.getString('missing')).thenReturn(null);
 
       final result = localDatabaseService.getString('missing');

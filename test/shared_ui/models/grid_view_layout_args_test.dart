@@ -43,8 +43,8 @@ void main() {
       const initialArgs = GridViewLayoutArgs(
         crossAxisCount: 4,
         childAspectRatio: 0.7,
-        crossAxisSpacing: 15.0,
-        mainAxisSpacing: 25.0,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 25,
       );
 
       test(
@@ -61,7 +61,7 @@ void main() {
       test('should return a copy with only specified values updated', () {
         final newArgs = initialArgs.copyWith(
           crossAxisCount: 5,
-          mainAxisSpacing: 30.0,
+          mainAxisSpacing: 30,
         );
         expect(newArgs.crossAxisCount, 5);
         expect(newArgs.childAspectRatio, initialArgs.childAspectRatio);
@@ -73,8 +73,8 @@ void main() {
         final newArgs = initialArgs.copyWith(
           crossAxisCount: 6,
           childAspectRatio: 1.2,
-          crossAxisSpacing: 22.0,
-          mainAxisSpacing: 35.0,
+          crossAxisSpacing: 22,
+          mainAxisSpacing: 35,
         );
         expect(newArgs.crossAxisCount, 6);
         expect(newArgs.childAspectRatio, 1.2);

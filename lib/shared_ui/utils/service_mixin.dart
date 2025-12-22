@@ -38,7 +38,7 @@ mixin ServiceMixin {
 
   void showErrorToast(String message) => ToastUtil.showError(message);
 
-  void showDataStateToast(DataState dataState, {String message = ''}) =>
+  void showDataStateToast<T>(DataState<T> dataState, {String message = ''}) =>
       ToastUtil.showMessage(dataState, message: message);
 
   /// Image Picker Service

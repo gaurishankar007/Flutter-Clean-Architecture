@@ -2,7 +2,7 @@ part of 'data_handler.dart';
 
 abstract final class ErrorHandler {
   /// Catches exceptions and logs the error.
-  static Future<void> catchException(Function() callBack) async {
+  static Future<void> catchException(Future<void> Function() callBack) async {
     try {
       await callBack();
     } catch (error, stackTrace) {
@@ -17,12 +17,9 @@ abstract final class ErrorHandler {
     try {
       return await callBack();
     } on DioException catch (exception, stackTrace) {
-      debugError('Error Response: ${exception.response?.toString()}');
+      debugError('Error Response: ${exception.response}');
       debugError(exception, stackTrace);
       return _dioExceptionToFailureState<T>(exception);
-    } on TypeError catch (error, stackTrace) {
-      debugError(error, stackTrace);
-      return FailureState.typeError();
     } on FormatException catch (exception, stackTrace) {
       debugError(exception, stackTrace);
       return FailureState.formatError();
@@ -37,14 +34,14 @@ abstract final class ErrorHandler {
     DioException exception,
   ) {
     String? errorMessage = ERROR_MESSAGE;
-    DioExceptionType errorType = exception.type;
-    Response? response = exception.response;
+    final errorType = exception.type;
+    final response = exception.response;
     final statusCode = response?.statusCode ?? 0;
 
     /// If the server response contains error status codes
     if (errorType == DioExceptionType.badResponse && response != null) {
       if (response.data is Map) {
-        errorMessage = response.data?['message'];
+        errorMessage = response.data?['message'] as String?;
       }
 
       if (statusCode >= 400 && statusCode < 500) {

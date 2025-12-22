@@ -9,8 +9,8 @@ class ApiResponse<T extends Object?> {
   });
 
   factory ApiResponse.fromResponse(Response response) {
-    Map<String, dynamic> data = response.data;
-    int statusCode = response.statusCode ?? 0;
+    final data = response.data as Map<String, dynamic>;
+    final statusCode = response.statusCode ?? 0;
 
     return ApiResponse<T>(
       data: data['data'] as T,

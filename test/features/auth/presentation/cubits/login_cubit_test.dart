@@ -54,11 +54,12 @@ void main() {
     mockNavigationService = MockNavigationService();
     mockImagePickerService = MockImagePickerService();
 
-    locator.registerSingleton<LoginUseCase>(mockLoginUseCase);
-    locator.registerSingleton<SaveUserDataUseCase>(mockSaveUserDataUseCase);
-    locator.registerSingleton<SessionService>(mockSessionService);
-    locator.registerSingleton<NavigationService>(mockNavigationService);
-    locator.registerSingleton<ImagePickerService>(mockImagePickerService);
+    locator
+      ..registerSingleton<LoginUseCase>(mockLoginUseCase)
+      ..registerSingleton<SaveUserDataUseCase>(mockSaveUserDataUseCase)
+      ..registerSingleton<SessionService>(mockSessionService)
+      ..registerSingleton<NavigationService>(mockNavigationService)
+      ..registerSingleton<ImagePickerService>(mockImagePickerService);
 
     final useCases = LoginCubitUseCases(
       login: mockLoginUseCase,
@@ -70,9 +71,7 @@ void main() {
     );
   });
 
-  tearDown(() {
-    locator.reset();
-  });
+  tearDown(locator.reset);
 
   blocTest<LoginCubit, LoginState>(
     'togglePasswordVisibility should flip passwordVisibility state',

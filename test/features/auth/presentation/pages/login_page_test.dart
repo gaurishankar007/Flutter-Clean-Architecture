@@ -57,20 +57,21 @@ void main() {
     mockNavigationService = MockNavigationService();
     mockImagePickerService = MockImagePickerService();
 
-    locator.registerSingleton<LoginUseCase>(mockLoginUseCase);
-    locator.registerSingleton<SaveUserDataUseCase>(mockSaveUserDataUseCase);
-    locator.registerSingleton<SessionService>(mockSessionService);
-    locator.registerSingleton<NavigationService>(mockNavigationService);
-    locator.registerSingleton<ImagePickerService>(mockImagePickerService);
-    locator.registerFactory<LoginCubit>(
-      () => LoginCubit(
-        sessionService: GetIt.I<SessionService>(),
-        useCases: LoginCubitUseCases(
-          login: mockLoginUseCase,
-          saveUserData: mockSaveUserDataUseCase,
+    locator
+      ..registerSingleton<LoginUseCase>(mockLoginUseCase)
+      ..registerSingleton<SaveUserDataUseCase>(mockSaveUserDataUseCase)
+      ..registerSingleton<SessionService>(mockSessionService)
+      ..registerSingleton<NavigationService>(mockNavigationService)
+      ..registerSingleton<ImagePickerService>(mockImagePickerService)
+      ..registerFactory<LoginCubit>(
+        () => LoginCubit(
+          sessionService: GetIt.I<SessionService>(),
+          useCases: LoginCubitUseCases(
+            login: mockLoginUseCase,
+            saveUserData: mockSaveUserDataUseCase,
+          ),
         ),
-      ),
-    );
+      );
     const screenDetails = ScreenDetails(
       logicalSize: Size(1030, 1280),
       physicalSize: Size(1030, 1280),
@@ -79,9 +80,7 @@ void main() {
     ScreenUtil.I.configureScreen(screenDetails);
   });
 
-  tearDown(() {
-    locator.reset();
-  });
+  tearDown(locator.reset);
 
   patrolWidgetTest('Login and save the user credential', ($) async {
     // Arrange

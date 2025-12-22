@@ -1,7 +1,7 @@
 import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
-import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
+import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
 import 'package:clean_architecture/features/auth/domain/use_cases/login_use_case.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
