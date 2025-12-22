@@ -1,7 +1,7 @@
 import 'package:clean_architecture/core/services/internet/internet_service.dart';
-import 'package:clean_architecture/features/{{feature.snakeCase()}}/data/data_sources/test_local_data_source.dart';
-import 'package:clean_architecture/features/{{feature.snakeCase()}}/data/data_sources/test_remote_data_source.dart';
-import 'package:clean_architecture/features/{{feature.snakeCase()}}/domain/repositories/test_repository.dart';
+import 'package:clean_architecture/features/{{feature.snakeCase()}}/data/data_sources/{{feature.snakeCase()}}_local_data_source.dart';
+import 'package:clean_architecture/features/{{feature.snakeCase()}}/data/data_sources/{{feature.snakeCase()}}_remote_data_source.dart';
+import 'package:clean_architecture/features/{{feature.snakeCase()}}/domain/repositories/{{feature.snakeCase()}}_repository.dart';
 import 'package:injectable/injectable.dart';
 
 
