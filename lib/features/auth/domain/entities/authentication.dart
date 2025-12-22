@@ -10,7 +10,9 @@ class Authentication {
 
   @override
   bool operator ==(covariant Authentication other) {
-    if (identical(this, other)) return true;
+    if (identical(this, other)) {
+      return true;
+    }
 
     return other.username == username && other.password == password;
   }

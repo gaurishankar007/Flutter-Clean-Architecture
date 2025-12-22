@@ -42,7 +42,9 @@ interface class AuthInterceptor extends Interceptor {
       _pendingRequests.add(DioRequestData(error: err, handler: handler));
 
       /// Don't refresh token again, if it is already being refreshed
-      if (_isTokenBeingRefreshed) return;
+      if (_isTokenBeingRefreshed) {
+        return;
+      }
       _isTokenBeingRefreshed = true;
 
       bool tokenRefreshSucceed = await _refreshToken(err.requestOptions);
@@ -54,10 +56,14 @@ interface class AuthInterceptor extends Interceptor {
             final response = await _retryRequest(request.error.requestOptions);
             request.handler.resolve(response);
           } on DioException catch (error) {
-            if (kDebugMode) log("Retry request: ${error.response.toString()}");
+            if (kDebugMode) {
+              log("Retry request: ${error.response.toString()}");
+            }
             request.handler.next(error);
           } catch (error) {
-            if (kDebugMode) log("Retry request: ${error.toString()}");
+            if (kDebugMode) {
+              log("Retry request: ${error.toString()}");
+            }
           }
         }
       }
@@ -94,7 +100,9 @@ interface class AuthInterceptor extends Interceptor {
       _sessionManager.clearSessionData();
     } catch (error) {
       _sessionManager.clearSessionData();
-      if (kDebugMode) log("Token refresh: ${error.toString()}");
+      if (kDebugMode) {
+        log("Token refresh: ${error.toString()}");
+      }
     }
 
     return false;

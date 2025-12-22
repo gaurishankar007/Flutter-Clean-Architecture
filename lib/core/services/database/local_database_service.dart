@@ -42,9 +42,13 @@ final class LocalDatabaseServiceImpl implements LocalDatabaseService {
   @override
   String? getEncryptedString(String key) {
     final encodedEncryption = sharedPreferences.getString(key);
-    if (encodedEncryption == null) return null;
-    final encryptedData = EncryptedData.fromJson(jsonDecode(encodedEncryption));
-    return EncryptionUtils.decrypt(encryptedData);
+    if (encodedEncryption != null) {
+      final encryptedData = EncryptedData.fromJson(
+        jsonDecode(encodedEncryption),
+      );
+      return EncryptionUtils.decrypt(encryptedData);
+    }
+    return null;
   }
 
   @override

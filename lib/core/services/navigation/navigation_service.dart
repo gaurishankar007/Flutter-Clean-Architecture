@@ -136,7 +136,9 @@ final class NavigationServiceImpl implements NavigationService {
         _ => null,
       };
 
-      if (routeToPush == null) return null;
+      if (routeToPush == null) {
+        return null;
+      }
       return await _appRouter.push(routeToPush);
     } catch (error, stackTrace) {
       ErrorHandler.debugError(error, stackTrace);

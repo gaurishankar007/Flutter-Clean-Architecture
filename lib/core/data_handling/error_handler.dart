@@ -43,7 +43,9 @@ abstract final class ErrorHandler {
 
     /// If the server response contains error status codes
     if (errorType == DioExceptionType.badResponse && response != null) {
-      if (response.data is Map) errorMessage = response.data?['message'];
+      if (response.data is Map) {
+        errorMessage = response.data?['message'];
+      }
 
       if (statusCode >= 400 && statusCode < 500) {
         return FailureState.badRequest(

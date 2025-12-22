@@ -130,7 +130,9 @@ abstract final class DataHandler {
       final data = dataState.data;
 
       // Optional: Perform an action on successful remote fetch (e.g., cache the data)
-      if (data != null && onRemoteSuccess != null) onRemoteSuccess(data);
+      if (data != null && onRemoteSuccess != null) {
+        onRemoteSuccess(data);
+      }
       return dataState;
     }
 

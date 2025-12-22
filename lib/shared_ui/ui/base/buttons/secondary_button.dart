@@ -37,17 +37,22 @@ class SecondaryButton extends HookWidget {
     final loadingNotifier = useValueNotifier(false);
     final onPressed = useCallback(() async {
       /// If the button is loading, discard the task
-      if (loadingNotifier.value) return;
+      if (loadingNotifier.value) {
+        return;
+      }
 
       /// If the button is not loadable
-      if (!loadableButton) return onTap();
+      if (!loadableButton) {
+        return onTap();
+      }
 
       loadingNotifier.value = true;
       await onTap();
 
       /// If the widget is disposed, don't update value
-      if (!context.mounted) return;
-      loadingNotifier.value = false;
+      if (context.mounted) {
+        loadingNotifier.value = false;
+      }
     });
 
     return SizedBox(

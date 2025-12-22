@@ -30,8 +30,11 @@ abstract interface class Validators {
 
   /// Validate email
   static String? email(String? value) {
-    if (value == null || value.isEmpty) return "Email address is required.";
-    if (!emailRegex.hasMatch(value)) return 'Enter a valid email address.';
+    if (value == null || value.isEmpty) {
+      return "Email address is required.";
+    } else if (!emailRegex.hasMatch(value)) {
+      return 'Enter a valid email address.';
+    }
 
     return null;
   }

@@ -88,7 +88,9 @@ class BaseScaffold extends StatelessWidget {
       scaffold = PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
+          if (didPop) {
+            return;
+          }
           onPopInvokedWithResult?.call();
         },
         child: scaffold,

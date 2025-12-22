@@ -20,7 +20,9 @@ class LoginButton extends StatelessWidget {
       loadableButton: true,
       expandWidth: true,
       onTap: () async {
-        if (!formKey.currentState!.validate()) return;
+        if (!formKey.currentState!.validate()) {
+          return;
+        }
         FocusManager.instance.primaryFocus?.unfocus();
 
         await context.read<LoginCubit>().fakeLogin(

@@ -30,7 +30,9 @@ class _LoadingCircleState extends State<LoadingCircle>
   @override
   void initState() {
     super.initState();
-    if (widget.color != null) return;
+    if (widget.color != null) {
+      return;
+    }
 
     controller = AnimationController(
       vsync: this,
@@ -61,7 +63,9 @@ class _LoadingCircleState extends State<LoadingCircle>
   void dispose() {
     // Dispose animation controller only if it is initialized
     // The animation controller is initialized only when the color is null
-    if (widget.color == null) controller.dispose();
+    if (widget.color == null) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -88,7 +92,9 @@ class _LoadingCircleState extends State<LoadingCircle>
 
     child = SizedBox(height: widget.height, width: widget.width, child: child);
 
-    if (widget.centered) return Center(child: child);
+    if (widget.centered) {
+      return Center(child: child);
+    }
     return child;
   }
 }

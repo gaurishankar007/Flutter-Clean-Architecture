@@ -62,35 +62,44 @@ class ScreenUtil {
     );
   }
 
-  /// Check screen size according to the width
   ScreenType _getScreenType() {
-    if (width <= 360) return ScreenType.compact;
-    if (width <= 600) return ScreenType.phone;
-    if (width <= 840) return ScreenType.tablet;
-    if (width <= 1024) return ScreenType.largeTablet;
+    if (width <= 360) {
+      return ScreenType.compact;
+    } else if (width <= 600) {
+      return ScreenType.phone;
+    } else if (width <= 840) {
+      return ScreenType.tablet;
+    } else if (width <= 1024) {
+      return ScreenType.largeTablet;
+    }
     return ScreenType.desktop;
   }
 
   /// Get the required number within the limitation
   double _limitedNumber(double number, {double? min, double? max}) {
-    if (min != null && number < min) return min;
-    if (max != null && number > max) return max;
+    if (min != null && number < min) {
+      return min;
+    } else if (max != null && number > max) {
+      return max;
+    }
     return number;
   }
 
   /// Required percentage of height with limitation
   double heightPart(double percentage, {double? min, double? max}) {
     double height = percentage / 100 * _height;
-    if (min == null && max == null) return height;
-
+    if (min == null && max == null) {
+      return height;
+    }
     return _limitedNumber(height, min: min, max: max);
   }
 
   /// Required percentage of width with limitation
   double widthPart(double percentage, {double? min, double? max}) {
     double width = percentage / 100 * _width;
-    if (min == null && max == null) return width;
-
+    if (min == null && max == null) {
+      return width;
+    }
     return _limitedNumber(width, min: min, max: max);
   }
 
@@ -100,17 +109,19 @@ class ScreenUtil {
     required Map<Set<ScreenType>, T> screens,
   }) {
     for (final entry in screens.entries) {
-      if (entry.key.contains(_type)) return entry.value;
+      if (entry.key.contains(_type)) {
+        return entry.value;
+      }
     }
     return base;
   }
 
   /// Get adapted values for compact and small screens otherwise use [base]
-  T getMobileValue<T>({required T base, required T screen12}) =>
+  T getMobileValue<T>({required T base, required T mobile}) =>
       getResponsiveValue(
         base: base,
         screens: {
-          {.compact, .phone}: screen12,
+          {.compact, .phone}: mobile,
         },
       );
 

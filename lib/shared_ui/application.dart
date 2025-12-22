@@ -44,8 +44,9 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
     // Schedule the screen size update to happen after the current frame is built.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Don't update if this context is already unmounted.
-      if (!mounted) return;
-      _screenObserverCubit.update();
+      if (mounted) {
+        _screenObserverCubit.update();
+      }
     });
   }
 

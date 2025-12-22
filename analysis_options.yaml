@@ -8,6 +8,7 @@ linter:
     - unnecessary_const
     - sort_constructors_first
     - avoid_void_async
+    - always_put_control_body_on_new_line
 
 analyzer:
   exclude:

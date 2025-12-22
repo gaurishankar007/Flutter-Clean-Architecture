@@ -21,7 +21,9 @@ class DashboardCubit extends BaseCubit<DashboardState> {
   }
 
   void setIndex(int index) {
-    if (_activeIndex == index && index != 0) return;
+    if (_activeIndex == index && index != 0) {
+      return;
+    }
 
     _activeIndex = index;
     emit(state.copyWith(activeIndex: _activeIndex));
