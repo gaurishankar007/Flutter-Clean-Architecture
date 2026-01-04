@@ -10,15 +10,15 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => <AutoRoute>[
-    AutoRoute(page: LoginRoute.page, path: LOGIN_PATH),
+    AutoRoute(page: LoginRoute.page, path: kLoginPath),
     AutoRoute(
-      path: DASHBOARD_PATH,
+      path: kDashboardPath,
       page: DashboardRoute.page,
       initial: true,
       guards: const [AuthenticatedGuard()],
       children: [
-        AutoRoute(path: HOME_PATH, page: HomeRoute.page, initial: true),
-        AutoRoute(path: SETTING_PATH, page: SettingRoute.page),
+        AutoRoute(path: kHomePath, page: HomeRoute.page, initial: true),
+        AutoRoute(path: kSettingPath, page: SettingRoute.page),
       ],
     ),
   ];

@@ -31,7 +31,7 @@ class BaseTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final bool readOnly;
   final String? initialValue;
-  final Function(String?)? onChanged;
+  final void Function(String?)? onChanged;
   final bool obscureText;
   final String? Function(String?)? validator;
   final AutovalidateMode? autovalidateMode;
@@ -71,7 +71,6 @@ class BaseTextField extends StatelessWidget {
             title!,
             color: titleColor,
             textType: titleSize ?? TextType.titleSmall,
-            fontWeight: FontWeight.w400,
           ),
           UIHelpers.spaceV8,
           child,

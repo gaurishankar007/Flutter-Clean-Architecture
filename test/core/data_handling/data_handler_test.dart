@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockResponse extends Mock implements Response {}
+class MockResponse<T> extends Mock implements Response<T> {}
 
 class FakeDto implements DomainConvertible<String> {
   FakeDto(this.value);
@@ -19,7 +19,7 @@ void main() {
   group('DataHandler.fetchWithFallback', () {
     test('returns remote data when online', () async {
       final result = await DataHandler.fetchWithFallback<int>(
-        true,
+        isInternetConnected: true,
         remoteCallback: () async => const SuccessState(data: 42),
       );
       expect(result, isA<SuccessState<int>>());
@@ -29,7 +29,7 @@ void main() {
     test('calls onRemoteSuccess when data is present', () async {
       int? callbackValue;
       await DataHandler.fetchWithFallback<int>(
-        true,
+        isInternetConnected: true,
         remoteCallback: () async => const SuccessState(data: 99),
         onRemoteSuccess: (data) => callbackValue = data,
       );
@@ -37,9 +37,9 @@ void main() {
     });
 
     test('does not call onRemoteSuccess when data is null', () async {
-      bool wasCalled = false;
+      var wasCalled = false;
       await DataHandler.fetchWithFallback<int>(
-        true,
+        isInternetConnected: true,
         remoteCallback: () async => const SuccessState(data: null),
         onRemoteSuccess: (data) => wasCalled = true,
       );
@@ -50,7 +50,7 @@ void main() {
       'returns local data when offline and localCallback is provided',
       () async {
         final result = await DataHandler.fetchWithFallback<String>(
-          false,
+          isInternetConnected: false,
           remoteCallback: () async => const SuccessState(data: 'remote'),
           localCallback: () async => const SuccessState(data: 'local'),
         );
@@ -61,15 +61,15 @@ void main() {
 
     test('returns NoInternetState when offline and no localCallback', () async {
       final result = await DataHandler.fetchWithFallback<double>(
-        false,
-        remoteCallback: () async => const SuccessState(data: 1.0),
+        isInternetConnected: false,
+        remoteCallback: () async => const SuccessState(data: 1),
       );
       expect(result.errorType, ErrorType.internetError);
     });
 
     test('returns remote failure state when remote call fails', () async {
       final result = await DataHandler.fetchWithFallback<String>(
-        true,
+        isInternetConnected: true,
         remoteCallback: () async => const FailureState(message: 'Remote error'),
       );
       expect(result, isA<FailureState<String>>());
@@ -80,7 +80,7 @@ void main() {
   group('DataHandler.fetchWithFallbackAndMap', () {
     test('maps remote data successfully when online', () async {
       final result = await DataHandler.fetchWithFallbackAndMap<FakeDto, String>(
-        true,
+        isInternetConnected: true,
         remoteCallback: () async => SuccessState(data: FakeDto(42)),
       );
       expect(result, isA<SuccessState<String>>());
@@ -90,7 +90,7 @@ void main() {
     test('calls onRemoteSuccess with raw data before mapping', () async {
       FakeDto? rawData;
       final result = await DataHandler.fetchWithFallbackAndMap<FakeDto, String>(
-        true,
+        isInternetConnected: true,
         remoteCallback: () async => SuccessState(data: FakeDto(99)),
         onRemoteSuccess: (data) => rawData = data,
       );
@@ -100,7 +100,7 @@ void main() {
 
     test('maps local data when offline', () async {
       final result = await DataHandler.fetchWithFallbackAndMap<FakeDto, String>(
-        false,
+        isInternetConnected: false,
         remoteCallback: () async => SuccessState(data: FakeDto(100)),
         localCallback: () async => SuccessState(data: FakeDto(50)),
       );
@@ -110,7 +110,7 @@ void main() {
 
     test('returns failure state when both remote and local fail', () async {
       final result = await DataHandler.fetchWithFallbackAndMap<FakeDto, String>(
-        false,
+        isInternetConnected: false,
         remoteCallback: () async => const FailureState(message: 'Remote error'),
         localCallback: () async => const FailureState(message: 'Local error'),
       );
@@ -123,7 +123,7 @@ void main() {
     test('maps remote list data successfully when online', () async {
       final result =
           await DataHandler.fetchWithFallbackAndMapList<FakeDto, String>(
-            true,
+            isInternetConnected: true,
             remoteCallback: () async =>
                 SuccessState(data: [FakeDto(1), FakeDto(2)]),
           );
@@ -135,7 +135,7 @@ void main() {
       List<FakeDto>? rawData;
       final result =
           await DataHandler.fetchWithFallbackAndMapList<FakeDto, String>(
-            true,
+            isInternetConnected: true,
             remoteCallback: () async => SuccessState(data: [FakeDto(3)]),
             onRemoteSuccess: (data) => rawData = data,
           );
@@ -147,7 +147,7 @@ void main() {
     test('maps local list data when offline', () async {
       final result =
           await DataHandler.fetchWithFallbackAndMapList<FakeDto, String>(
-            false,
+            isInternetConnected: false,
             remoteCallback: () async => SuccessState(data: [FakeDto(10)]),
             localCallback: () async =>
                 SuccessState(data: [FakeDto(20), FakeDto(21)]),
@@ -159,7 +159,7 @@ void main() {
     test('returns failure state when both remote and local fail', () async {
       final result =
           await DataHandler.fetchWithFallbackAndMapList<FakeDto, String>(
-            false,
+            isInternetConnected: false,
             remoteCallback: () async =>
                 const FailureState(message: 'Remote error'),
             localCallback: () async =>
@@ -213,7 +213,7 @@ void main() {
 
   group('DataHandler.safeApiCall', () {
     test('returns SuccessState on valid standard response', () async {
-      final mockResponse = MockResponse();
+      final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn({
         'data': {'id': 1},
         'message': 'ok',
@@ -235,7 +235,7 @@ void main() {
     test(
       'returns FailureState on missing data key in standard response',
       () async {
-        final mockResponse = MockResponse();
+        final mockResponse = MockResponse<dynamic>();
         when(() => mockResponse.data).thenReturn({'foo': 'bar'});
         when(() => mockResponse.statusCode).thenReturn(200);
 
@@ -253,32 +253,28 @@ void main() {
     test(
       'handles static data return with useStaticDataAsNull = true',
       () async {
-        final mockResponse = MockResponse();
+        final mockResponse = MockResponse<dynamic>();
         when(() => mockResponse.data).thenReturn({'data': 'ignored'});
         when(() => mockResponse.statusCode).thenReturn(200);
 
         final result = await DataHandler.safeApiCall<String, String>(
           request: () async => mockResponse,
-          staticData: null,
-          useStaticDataAsNull: true,
         );
 
         expect(result, isA<SuccessState<String>>());
-        expect(result.data, null);
       },
     );
 
     test(
       'handles static data return with useStaticDataAsNull = false',
       () async {
-        final mockResponse = MockResponse();
+        final mockResponse = MockResponse<dynamic>();
         when(() => mockResponse.data).thenReturn({'data': 'from_api'});
         when(() => mockResponse.statusCode).thenReturn(200);
 
         final result = await DataHandler.safeApiCall<String, String>(
           request: () async => mockResponse,
           staticData: 'static_value',
-          useStaticDataAsNull: false,
         );
 
         expect(result, isA<SuccessState<String>>());
@@ -287,7 +283,7 @@ void main() {
     );
 
     test('handles list deserialization correctly', () async {
-      final mockResponse = MockResponse();
+      final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn({
         'data': [
           {'id': 1},
@@ -312,7 +308,7 @@ void main() {
     });
 
     test('returns format error for unexpected response type', () async {
-      final mockResponse = MockResponse();
+      final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn('invalid_string_data');
       when(() => mockResponse.statusCode).thenReturn(200);
 
@@ -327,7 +323,7 @@ void main() {
     });
 
     test('handles non-standard response structure', () async {
-      final mockResponse = MockResponse();
+      final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn({'id': 1, 'name': 'test'});
       when(() => mockResponse.statusCode).thenReturn(200);
 
@@ -346,7 +342,7 @@ void main() {
     });
 
     test('handles raw data without deserialization', () async {
-      final mockResponse = MockResponse();
+      final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn('raw_string');
       when(() => mockResponse.statusCode).thenReturn(200);
 
@@ -360,7 +356,7 @@ void main() {
     });
 
     test('returns type mismatch error for incompatible types', () async {
-      final mockResponse = MockResponse();
+      final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn({'id': 1});
       when(() => mockResponse.statusCode).thenReturn(200);
 

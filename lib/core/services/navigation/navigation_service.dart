@@ -9,22 +9,22 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
 abstract interface class NavigationService {
-  RouterDelegate<Object>? get routerDelegate;
-  RouteInformationParser<Object>? get routeInformationParser;
+  AutoRouterDelegate get routerDelegate;
+  DefaultRouteParser get routeInformationParser;
   GlobalKey<NavigatorState> get navigatorKey;
   String get currentPath;
   Future<bool> maybePop<T extends Object?>([T? result]);
   Future<bool> maybePopTop<T extends Object?>([T? result]);
   void back();
-  Future<void> replaceAllRoute(PageRouteInfo<dynamic> route);
-  Future<T?> pushRoute<T>(PageRouteInfo<dynamic> route);
+  Future<void> replaceAllRoute(PageRouteInfo route);
+  Future<T?> pushRoute<T>(PageRouteInfo<T> route);
   Future<T?> pushPlatformRoute<T>({
-    PageRouteInfo<dynamic>? androidRoute,
-    PageRouteInfo<dynamic>? iOSRoute,
-    PageRouteInfo<dynamic>? androidIOSRoute,
-    PageRouteInfo<dynamic>? webRoute,
+    PageRouteInfo<T>? androidRoute,
+    PageRouteInfo<T>? iOSRoute,
+    PageRouteInfo<T>? androidIOSRoute,
+    PageRouteInfo<T>? webRoute,
   });
-  Future<T?> replaceRoute<T>(PageRouteInfo<dynamic> route);
+  Future<T?> replaceRoute<T>(PageRouteInfo<T> route);
 }
 
 @module
@@ -37,15 +37,16 @@ abstract class NavigationServiceModule {
 final class NavigationServiceImpl implements NavigationService {
   NavigationServiceImpl({required AppRouter appRouter})
     : _appRouter = appRouter;
+
   final AppRouter _appRouter;
 
   /// A delegate that configures a widget, typically a [Navigator]
   @override
-  RouterDelegate<Object>? get routerDelegate => _appRouter.delegate();
+  AutoRouterDelegate get routerDelegate => _appRouter.delegate();
 
   /// A delegate to parse the route information
   @override
-  RouteInformationParser<Object>? get routeInformationParser =>
+  DefaultRouteParser get routeInformationParser =>
       _appRouter.defaultRouteParser();
 
   /// Get Navigator key from auto router
@@ -57,21 +58,21 @@ final class NavigationServiceImpl implements NavigationService {
   String get currentPath => _appRouter.currentPath;
 
   /// Pops the last route in the current router's stack.
-  /// This is "safe" versions of pop that checks if popping is possible before attempting.
+  /// This is 'safe' versions of pop that checks if popping is possible before attempting.
   ///
   /// Example:
   ///
-  /// Root Router [HomeRoute]
+  /// Root Router HomeRoute
   ///
   ///  └─ Nested Router [ProfileRoute, SettingsRoute, AboutRoute]
   ///
   /// maybePop() → Removes AboutRoute (innermost router)
   @override
-  Future<bool> maybePop<T extends Object?>([T? result]) async =>
-      await _appRouter.maybePop(result);
+  Future<bool> maybePop<T extends Object?>([T? result]) =>
+      _appRouter.maybePop(result);
 
   /// Pops from the topmost/root router in the hierarchy.
-  /// This is "safe" versions of popTop that checks if popping is possible before attempting.
+  /// This is 'safe' versions of popTop that checks if popping is possible before attempting.
   ///
   /// Example:
   ///
@@ -81,8 +82,8 @@ final class NavigationServiceImpl implements NavigationService {
   ///
   /// maybePopTop() → Removes DashboardRoute (root router)
   @override
-  Future<bool> maybePopTop<T extends Object?>([T? result]) async =>
-      await _appRouter.maybePopTop(result);
+  Future<bool> maybePopTop<T extends Object?>([T? result]) =>
+      _appRouter.maybePopTop(result);
 
   /// Automatically chooses between pop/popTop based on context.
   /// High-level navigation method that handles both Flutter navigation AND browser history.
@@ -92,35 +93,27 @@ final class NavigationServiceImpl implements NavigationService {
 
   /// Replace all previous routes the new route
   @override
-  Future<void> replaceAllRoute(PageRouteInfo<dynamic> route) async {
-    try {
-      await _appRouter.replaceAll([route]);
-    } catch (error, stackTrace) {
-      ErrorHandler.debugError(error, stackTrace);
-    }
-  }
+  Future<void> replaceAllRoute(PageRouteInfo route) =>
+      ErrorHandler.executeSafe(() => _appRouter.replaceAll([route]));
 
   /// Adds the corresponding page to the given route
   @override
-  Future<T?> pushRoute<T>(PageRouteInfo<dynamic> route) async {
-    try {
-      return await _appRouter.push(route);
-    } catch (error, stackTrace) {
-      ErrorHandler.debugError(error, stackTrace);
-      return null;
-    }
-  }
+  Future<T?> pushRoute<T>(PageRouteInfo<T> route) =>
+      ErrorHandler.executeSafeReturn(
+        () => _appRouter.push(route),
+        valueOnError: null,
+      );
 
   /// Adds the corresponding page to the given route based on the current platform
   @override
   Future<T?> pushPlatformRoute<T>({
-    PageRouteInfo<dynamic>? androidRoute,
-    PageRouteInfo<dynamic>? iOSRoute,
-    PageRouteInfo<dynamic>? androidIOSRoute,
-    PageRouteInfo<dynamic>? webRoute,
+    PageRouteInfo<T>? androidRoute,
+    PageRouteInfo<T>? iOSRoute,
+    PageRouteInfo<T>? androidIOSRoute,
+    PageRouteInfo<T>? webRoute,
     String? platform,
-  }) async {
-    try {
+  }) {
+    return ErrorHandler.executeSafeReturn(() async {
       platform ??= kIsWeb
           ? 'web'
           : Platform.isAndroid
@@ -139,22 +132,16 @@ final class NavigationServiceImpl implements NavigationService {
       if (routeToPush == null) {
         return null;
       }
-      return await _appRouter.push(routeToPush);
-    } catch (error, stackTrace) {
-      ErrorHandler.debugError(error, stackTrace);
-      return null;
-    }
+      return _appRouter.push(routeToPush);
+    }, valueOnError: null);
   }
 
   @override
-  Future<T?> replaceRoute<T>(PageRouteInfo route) async {
-    try {
-      return await _appRouter.replace(route);
-    } catch (error, stackTrace) {
-      ErrorHandler.debugError(error, stackTrace);
-      return null;
-    }
-  }
+  Future<T?> replaceRoute<T>(PageRouteInfo<T> route) =>
+      ErrorHandler.executeSafeReturn(
+        () => _appRouter.replace(route),
+        valueOnError: null,
+      );
 }
 
 /// A util class for accessing [NavigationService]

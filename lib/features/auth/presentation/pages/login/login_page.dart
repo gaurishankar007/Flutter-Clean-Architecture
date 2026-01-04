@@ -21,7 +21,7 @@ class LoginPage extends HookWidget {
   Widget build(BuildContext context) {
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
-    final formKey = useMemoized(() => GlobalKey<FormState>());
+    final formKey = useMemoized(GlobalKey<FormState>.new);
 
     return BlocProvider(
       create: (context) => GetIt.I<LoginCubit>(),

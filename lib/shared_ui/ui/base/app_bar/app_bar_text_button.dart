@@ -9,13 +9,13 @@ class AppBarTextButton extends StatelessWidget {
     required this.text,
     this.padding,
   });
-  final Function() onPressed;
+  final void Function() onPressed;
   final String text;
   final EdgeInsets? padding;
 
   @override
   Widget build(BuildContext context) {
-    Widget child = BaseTextButton(
+    final Widget child = BaseTextButton(
       onPressed: onPressed,
       text: text,
       textType: TextType.bodyLarge,

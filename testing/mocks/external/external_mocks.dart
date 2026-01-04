@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MockDio extends Mock implements Dio {}
 
+class MockDioException extends Mock implements DioException {}
+
 class MockInternetConnection extends Mock implements InternetConnection {}
 
 class MockSharedPreferences extends Mock implements SharedPreferences {}

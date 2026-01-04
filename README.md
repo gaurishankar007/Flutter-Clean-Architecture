@@ -6,7 +6,7 @@ For more details on specific commands and guidelines, refer to the following doc
 
 - [**Flutter Tips**](docs/flutter_tips.md): A collection of best practices for writing efficient, readable, and performant Flutter code.
 - [**Flutter Commands Cheat Sheet**](docs/flutter_commands_cheat_sheet.md): A collection of essential and frequently used Flutter commands to boost your productivity.
-- [**Flutter Configuration Guidelines**](docs/flutter_configuration_guidelines.md): Guidelines for setting up the Flutter environment, including activating pub commands, configuring Firebase CLI, and managing the Java SDK location.
+- [**Flutter Configuration Guidelines**](docs/flutter_configuration_guidelines.md): Guidelines for setting up the Flutter environment, including activating pub commands, and managing the Java SDK location.
 - [**Git Commands Cheat Sheet**](docs/git_commands_cheat_sheet.md): A collection of essential and frequently used git commands to boost your productivity.
 
 ## Table of Contents 📌
@@ -121,7 +121,7 @@ For more detailed information and real-world examples, see the [**SOLID Principl
 - 🍴 **Build Flavors**: Supports Development, Staging, and Production environments.
 - 🔧 **Robust Error Handling**: Comprehensive API and internal error management.
 - 🔄 **Automated Request/Response Handling**: Includes token refreshing and request inspection.
-- 📡 **Core Services**: Navigation, Internet, Local Database, Toast Messages, and User Credential management.
+- 📡 **Core Services**: Navigation, Internet, Local Database, Image Picker, Toast Messages, and User Credential management.
 - 🎨 **Reusable UI Components**: Customizable themes and reusable widgets.
 - ⚙️ **Utilities**: Screen size handling, extensions, mixins, generics, and form validation utilities.
 
@@ -201,8 +201,8 @@ lib/
 ├── main_stg.dart
 ```
 
-- **`config/`**: Environment and platform setup (flavor configs), dependency injection (`injector/`), Firebase options, and any Pigeon-generated platform bindings. `app_config.dart` holds flavor-specific values (base URLs, feature flags).
-- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core services (API client, navigation service, session/local storage, connectivity/InternetService, notification service), and general-purpose utilities.
+- **`config/`**: Environment and platform setup (flavor configs), dependency injection (`injector/`), and any Pigeon-generated platform bindings. `app_config.dart` holds flavor-specific values (base URLs, feature flags).
+- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core services (API client, navigation service, session/local storage, connectivity/InternetService), and general-purpose utilities.
 - **`features/`**: Each feature follows Clean Architecture and is self-contained with three layers:
   - **`data/`**: Remote and local data sources, DTOs/models, and concrete repository implementations that map to domain entities.
   - **`domain/`**: Pure business logic (entities, use cases/interactors, and abstract repository interfaces). No Flutter or external deps here.
@@ -212,7 +212,7 @@ lib/
 - **Entry Points**:
   - `main.dart` → Production entry that initializes DI and runs `application.dart`.
   - `main_dev.dart` → Development entry (dev flags, debug tools enabled).
-  - `main_stg.dart` → Staging entry (staging config and Firebase options).
+  - `main_stg.dart` → Staging entry (staging config).
 
 Notes:
 
@@ -234,12 +234,11 @@ The app supports three flavors: `production`, `staging`, and `development` for b
 
 - Uses `get_it` and `injectable` for dependency injection.
 - Flavor-specific configuration (e.g., API base URL) is managed via `AppConfig`.
-- Firebase is configured per flavor (different options for Android/iOS).
 - See `Project Structure` for entry points (`main.dart`, `main_stg.dart`, `main_dev.dart`).
 
 ## Responsiveness
 
-- Uses `screen_util` to manage screen size, types, and responsive values (e.g., width, padding).
+- Uses a custom `ScreenUtil` to manage screen size, types, and responsive values (e.g., width, padding).
 - `ScreenObserverCubit`: A Bloc `cubit` that enhances responsiveness by observing screen size changes. It leverages `ScreenUtil` to determine the current screen type (e.g., mobile, tablet, desktop). To prevent unnecessary widget rebuilds during the build cycle, it updates its state only after the current frame has been rendered. This ensures that listeners are notified of screen type or desktop layout changes (e.g., switching from mobile to desktop view) efficiently, allowing widgets to rebuild selectively for optimized responsive UI adjustments.
 - The root widget, `CleanArchitectureSample`, uses `WidgetsBindingObserver` to listen for `didChangeMetrics`. When the screen size changes, it schedules an update to the `ScreenObserverCubit` using `WidgetsBinding.instance.addPostFrameCallback`, ensuring the UI is rebuilt safely and efficiently in response to layout changes.
 
@@ -282,10 +281,14 @@ graph TD
 - Sensitive data, such as user details, is encrypted using AES-256 before being persisted. The `LocalDatabaseService` handles this by using `EncryptionUtils` to ensure that data at rest on the device is secure.
 - The `LocalDatabase` can be extended to use Hive, Isar, or SQLite for more complex data needs.
 
+### Image Picker
+
+- `ImagePickerService` provides an abstraction for selecting images from the gallery or camera, ensuring decoupling from specific plugin implementations.
+
 ## Data Handling
 
 - **DataHandler**: A utility for making safe API calls, handling response validation, and parsing JSON. It wraps results in a `DataState`.
-- **ErrorHandler**: Catches various exceptions (e.g., Dio, Firebase, Format) and converts them into a standardized `FailureState` with user-friendly messages.
+- **ErrorHandler**: Catches various exceptions (e.g., Dio, Format) and converts them into a standardized `FailureState` with user-friendly messages.
 
 ## Data States
 
@@ -336,7 +339,7 @@ flowchart TD
 - **Data Sources (`Remote`, `Local`)**:
 
   - **RemoteDataSource**: Handles communication with the backend REST API. It uses the `ApiService` to make HTTP requests. Each method is wrapped in `DataHandler.safeApiCall` to safely parse responses and handle API-specific errors.
-  - **LocalDataSource**: Manages data persistence on the device (e.g., user session, cached data). It uses `LocalDatabaseService` (an abstraction over `shared_preferences`) and wraps its methods in `ErrorHandler.handleException` to ensure consistent error handling.
+  - **LocalDataSource**: Manages data persistence on the device (e.g., user session, cached data). It uses `LocalDatabaseService` (an abstraction over `shared_preferences`) and wraps its methods in `ErrorHandler.execute` to ensure consistent error handling.
 
 - **ApiService**: An abstraction over the `Dio` HTTP client. It is configured with the base URL from `AppConfig` and includes interceptors. It provides standard methods like `get`, `post`, `put`, and `delete` for making API calls.
 
@@ -358,7 +361,7 @@ class LoginCubit extends BaseCubit<LoginState> {
 
   Future<void> login({required String username, required String password}) async {
     final dataState = await _useCases.login.call(
-      LoginRequest(username: "", password: ""),
+      Authentication(username: username, password: password),
     );
 
     dataState.when(

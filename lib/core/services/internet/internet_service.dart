@@ -23,6 +23,7 @@ abstract class InternetServiceModule {
 final class InternetServiceImpl implements InternetService {
   InternetServiceImpl({required InternetConnection internetConnection})
     : _internetConnection = internetConnection;
+
   final InternetConnection _internetConnection;
   Stream<InternetStatus>? _connectivityStream;
   StreamSubscription<InternetStatus>? _subscription;
@@ -35,12 +36,11 @@ final class InternetServiceImpl implements InternetService {
   Stream<InternetStatus>? get connectivityStream => _connectivityStream;
 
   @override
-  Future<bool> checkConnection() async =>
-      await _internetConnection.hasInternetAccess;
+  Future<bool> checkConnection() => _internetConnection.hasInternetAccess;
 
   /// Creates a broadcast stream and updates internet status
   @override
-  subscribeConnectivity() async {
+  Future<void> subscribeConnectivity() async {
     /// Broadcasts a stream which can be listen multiple times
     _connectivityStream ??= _internetConnection.onStatusChange
         .asBroadcastStream();
@@ -53,7 +53,7 @@ final class InternetServiceImpl implements InternetService {
 
   /// Stop listening to the internet status changes
   @override
-  unSubscriptionConnectivity() => _subscription?.cancel();
+  void unSubscriptionConnectivity() => _subscription?.cancel();
 }
 
 /// A util class for accessing [InternetService]

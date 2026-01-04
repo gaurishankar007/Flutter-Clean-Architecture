@@ -20,7 +20,7 @@ class SecondaryButton extends HookWidget {
     this.elevation,
     this.expandWidth = false,
   });
-  final Function() onTap;
+  final Future<void> Function() onTap;
   final String text;
   final TextType textType;
   final FontWeight textFontWeight;

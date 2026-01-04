@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 void showCloseAppDialog(BuildContext context) {
-  showDialog(
+  showDialog<dynamic>(
     context: context,
     builder: (dialogContext) {
       return AlertDialog(
@@ -17,21 +17,21 @@ void showCloseAppDialog(BuildContext context) {
           PrimaryButton(
             height: 40,
             width: 80,
-            onTap: () => Navigator.pop(dialogContext),
+            onTap: () async => Navigator.pop(dialogContext),
             text: 'No',
-            foregroundColor: AppColors.white,
           ),
           UIHelpers.spaceH4,
           PrimaryButton(
             height: 40,
             width: 80,
             color: AppColors.red600,
-            onTap: () {
+            onTap: () async {
               Navigator.pop(dialogContext);
-              SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+              await SystemChannels.platform.invokeMethod(
+                'SystemNavigator.pop',
+              );
             },
             text: 'Yes',
-            foregroundColor: AppColors.white,
           ),
         ],
       );

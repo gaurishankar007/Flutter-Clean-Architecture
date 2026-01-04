@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 
 class ConnectionFailed extends StatelessWidget {
   const ConnectionFailed({super.key, required this.callBack});
-  final Function() callBack;
+  final Future<void> Function() callBack;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,6 @@ class ConnectionFailed extends StatelessWidget {
             'Connection Failure 🛰️',
             textAlign: TextAlign.center,
             color: AppColors.black,
-            fontWeight: FontWeight.w600,
           ),
           const Spacer(),
           PrimaryButton(

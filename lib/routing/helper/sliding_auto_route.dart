@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
-final class SlidingAutoRoute extends CustomRoute {
+final class SlidingAutoRoute extends CustomRoute<dynamic> {
   SlidingAutoRoute({
     required super.page,
     required super.path,

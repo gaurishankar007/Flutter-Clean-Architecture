@@ -15,7 +15,7 @@ class BaseTextButton extends StatelessWidget {
     this.visualDensity,
     this.elevation,
   });
-  final Function() onPressed;
+  final void Function() onPressed;
   final String text;
   final Color? textColor;
   final TextType? textType;

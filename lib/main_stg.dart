@@ -4,7 +4,7 @@ import 'package:clean_architecture/shared_ui/application.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
-Future main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppInitializer.initializeApp(environment: Flavor.staging);
   usePathUrlStrategy(); // Web-only

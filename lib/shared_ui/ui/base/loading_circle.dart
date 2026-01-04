@@ -25,7 +25,7 @@ class LoadingCircle extends StatefulWidget {
 class _LoadingCircleState extends State<LoadingCircle>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
-  late Animation colorAnimation;
+  late Animation<Color?> colorAnimation;
 
   @override
   void initState() {

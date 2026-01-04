@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
 
-Response getResponse({
+Response<dynamic> getResponse({
   dynamic data,
   String responseDataKey = 'data',
   String? message,
   int? statusCode,
   RequestOptions? requestOptions,
+  bool isStandardResponse = true,
 }) => Response(
-  data: {responseDataKey: data, 'message': message},
+  data: isStandardResponse ? {responseDataKey: data, 'message': message} : data,
   requestOptions: requestOptions ?? RequestOptions(),
   statusCode: statusCode,
 );

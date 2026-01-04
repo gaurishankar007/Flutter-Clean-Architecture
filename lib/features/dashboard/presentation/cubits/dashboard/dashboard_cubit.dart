@@ -43,5 +43,5 @@ class DashboardCubit extends BaseCubit<DashboardState> {
   }
 
   /// Check whether the token is expired or not
-  FutureBool verifyToken() async => await _useCases.checkAuthentication.call();
+  FutureBool verifyToken() => _useCases.checkAuthentication.call();
 }

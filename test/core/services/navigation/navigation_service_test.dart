@@ -1,19 +1,10 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
-import 'package:clean_architecture/routing/routes.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../testing/mocks/external/router_mocks.dart';
-
-// Concrete fake class for RouterDelegate
-class FakeRouterDelegate extends AutoRouterDelegate {
-  FakeRouterDelegate() : super(AppRouter());
-
-  @override
-  Widget build(BuildContext context) => Container();
-}
 
 void main() {
   late MockAppRouter mockAppRouter;
@@ -25,7 +16,7 @@ void main() {
   });
 
   test('routerDelegate returns delegate from AppRouter', () {
-    final delegate = FakeRouterDelegate();
+    final delegate = MockAutoRouterDelegate();
     when(() => mockAppRouter.delegate()).thenReturn(delegate);
 
     expect(navigationService.routerDelegate, delegate);
@@ -56,18 +47,18 @@ void main() {
     final result = await navigationService.maybePop<Object?>();
 
     expect(result, true);
-    verify(() => mockAppRouter.maybePop<Object?>(null)).called(1);
+    verify(() => mockAppRouter.maybePop<Object?>()).called(1);
   });
 
   test('maybePopTop calls maybePopTop on AppRouter', () async {
     when(
-      () => mockAppRouter.maybePopTop<Object?>(null),
+      () => mockAppRouter.maybePopTop<Object?>(),
     ).thenAnswer((_) async => true);
 
     final result = await navigationService.maybePopTop<Object?>();
 
     expect(result, true);
-    verify(() => mockAppRouter.maybePopTop<Object?>(null)).called(1);
+    verify(() => mockAppRouter.maybePopTop<Object?>()).called(1);
   });
 
   test('back calls back on AppRouter', () {
@@ -82,7 +73,7 @@ void main() {
   });
 
   test('replaceAllRoute calls replaceAll on AppRouter', () async {
-    final route = MockPageRouteInfo();
+    const route = MockPageRouteInfo();
     when(() => mockAppRouter.replaceAll([route])).thenAnswer((_) async {});
 
     await navigationService.replaceAllRoute(route);
@@ -91,7 +82,7 @@ void main() {
   });
 
   test('pushRoute calls push on AppRouter and returns result', () async {
-    final route = MockPageRouteInfo();
+    const route = LoginRoute();
     when(
       () => mockAppRouter.push<Object?>(route),
     ).thenAnswer((_) async => 'result');
@@ -105,8 +96,8 @@ void main() {
   test(
     'pushPlatformRoute calls push on AppRouter and returns result',
     () async {
-      final route = MockPageRouteInfo();
-      final webRoute = MockPageRouteInfo();
+      const route = MockPageRouteInfo();
+      const webRoute = MockPageRouteInfo();
 
       when(
         () => mockAppRouter.push<Object?>(route),
@@ -125,7 +116,7 @@ void main() {
   );
 
   test('pushRoute returns null and logs error if push throws', () async {
-    final route = MockPageRouteInfo();
+    const route = MockPageRouteInfo();
     when(() => mockAppRouter.push<Object?>(route)).thenThrow(Exception('fail'));
 
     final result = await navigationService.pushRoute<Object?>(route);
@@ -135,7 +126,7 @@ void main() {
   });
 
   test('replaceAllRoute logs error if replaceAll throws', () async {
-    final route = MockPageRouteInfo();
+    const route = MockPageRouteInfo();
     when(() => mockAppRouter.replaceAll([route])).thenThrow(Exception('fail'));
 
     // Should not throw

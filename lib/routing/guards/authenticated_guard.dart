@@ -8,7 +8,7 @@ final class AuthenticatedGuard extends AutoRouteGuard {
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) {
     if (SessionUtil.I.isLoggedIn) {
-      return resolver.next(true);
+      return resolver.next();
     }
 
     router.replaceAll([const LoginRoute()]);

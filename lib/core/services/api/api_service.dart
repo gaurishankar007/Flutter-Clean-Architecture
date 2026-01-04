@@ -1,5 +1,3 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:developer';
 
 import 'package:alice/alice.dart';
@@ -23,52 +21,54 @@ part 'multipart_service.dart';
 
 /// Convenience methods to make an HTTP PATCH request.
 abstract interface class ApiService {
-  Future<Response> get<T>(
+  void updateBaseUrl({required String baseUrl});
+
+  Future<Response<T>> get<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-    final ProgressCallback? onSendProgress,
-    final ProgressCallback? onReceiveProgress,
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
   });
 
-  Future<Response> post<T>(
+  Future<Response<T>> post<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-    final ProgressCallback? onSendProgress,
-    final ProgressCallback? onReceiveProgress,
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
   });
 
-  Future<Response> put<T>(
+  Future<Response<T>> put<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-    final ProgressCallback? onSendProgress,
-    final ProgressCallback? onReceiveProgress,
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
   });
 
-  Future<Response> patch<T>(
+  Future<Response<T>> patch<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-    final ProgressCallback? onSendProgress,
-    final ProgressCallback? onReceiveProgress,
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
   });
 
-  Future<Response> delete<T>(
+  Future<Response<T>> delete<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
   });
 }
 
@@ -103,12 +103,9 @@ final class ApiServiceImpl implements ApiService {
       final alice = Alice(
         configuration: AliceConfiguration(
           navigatorKey: navigationService.navigatorKey,
-          showNotification: true,
-          showInspectorOnShake: true,
-          showShareButton: true,
         ),
       );
-      AliceDioAdapter aliceDioAdapter = AliceDioAdapter();
+      final aliceDioAdapter = AliceDioAdapter();
       alice.addAdapter(aliceDioAdapter);
       _dio.interceptors.addAll([authInterceptor, aliceDioAdapter]);
     }
@@ -116,15 +113,19 @@ final class ApiServiceImpl implements ApiService {
   final Dio _dio;
 
   @override
-  Future<Response> get<T>(
+  void updateBaseUrl({required String baseUrl}) =>
+      _dio.options.baseUrl = baseUrl;
+
+  @override
+  Future<Response<T>> get<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-    final ProgressCallback? onSendProgress,
-    final ProgressCallback? onReceiveProgress,
-  }) async => await _dio.get(
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) => _dio.get(
     path,
     data: data,
     queryParameters: queryParameters,
@@ -134,34 +135,15 @@ final class ApiServiceImpl implements ApiService {
   );
 
   @override
-  Future<Response> post<T>(
+  Future<Response<T>> post<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-    final ProgressCallback? onSendProgress,
-    final ProgressCallback? onReceiveProgress,
-  }) async => await _dio.post(
-    path,
-    data: data,
-    queryParameters: queryParameters,
-    options: options,
-    cancelToken: cancelToken,
-    onSendProgress: onSendProgress,
-    onReceiveProgress: onReceiveProgress,
-  );
-
-  @override
-  Future<Response> put<T>(
-    String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-    final ProgressCallback? onSendProgress,
-    final ProgressCallback? onReceiveProgress,
-  }) async => await _dio.put(
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) => _dio.post(
     path,
     data: data,
     queryParameters: queryParameters,
@@ -172,15 +154,15 @@ final class ApiServiceImpl implements ApiService {
   );
 
   @override
-  Future<Response> patch<T>(
+  Future<Response<T>> put<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-    final ProgressCallback? onSendProgress,
-    final ProgressCallback? onReceiveProgress,
-  }) async => await _dio.patch(
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) => _dio.put(
     path,
     data: data,
     queryParameters: queryParameters,
@@ -191,13 +173,32 @@ final class ApiServiceImpl implements ApiService {
   );
 
   @override
-  Future<Response> delete<T>(
+  Future<Response<T>> patch<T>(
     String path, {
-    final Object? data,
-    final Map<String, dynamic>? queryParameters,
-    final Options? options,
-    final CancelToken? cancelToken,
-  }) async => await _dio.delete(
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) => _dio.patch(
+    path,
+    data: data,
+    queryParameters: queryParameters,
+    options: options,
+    cancelToken: cancelToken,
+    onSendProgress: onSendProgress,
+    onReceiveProgress: onReceiveProgress,
+  );
+
+  @override
+  Future<Response<T>> delete<T>(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) => _dio.delete(
     path,
     data: data,
     queryParameters: queryParameters,

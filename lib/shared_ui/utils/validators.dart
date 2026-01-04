@@ -8,8 +8,8 @@ abstract interface class Validators {
     r'[0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\'
     r'x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])',
   );
-  static final RegExp alphabetRegex = RegExp(r'[a-zA-Z]');
-  static final RegExp numberRegex = RegExp(r'[0-9]');
+  static final RegExp alphabetRegex = RegExp('[a-zA-Z]');
+  static final RegExp numberRegex = RegExp('[0-9]');
   static final RegExp specialCharactersRegex = RegExp(
     r'[!@#$%^&*(),.?":{}|<>]',
   );

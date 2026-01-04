@@ -1,18 +1,16 @@
-// ignore_for_file: constant_identifier_names
-
 // Authentication
-const String LOGIN_ROUTE = 'LoginRoute';
-const String LOGIN_PATH = '/login';
+const String kLoginRoute = 'LoginRoute';
+const String kLoginPath = '/login';
 
-const String CHANGE_PASSWORD_ROUTE = 'ChangePasswordRoute';
-const String CHANGE_PASSWORD_PATH = 'ChangePassword';
+const String kChangePasswordRoute = 'ChangePasswordRoute';
+const String kChangePasswordPath = 'ChangePassword';
 
 // Dashboard
-const String DASHBOARD_ROUTE = 'DashboardRoute';
-const String DASHBOARD_PATH = '/dashboard/home';
+const String kDashboardRoute = 'DashboardRoute';
+const String kDashboardPath = '/dashboard/home';
 
-const String HOME_ROUTE = 'HomeRoute';
-const String HOME_PATH = 'home';
+const String kHomeRoute = 'HomeRoute';
+const String kHomePath = 'home';
 
-const String SETTING_ROUTE = 'SettingRoute';
-const String SETTING_PATH = 'setting';
+const String kSettingRoute = 'SettingRoute';
+const String kSettingPath = 'setting';

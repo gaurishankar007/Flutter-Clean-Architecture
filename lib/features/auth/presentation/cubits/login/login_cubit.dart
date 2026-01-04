@@ -59,7 +59,7 @@ class LoginCubit extends BaseCubit<LoginState> {
       if (_saveUserCredential) {
         await _useCases.saveUserData.call(dataState.data!);
       }
-      replaceAllRoute(const HomeRoute());
+      await replaceAllRoute(const HomeRoute());
     }
   }
 
@@ -67,7 +67,7 @@ class LoginCubit extends BaseCubit<LoginState> {
     required String username,
     required String password,
   }) async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     final dataState = SuccessState(
       data: UserData(
@@ -88,6 +88,6 @@ class LoginCubit extends BaseCubit<LoginState> {
       await _useCases.saveUserData.call(dataState.data!);
     }
 
-    replaceAllRoute(const HomeRoute());
+    await replaceAllRoute(const HomeRoute());
   }
 }

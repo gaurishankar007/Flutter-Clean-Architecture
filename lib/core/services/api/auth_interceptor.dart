@@ -47,7 +47,7 @@ interface class AuthInterceptor extends Interceptor {
       }
       _isTokenBeingRefreshed = true;
 
-      bool tokenRefreshSucceed = await _refreshToken(err.requestOptions);
+      final bool tokenRefreshSucceed = await _refreshToken(err.requestOptions);
 
       /// If token refreshing is successful, retry the pending requests
       if (tokenRefreshSucceed) {
@@ -57,12 +57,12 @@ interface class AuthInterceptor extends Interceptor {
             request.handler.resolve(response);
           } on DioException catch (error) {
             if (kDebugMode) {
-              log('Retry request: ${error.response.toString()}');
+              log('Retry request: ${error.response}');
             }
             request.handler.next(error);
           } catch (error) {
             if (kDebugMode) {
-              log('Retry request: ${error.toString()}');
+              log('Retry request: $error');
             }
           }
         }
@@ -83,17 +83,19 @@ interface class AuthInterceptor extends Interceptor {
       final request = RefreshTokenRequest(
         refreshToken: _sessionManager.refreshToken,
       );
-      final response = await _dio.post(
+      final response = await _dio.post<dynamic>(
         ApiEndpoints.refreshToken,
         data: request.toJson(),
         options: Options(headers: requestOptions.headers),
       );
 
       /// If api response is successful, return the new accessToken
-      ApiResponse<MapDynamic> apiResponse = ApiResponse.fromResponse(response);
+      final ApiResponse<MapDynamic> apiResponse = ApiResponse.fromResponse(
+        response,
+      );
       if (apiResponse.success) {
         final tokenResponse = RefreshTokenResponse.fromJson(apiResponse.data);
-        _sessionManager.refreshAccessToken(tokenResponse.accessToken);
+        await _sessionManager.refreshAccessToken(tokenResponse.accessToken);
         return true;
       }
     } on DioException catch (_) {
@@ -101,14 +103,14 @@ interface class AuthInterceptor extends Interceptor {
     } catch (error) {
       _sessionManager.clearSessionData();
       if (kDebugMode) {
-        log('Token refresh: ${error.toString()}');
+        log('Token refresh: $error');
       }
     }
 
     return false;
   }
 
-  Future<Response> _retryRequest(RequestOptions requestOptions) async {
+  Future<Response<dynamic>> _retryRequest(RequestOptions requestOptions) {
     /// Reset authorization header
     requestOptions.headers.remove('Authorization');
     requestOptions.headers.addAll({

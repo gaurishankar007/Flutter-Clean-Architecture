@@ -21,10 +21,10 @@ class BaseScaffold extends StatelessWidget {
     this.useBottomNavigationPadding = true,
   });
   final bool showAnnotatedRegion;
-  final Function()? onPopInvokedWithResult;
+  final void Function()? onPopInvokedWithResult;
   final bool? resizeToAvoidBottomInset;
   final Widget? appBar;
-  final Future Function()? onRefresh;
+  final Future<void> Function()? onRefresh;
   final bool isScrollable;
   final ScrollPhysics? scrollPhysics;
   final EdgeInsets? padding;

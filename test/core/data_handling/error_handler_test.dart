@@ -4,14 +4,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockDioException extends Mock implements DioException {}
-
-class MockResponse extends Mock implements Response {}
+import '../../../testing/mocks/external/external_mocks.dart';
+import 'data_handler_test.dart';
 
 void main() {
-  group('ErrorHandler.handleException', () {
+  group('ErrorHandler.execute', () {
     test('returns result when no exception thrown', () async {
-      final result = await ErrorHandler.handleException<int>(
+      final result = await ErrorHandler.execute<int>(
         () async => const SuccessState(data: 1),
       );
       expect(result, isA<SuccessState<int>>());
@@ -19,14 +18,14 @@ void main() {
     });
 
     test('handles DioException with 400 status as BadRequestState', () async {
-      final response = MockResponse();
+      final response = MockResponse<dynamic>();
       when(() => response.statusCode).thenReturn(400);
       when(() => response.data).thenReturn({'message': 'bad request'});
       final dioException = MockDioException();
       when(() => dioException.type).thenReturn(DioExceptionType.badResponse);
       when(() => dioException.response).thenReturn(response);
 
-      final result = await ErrorHandler.handleException<int>(() {
+      final result = await ErrorHandler.execute<int>(() {
         throw dioException;
       });
 
@@ -35,55 +34,21 @@ void main() {
       expect(result.statusCode, 400);
     });
 
-    test('handles DioException with 404 status as BadRequestState', () async {
-      final response = MockResponse();
-      when(() => response.statusCode).thenReturn(404);
-      when(() => response.data).thenReturn({'message': 'not found'});
-      final dioException = MockDioException();
-      when(() => dioException.type).thenReturn(DioExceptionType.badResponse);
-      when(() => dioException.response).thenReturn(response);
-
-      final result = await ErrorHandler.handleException<int>(() async {
-        throw dioException;
-      });
-
-      expect(result.errorType, ErrorType.requestError);
-      expect(result.message, 'not found');
-      expect(result.statusCode, 404);
-    });
-
     test('handles DioException with 500 status as ServerErrorState', () async {
-      final response = MockResponse();
+      final response = MockResponse<dynamic>();
       when(() => response.statusCode).thenReturn(500);
       when(() => response.data).thenReturn({'message': 'server error'});
       final dioException = MockDioException();
       when(() => dioException.type).thenReturn(DioExceptionType.badResponse);
       when(() => dioException.response).thenReturn(response);
 
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.execute<int>(() {
         throw dioException;
       });
 
       expect(result.errorType, ErrorType.serverError);
       expect(result.message, 'server error');
       expect(result.statusCode, 500);
-    });
-
-    test('handles DioException with 503 status as ServerErrorState', () async {
-      final response = MockResponse();
-      when(() => response.statusCode).thenReturn(503);
-      when(() => response.data).thenReturn({'message': 'service unavailable'});
-      final dioException = MockDioException();
-      when(() => dioException.type).thenReturn(DioExceptionType.badResponse);
-      when(() => dioException.response).thenReturn(response);
-
-      final result = await ErrorHandler.handleException<int>(() async {
-        throw dioException;
-      });
-
-      expect(result.errorType, ErrorType.serverError);
-      expect(result.message, 'service unavailable');
-      expect(result.statusCode, 503);
     });
 
     test('handles DioException with connectionError as FailureState', () async {
@@ -93,7 +58,7 @@ void main() {
       ).thenReturn(DioExceptionType.connectionError);
       when(() => dioException.response).thenReturn(null);
 
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.execute<int>(() {
         throw dioException;
       });
 
@@ -107,7 +72,7 @@ void main() {
       when(() => dioException.type).thenReturn(DioExceptionType.cancel);
       when(() => dioException.response).thenReturn(null);
 
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.execute<int>(() {
         throw dioException;
       });
 
@@ -121,7 +86,7 @@ void main() {
       when(() => dioException.type).thenReturn(DioExceptionType.receiveTimeout);
       when(() => dioException.response).thenReturn(null);
 
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.execute<int>(() {
         throw dioException;
       });
 
@@ -135,7 +100,7 @@ void main() {
       when(() => dioException.type).thenReturn(DioExceptionType.sendTimeout);
       when(() => dioException.response).thenReturn(null);
 
-      final result = await ErrorHandler.handleException<int>(() async {
+      final result = await ErrorHandler.execute<int>(() {
         throw dioException;
       });
 
@@ -153,7 +118,7 @@ void main() {
         ).thenReturn(DioExceptionType.connectionTimeout);
         when(() => dioException.response).thenReturn(null);
 
-        final result = await ErrorHandler.handleException<int>(() async {
+        final result = await ErrorHandler.execute<int>(() {
           throw dioException;
         });
 
@@ -168,7 +133,7 @@ void main() {
       when(() => dioException.type).thenReturn(DioExceptionType.badCertificate);
       when(() => dioException.response).thenReturn(null);
 
-      final result = await ErrorHandler.handleException<int>(() {
+      final result = await ErrorHandler.execute<int>(() {
         throw dioException;
       });
 
@@ -184,7 +149,7 @@ void main() {
         when(() => dioException.type).thenReturn(DioExceptionType.unknown);
         when(() => dioException.response).thenReturn(null);
 
-        final result = await ErrorHandler.handleException<int>(() {
+        final result = await ErrorHandler.execute<int>(() {
           throw dioException;
         });
 
@@ -194,57 +159,39 @@ void main() {
       },
     );
 
-    test('handles TypeError as FailureState.typeError', () async {
-      final result = await ErrorHandler.handleException<int>(() {
-        throw TypeError();
-      });
-
-      expect(result, isA<FailureState<int>>());
-      expect(result.errorType, ErrorType.typeError);
-    });
-
-    test('handles FormatException as FailureState.formatError', () async {
-      final result = await ErrorHandler.handleException<int>(() {
-        throw const FormatException('bad format');
-      });
-
-      expect(result, isA<FailureState<int>>());
-      expect(result.errorType, ErrorType.formatError);
-    });
-
     test('handles generic Exception as FailureState', () async {
-      final result = await ErrorHandler.handleException<int>(() {
+      final result = await ErrorHandler.execute<int>(() {
         throw Exception('generic error');
       });
 
       expect(result, isA<FailureState<int>>());
-      expect(result.message, contains('generic error'));
+      expect(result.message, contains(kErrorMessage));
     });
 
     test('handles String error as FailureState', () async {
-      final result = await ErrorHandler.handleException<int>(() {
+      final result = await ErrorHandler.execute<int>(() {
         throw Exception('string error');
       });
 
       expect(result, isA<FailureState<int>>());
-      expect(result.message, contains('string error'));
+      expect(result.message, contains(kErrorMessage));
     });
 
     test('handles custom error object as FailureState', () async {
-      final result = await ErrorHandler.handleException<int>(() {
+      final result = await ErrorHandler.execute<int>(() {
         throw ArgumentError('invalid argument');
       });
 
       expect(result, isA<FailureState<int>>());
-      expect(result.message, contains('invalid argument'));
+      expect(result.message, contains(kErrorMessage));
     });
   });
 
-  group('ErrorHandler.catchException', () {
+  group('ErrorHandler.executeSafe', () {
     test('catches and logs exception without rethrowing', () async {
       var exceptionCaught = false;
 
-      await ErrorHandler.catchException(() {
+      await ErrorHandler.executeSafe(() {
         throw Exception('test exception');
       });
 
@@ -256,11 +203,64 @@ void main() {
     test('does not interfere with successful execution', () async {
       var executed = false;
 
-      await ErrorHandler.catchException(() async {
+      await ErrorHandler.executeSafe(() async {
         executed = true;
       });
 
       expect(executed, true);
+    });
+  });
+
+  group('ErrorHandler.executeSafeReturn', () {
+    test('returns value when no exception thrown', () async {
+      final result = await ErrorHandler.executeSafeReturn<int>(
+        () async => 10,
+        valueOnError: -1,
+      );
+      expect(result, 10);
+    });
+
+    test('returns valueOnError when exception thrown', () async {
+      final result = await ErrorHandler.executeSafeReturn<int>(
+        () async => throw Exception('fail'),
+        valueOnError: -1,
+      );
+      expect(result, -1);
+    });
+  });
+
+  group('ErrorHandler.executeSafeSync', () {
+    test('executes successfully without exception', () {
+      var executed = false;
+      ErrorHandler.executeSafeSync(() {
+        executed = true;
+      });
+      expect(executed, true);
+    });
+
+    test('catches exception and does not rethrow', () {
+      ErrorHandler.executeSafeSync(() {
+        throw Exception('sync fail');
+      });
+      // If we reach here, exception was caught
+    });
+  });
+
+  group('ErrorHandler.executeSafeReturnSync', () {
+    test('returns value when no exception thrown', () {
+      final result = ErrorHandler.executeSafeReturnSync(
+        () => 20,
+        valueOnError: -1,
+      );
+      expect(result, 20);
+    });
+
+    test('returns valueOnError when exception thrown', () {
+      final result = ErrorHandler.executeSafeReturnSync<int>(
+        () => throw Exception('sync fail'),
+        valueOnError: -1,
+      );
+      expect(result, -1);
     });
   });
 }

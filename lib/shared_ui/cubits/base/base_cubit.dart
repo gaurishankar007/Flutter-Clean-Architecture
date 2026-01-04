@@ -9,11 +9,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 enum StateStatus { initial, loading, loaded, noInternet }
 
 abstract class BaseState extends Equatable {
-  const BaseState({this.stateStatus = StateStatus.initial});
-  final StateStatus stateStatus;
+  const BaseState({this.status = StateStatus.initial});
+  final StateStatus status;
 
   @override
-  List<Object?> get props => [stateStatus];
+  List<Object?> get props => [status];
 }
 
 abstract class BaseCubit<T> extends Cubit<T> with ServiceMixin {

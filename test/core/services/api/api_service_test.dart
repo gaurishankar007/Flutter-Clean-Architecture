@@ -40,9 +40,11 @@ void main() {
 
   group('Api Service Implementation', () {
     test('get calls Dio.get with correct arguments', () async {
-      final response = Response(requestOptions: RequestOptions(path: '/test'));
+      final response = Response<dynamic>(
+        requestOptions: RequestOptions(path: '/test'),
+      );
       when(
-        () => mockDio.get(
+        () => mockDio.get<dynamic>(
           any(),
           data: any(named: 'data'),
           queryParameters: any(named: 'queryParameters'),
@@ -52,16 +54,18 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.get('/test', data: {'a': 1});
+      final result = await apiService.get<dynamic>('/test', data: {'a': 1});
 
       expect(result, response);
-      verify(() => mockDio.get('/test', data: {'a': 1})).called(1);
+      verify(() => mockDio.get<dynamic>('/test', data: {'a': 1})).called(1);
     });
 
     test('post calls Dio.post with correct arguments', () async {
-      final response = Response(requestOptions: RequestOptions(path: '/test'));
+      final response = Response<dynamic>(
+        requestOptions: RequestOptions(path: '/test'),
+      );
       when(
-        () => mockDio.post(
+        () => mockDio.post<dynamic>(
           any(),
           data: any(named: 'data'),
           queryParameters: any(named: 'queryParameters'),
@@ -72,16 +76,18 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.post('/test', data: {'b': 2});
+      final result = await apiService.post<dynamic>('/test', data: {'b': 2});
 
       expect(result, response);
-      verify(() => mockDio.post('/test', data: {'b': 2})).called(1);
+      verify(() => mockDio.post<dynamic>('/test', data: {'b': 2})).called(1);
     });
 
     test('put calls Dio.put with correct arguments', () async {
-      final response = Response(requestOptions: RequestOptions(path: '/test'));
+      final response = Response<dynamic>(
+        requestOptions: RequestOptions(path: '/test'),
+      );
       when(
-        () => mockDio.put(
+        () => mockDio.put<dynamic>(
           any(),
           data: any(named: 'data'),
           queryParameters: any(named: 'queryParameters'),
@@ -92,16 +98,18 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.put('/test', data: {'c': 3});
+      final result = await apiService.put<dynamic>('/test', data: {'c': 3});
 
       expect(result, response);
-      verify(() => mockDio.put('/test', data: {'c': 3})).called(1);
+      verify(() => mockDio.put<dynamic>('/test', data: {'c': 3})).called(1);
     });
 
     test('patch calls Dio.patch with correct arguments', () async {
-      final response = Response(requestOptions: RequestOptions(path: '/test'));
+      final response = Response<dynamic>(
+        requestOptions: RequestOptions(path: '/test'),
+      );
       when(
-        () => mockDio.patch(
+        () => mockDio.patch<dynamic>(
           any(),
           data: any(named: 'data'),
           queryParameters: any(named: 'queryParameters'),
@@ -112,16 +120,18 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.patch('/test', data: {'d': 4});
+      final result = await apiService.patch<dynamic>('/test', data: {'d': 4});
 
       expect(result, response);
-      verify(() => mockDio.patch('/test', data: {'d': 4})).called(1);
+      verify(() => mockDio.patch<dynamic>('/test', data: {'d': 4})).called(1);
     });
 
     test('delete calls Dio.delete with correct arguments', () async {
-      final response = Response(requestOptions: RequestOptions(path: '/test'));
+      final response = Response<dynamic>(
+        requestOptions: RequestOptions(path: '/test'),
+      );
       when(
-        () => mockDio.delete(
+        () => mockDio.delete<dynamic>(
           any(),
           data: any(named: 'data'),
           queryParameters: any(named: 'queryParameters'),
@@ -130,10 +140,10 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.delete('/test', data: {'e': 5});
+      final result = await apiService.delete<dynamic>('/test', data: {'e': 5});
 
       expect(result, response);
-      verify(() => mockDio.delete('/test', data: {'e': 5})).called(1);
+      verify(() => mockDio.delete<dynamic>('/test', data: {'e': 5})).called(1);
     });
   });
 }

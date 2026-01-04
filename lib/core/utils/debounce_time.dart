@@ -5,7 +5,7 @@ class DebounceTime {
   final Duration delay;
   Timer? _timer;
 
-  void run(Function() action) {
+  void run(void Function() action) {
     _timer?.cancel();
     _timer = Timer(delay, action);
   }

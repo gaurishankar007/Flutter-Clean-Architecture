@@ -1,6 +1,7 @@
-import 'dart:convert' show jsonEncode, jsonDecode;
+import 'dart:convert' show jsonDecode, jsonEncode;
 
 import 'package:clean_architecture/core/utils/encryption/encryption_utils.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,6 +10,7 @@ abstract interface class LocalDatabaseService {
   Future<void> setStringWithEncryption(String key, String value);
   String? getString(String key);
   String? getEncryptedString(String key);
+  bool has(String key);
   Future<void> remove(String key);
   Future<void> clear();
 }
@@ -42,14 +44,16 @@ final class LocalDatabaseServiceImpl implements LocalDatabaseService {
   @override
   String? getEncryptedString(String key) {
     final encodedEncryption = sharedPreferences.getString(key);
-    if (encodedEncryption != null) {
-      final encryptedData = EncryptedData.fromJson(
-        jsonDecode(encodedEncryption),
-      );
-      return EncryptionUtils.decrypt(encryptedData);
+    if (encodedEncryption == null) {
+      return null;
     }
-    return null;
+    final encryptionMap = jsonDecode(encodedEncryption) as MapDynamic;
+    final encryptedData = EncryptedData.fromJson(encryptionMap);
+    return EncryptionUtils.decrypt(encryptedData);
   }
+
+  @override
+  bool has(String key) => sharedPreferences.containsKey(key);
 
   @override
   Future<void> remove(String key) => sharedPreferences.remove(key);

@@ -26,7 +26,7 @@ final class AuthRepositoryImpl implements AuthRepository {
   @override
   FutureData<UserData> login(Authentication authentication) {
     return DataHandler.fetchWithFallbackAndMap(
-      _internet.isConnected,
+      isInternetConnected: _internet.isConnected,
       remoteCallback: () => _remoteDataSource.login(
         AuthenticationRequest.fromDomain(authentication),
       ),
@@ -47,8 +47,8 @@ final class AuthRepositoryImpl implements AuthRepository {
   @override
   FutureBool checkAuth() {
     return DataHandler.fetchWithFallback(
-      _internet.isConnected,
-      remoteCallback: () => _remoteDataSource.checkAUth(),
+      isInternetConnected: _internet.isConnected,
+      remoteCallback: _remoteDataSource.checkAUth,
     );
   }
 

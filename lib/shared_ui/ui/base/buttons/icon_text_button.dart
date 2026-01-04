@@ -13,7 +13,7 @@ class IconTextButton extends StatelessWidget {
     this.iconSize,
     this.textColor,
   });
-  final Function() onPressed;
+  final void Function() onPressed;
   final IconData iconData;
   final String text;
   final Color? iconColor;
@@ -22,7 +22,7 @@ class IconTextButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color newIconColor = iconColor ?? AppColors.base;
+    final Color newIconColor = iconColor ?? AppColors.base;
 
     return InkWell(
       onTap: onPressed,

@@ -32,7 +32,7 @@ class BaseBottomNavigation extends StatelessWidget {
             children: List.generate(icons.length, (index) {
               return BaseIconButton(
                 onPressed: () => context.read<DashboardCubit>().setIndex(index),
-                visualDensity: const VisualDensity(),
+                visualDensity: VisualDensity.standard,
                 padding: const EdgeInsets.all(10),
                 icon: Icon(
                   icons[index],

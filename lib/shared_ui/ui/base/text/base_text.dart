@@ -73,7 +73,6 @@ class BaseText extends StatelessWidget {
     String text, {
     TextAlign? textAlign,
     Color? color,
-    FontWeight? fontWeight,
   }) => BaseText(
     text,
     textAlign: textAlign,

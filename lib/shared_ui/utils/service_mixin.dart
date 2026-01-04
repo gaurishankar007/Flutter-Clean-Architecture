@@ -3,6 +3,7 @@ import 'package:clean_architecture/core/data_states/data_state.dart';
 import 'package:clean_architecture/core/services/image_picker/image_picker_service.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
 import 'package:clean_architecture/shared_ui/utils/toast_util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 
 mixin ServiceMixin {
@@ -10,20 +11,27 @@ mixin ServiceMixin {
   final _imagePickerService = ImagePickerUtil.I;
 
   /// Navigation Service
-  Future<bool> popPage<T extends Object?>([T? result]) =>
+  Future<bool> maybePopRoute<T extends Object?>([T? result]) =>
+      _navigationService.maybePop(result);
+
+  Future<bool> maybePopTopRoute<T extends Object?>([T? result]) =>
       _navigationService.maybePopTop(result);
 
-  Future<void> replaceAllRoute(PageRouteInfo<dynamic> route) =>
+  /// Pops route based on mobile or web platform.
+  void popRouteAdaptively() =>
+      kIsWeb ? _navigationService.back() : _navigationService.maybePop();
+
+  Future<void> replaceAllRoute<T>(PageRouteInfo<T> route) =>
       _navigationService.replaceAllRoute(route);
 
-  Future<T?> pushRoute<T>(PageRouteInfo<dynamic> route) =>
+  Future<T?> pushRoute<T>(PageRouteInfo<T> route) =>
       _navigationService.pushRoute(route);
 
-  Future<T?> pushPlatformRoute<T>({
-    PageRouteInfo<dynamic>? androidRoute,
-    PageRouteInfo<dynamic>? iOSRoute,
-    PageRouteInfo<dynamic>? androidIOSRoute,
-    PageRouteInfo<dynamic>? webRoute,
+  Future<void> pushPlatformRoute<T>({
+    PageRouteInfo<T>? androidRoute,
+    PageRouteInfo<T>? iOSRoute,
+    PageRouteInfo<T>? androidIOSRoute,
+    PageRouteInfo<T>? webRoute,
   }) => _navigationService.pushPlatformRoute(
     androidRoute: androidRoute,
     iOSRoute: iOSRoute,

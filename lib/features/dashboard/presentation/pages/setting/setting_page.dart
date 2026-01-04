@@ -30,7 +30,7 @@ class SettingPage extends StatelessWidget {
                 const SettingItems(),
                 const Spacer(),
                 PrimaryButton(
-                  onTap: SessionUtil.I.clearSessionData,
+                  onTap: () async => SessionUtil.I.clearSessionData(),
                   text: 'Logout',
                   color: AppColors.error,
                   expandWidth: true,

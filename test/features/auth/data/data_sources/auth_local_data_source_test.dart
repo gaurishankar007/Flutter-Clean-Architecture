@@ -73,7 +73,7 @@ void main() {
         final result = await dataSource.saveUserData(tUserDataModel);
 
         // Assert
-        expect(result, isA<FailureState>());
+        expect(result, isA<FailureState<bool>>());
       },
     );
   });
@@ -125,7 +125,7 @@ void main() {
         final result = await dataSource.getUserData();
 
         // Assert
-        expect(result, isA<FailureState>());
+        expect(result, isA<FailureState<UserDataResponse>>());
       },
     );
   });
@@ -160,7 +160,7 @@ void main() {
         final result = await dataSource.removeUserData();
 
         // Assert
-        expect(result, isA<FailureState>());
+        expect(result, isA<FailureState<bool>>());
       },
     );
   });

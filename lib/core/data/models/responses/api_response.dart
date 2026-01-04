@@ -8,7 +8,7 @@ class ApiResponse<T extends Object?> {
     required this.message,
   });
 
-  factory ApiResponse.fromResponse(Response response) {
+  factory ApiResponse.fromResponse(Response<dynamic> response) {
     final data = response.data as Map<String, dynamic>;
     final statusCode = response.statusCode ?? 0;
 

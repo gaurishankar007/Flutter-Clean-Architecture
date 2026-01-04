@@ -21,9 +21,9 @@ final class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   final LocalDatabaseService _localDatabase;
 
   @override
-  FutureBool saveUserData(UserDataResponse userDataModel) async {
-    return ErrorHandler.handleException(() async {
-      _localDatabase.setString(
+  FutureBool saveUserData(UserDataResponse userDataModel) {
+    return ErrorHandler.execute(() async {
+      await _localDatabase.setString(
         LocalDbKeys.userData,
         jsonEncode(userDataModel.toJson()),
       );
@@ -32,12 +32,15 @@ final class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
-  FutureData<UserDataResponse> getUserData() async {
-    return ErrorHandler.handleException(() async {
-      String userData = _localDatabase.getString(LocalDbKeys.userData) ?? '';
+  FutureData<UserDataResponse> getUserData() {
+    return ErrorHandler.execute(() async {
+      final String userData =
+          _localDatabase.getString(LocalDbKeys.userData) ?? '';
 
       if (userData.isNotEmpty) {
-        final userDataModel = UserDataResponse.fromJson(jsonDecode(userData));
+        final userDataModel = UserDataResponse.fromJson(
+          jsonDecode(userData) as MapDynamic,
+        );
         return SuccessState(data: userDataModel);
       }
       return const FailureState<UserDataResponse>(
@@ -48,7 +51,7 @@ final class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   FutureBool removeUserData() {
-    return ErrorHandler.handleException(() async {
+    return ErrorHandler.execute(() async {
       await _localDatabase.remove(LocalDbKeys.userData);
       return const SuccessState(data: true);
     });

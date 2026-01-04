@@ -32,7 +32,7 @@ class DashboardDrawer extends StatelessWidget {
                       UIHelpers.spaceV16,
                       ListTile(
                         onTap: () => context.read<DashboardCubit>().setIndex(0),
-                        visualDensity: const VisualDensity(),
+                        visualDensity: VisualDensity.standard,
                         horizontalTitleGap: 8,
                         leading: Icon(
                           AppIcons.home,
@@ -50,7 +50,7 @@ class DashboardDrawer extends StatelessWidget {
                       ),
                       ListTile(
                         onTap: () => context.read<DashboardCubit>().setIndex(1),
-                        visualDensity: const VisualDensity(),
+                        visualDensity: VisualDensity.standard,
                         horizontalTitleGap: 8,
                         leading: Icon(
                           AppIcons.setting,

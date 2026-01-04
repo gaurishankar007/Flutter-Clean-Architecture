@@ -13,7 +13,7 @@ class BaseCheckbox extends StatelessWidget {
   });
   final double? scale;
   final bool value;
-  final Function(bool?)? onChanged;
+  final void Function(bool?)? onChanged;
   final String? title;
 
   @override
@@ -25,9 +25,7 @@ class BaseCheckbox extends StatelessWidget {
         fillColor: WidgetStateColor.resolveWith(
           (states) => value ? AppColors.hightLight : Colors.transparent,
         ),
-        side: value
-            ? null
-            : const BorderSide(width: 1.2, color: AppColors.black),
+        side: value ? null : const BorderSide(width: 1.2),
         onChanged: onChanged,
         visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

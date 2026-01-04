@@ -12,7 +12,7 @@ class BaseIconButton extends StatelessWidget {
     this.targetSize,
     this.disableSplash = false,
   });
-  final Function() onPressed;
+  final void Function() onPressed;
   final Icon icon;
   final double? splashRadius;
   final EdgeInsets? padding;

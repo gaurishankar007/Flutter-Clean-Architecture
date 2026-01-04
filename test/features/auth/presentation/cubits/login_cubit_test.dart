@@ -43,7 +43,7 @@ void main() {
       refreshToken: '',
     );
     registerFallbackValue(const Authentication(username: '', password: ''));
-    registerFallbackValue(MockPageRouteInfo());
+    registerFallbackValue(const MockPageRouteInfo());
     registerFallbackValue(userData);
   });
 

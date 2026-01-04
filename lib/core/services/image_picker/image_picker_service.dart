@@ -48,7 +48,7 @@ final class ImagePickerServiceImpl implements ImagePickerService {
     );
 
     if (xImage != null) {
-      File image = File(xImage.path);
+      final image = File(xImage.path);
       return image.path;
     }
 

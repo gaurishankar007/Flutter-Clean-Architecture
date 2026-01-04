@@ -9,7 +9,7 @@ abstract interface class MultiPartService {
   });
 }
 
-/// A file to be uploaded as part of a [MultipartRequest]. This doesn't need to
+/// A file to be uploaded as part of a MultipartRequest. This doesn't need to
 /// correspond to a physical file.
 ///
 /// MultipartFile is based on stream, and a stream can be read only once,
@@ -21,7 +21,7 @@ final class MultiPartServiceImpl implements MultiPartService {
     String? filename,
     MediaType? contentType,
     Map<String, List<String>>? headers,
-  }) async => await MultipartFile.fromFile(
+  }) => MultipartFile.fromFile(
     filePath,
     filename: filename,
     contentType: contentType,

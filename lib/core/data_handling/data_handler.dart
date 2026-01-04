@@ -28,7 +28,7 @@ abstract final class DataHandler {
   ///
   /// Behavior:
   /// - If [isStandardResponse] is `true` (the default), the method expects a
-  ///   JSON object shaped like `{ "data": <payload>, "message": "..." }`.
+  ///   JSON object shaped like `{ 'data': <payload>, 'message': '...' }`.
   ///   The payload is extracted using [responseDataKey] (default: `'data'`).
   /// - If [fromJson] is provided, it will be used to convert a `Map<String, dynamic>`
   ///   (single object) or each element of a `List` into an `R` instance.
@@ -41,31 +41,34 @@ abstract final class DataHandler {
   /// Returns a [SuccessState<T>] on success or a [FailureState<T>] describing
   /// the error (format errors, bad response structure, or other mapped errors).
   static FutureData<T> safeApiCall<T, R>({
-    required Future<Response> Function() request,
-    R Function(Map<String, dynamic> json)? fromJson,
+    required Future<Response<dynamic>> Function() request,
+    R Function(MapDynamic json)? fromJson,
     bool isStandardResponse = true,
     String responseDataKey = 'data',
-    T? staticData,
+    R? staticData,
     bool useStaticDataAsNull = false,
   }) {
-    return ErrorHandler.handleException(() async {
-      final Response response = await request();
+    return ErrorHandler.execute(() async {
+      final response = await request();
       dynamic rawData = response.data;
       String? responseMessage;
       T? data;
 
       // Handle standard API response structure
       if (isStandardResponse && staticData == null) {
-        if (rawData is! Map<String, dynamic>) {
+        if (rawData is! MapDynamic) {
           return FailureState.badResponse(
-            message:
-                'Expected standard response format but got ${rawData.runtimeType}',
+            error: 'Bad response format: ${rawData.runtimeType}',
+            statusCode: response.statusCode,
+            response: response,
           );
         }
         // Returns bad response failure state if the response structure is not standard
         if (!rawData.containsKey(responseDataKey)) {
           return FailureState.badResponse(
-            message: 'Response missing expected key: "$responseDataKey"',
+            error: 'Response missing expected key: "$responseDataKey"',
+            statusCode: response.statusCode,
+            response: response,
           );
         }
 
@@ -75,19 +78,19 @@ abstract final class DataHandler {
 
       // Handle static data return
       if (staticData != null || useStaticDataAsNull) {
-        data = staticData;
+        data = staticData as T;
       }
       // Handle JSON deserialization
       else if (fromJson != null) {
-        if (rawData is Map<String, dynamic>) {
+        if (rawData is MapDynamic) {
           data = fromJson(rawData) as T;
         } else if (rawData is List) {
           data = rawData.map((e) => fromJson(e as MapDynamic)).toList() as T;
         } else {
-          return FailureState(
-            message:
-                'Expected Map or List for deserialization but got ${rawData.runtimeType}',
-            errorType: ErrorType.formatError,
+          return FailureState.badResponse(
+            error: 'Expected Map or List but got ${rawData.runtimeType}',
+            statusCode: response.statusCode,
+            response: response,
           );
         }
       }
@@ -98,6 +101,8 @@ abstract final class DataHandler {
         return FailureState(
           message: 'Type mismatch: Expected $T, got ${rawData.runtimeType}',
           errorType: ErrorType.formatError,
+          statusCode: response.statusCode,
+          response: response,
         );
       }
 
@@ -105,6 +110,7 @@ abstract final class DataHandler {
         data: data,
         message: responseMessage,
         statusCode: response.statusCode,
+        response: response,
       );
     });
   }
@@ -119,10 +125,10 @@ abstract final class DataHandler {
   /// - If [isInternetConnected] is `false`, the method will call [localCallback]
   ///   (if provided) and return its result. If no local fallback is provided,
   ///   a `FailureState.noInternet()` is returned.
-  static FutureData<T> fetchWithFallback<T>(
-    bool isInternetConnected, {
+  static FutureData<T> fetchWithFallback<T>({
+    required bool isInternetConnected,
     required FutureData<T> Function() remoteCallback,
-    Function(T data)? onRemoteSuccess,
+    void Function(T data)? onRemoteSuccess,
     FutureData<T> Function()? localCallback,
   }) async {
     if (isInternetConnected) {
@@ -158,14 +164,14 @@ abstract final class DataHandler {
   /// The returned [DataState] contains the mapped domain model `R` on success
   /// or the propagated failure state on error.
   static FutureData<R>
-  fetchWithFallbackAndMap<T extends DomainConvertible<R>, R>(
-    bool isInternetConnected, {
+  fetchWithFallbackAndMap<T extends DomainConvertible<R>, R>({
+    required bool isInternetConnected,
     required FutureData<T> Function() remoteCallback,
-    Function(T data)? onRemoteSuccess,
+    void Function(T data)? onRemoteSuccess,
     FutureData<T> Function()? localCallback,
   }) async {
-    final DataState<T> dtoState = await fetchWithFallback(
-      isInternetConnected,
+    final dtoState = await fetchWithFallback(
+      isInternetConnected: isInternetConnected,
       remoteCallback: remoteCallback,
       onRemoteSuccess: onRemoteSuccess,
       localCallback: localCallback,
@@ -176,14 +182,14 @@ abstract final class DataHandler {
   }
 
   static FutureList<R>
-  fetchWithFallbackAndMapList<T extends DomainConvertible<R>, R>(
-    bool isInternetConnected, {
+  fetchWithFallbackAndMapList<T extends DomainConvertible<R>, R>({
+    required bool isInternetConnected,
     required FutureList<T> Function() remoteCallback,
-    Function(List<T> data)? onRemoteSuccess,
+    void Function(List<T> data)? onRemoteSuccess,
     FutureData<List<T>> Function()? localCallback,
   }) async {
-    final DataState<List<T>> dtoState = await fetchWithFallback(
-      isInternetConnected,
+    final dtoState = await fetchWithFallback(
+      isInternetConnected: isInternetConnected,
       remoteCallback: remoteCallback,
       onRemoteSuccess: onRemoteSuccess,
       localCallback: localCallback,

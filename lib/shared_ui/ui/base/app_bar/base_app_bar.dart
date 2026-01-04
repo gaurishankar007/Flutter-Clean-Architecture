@@ -29,13 +29,15 @@ class BaseAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // AppBar padding
-    double horizontalPadding = ScreenUtil.I.horizontalSpace;
+    final double horizontalPadding = ScreenUtil.I.horizontalSpace;
     // AppBar leading height and width
-    double leadingSize = 25;
+    const double leadingSize = 25;
     // The maximum width of the AppBar leading
-    double leadingWidth = showLeading ? horizontalPadding + leadingSize : 0;
+    final double leadingWidth = showLeading
+        ? horizontalPadding + leadingSize
+        : 0;
     // Space between Leading and title
-    double titleSpacing = showLeading ? 8 : horizontalPadding;
+    final double titleSpacing = showLeading ? 8 : horizontalPadding;
 
     Widget? leadingWidget;
     Widget? titleWidget;
@@ -48,7 +50,7 @@ class BaseAppBar extends StatelessWidget {
             BaseIconButton(
               onPressed: NavigationUtil.I.maybePopTop,
               icon: const Icon(
-                AppIcons.arrow_left,
+                AppIcons.arrowLeft,
                 size: 20,
                 color: AppColors.base,
               ),

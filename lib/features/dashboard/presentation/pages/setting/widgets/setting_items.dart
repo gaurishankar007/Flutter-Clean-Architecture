@@ -36,7 +36,7 @@ class SettingItems extends StatelessWidget {
         horizontalTitleGap: 8,
         leading: Icon(iconData, size: 22),
         title: BaseText.bodyLarge(name),
-        trailing: const Icon(AppIcons.arrow_right, size: 22),
+        trailing: const Icon(AppIcons.arrowRight, size: 22),
       ),
     );
   }
