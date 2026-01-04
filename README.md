@@ -33,6 +33,7 @@ For more details on specific commands and guidelines, refer to the following doc
     - [Internet Status](#internet-status)
     - [Navigation](#navigation)
     - [Session and LocalDatabase](#session-and-localdatabase)
+    - [Image Picker](#image-picker)
   - [Data Handling](#data-handling)
   - [Data States](#data-states)
   - [API Workflow Overview](#api-workflow-overview)
@@ -164,9 +165,9 @@ lib/
 ├── core/
 │   ├── constants/
 │   ├── data/
+│   │   ├── handlers/
+│   │   ├── states/
 │   │   └── models/
-│   ├── data_handling/
-│   ├── data_states/
 │   ├── domain/
 │   │   ├── entities/
 │   │   └── use_cases/
