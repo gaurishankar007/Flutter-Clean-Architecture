@@ -1,5 +1,5 @@
 import 'package:clean_architecture/core/constants/api_endpoints.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';

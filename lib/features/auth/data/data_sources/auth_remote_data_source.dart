@@ -1,5 +1,5 @@
 import 'package:clean_architecture/core/constants/api_endpoints.dart';
-import 'package:clean_architecture/core/data_handling/data_handler.dart';
+import 'package:clean_architecture/core/data/handlers/data_handler.dart';
 import 'package:clean_architecture/core/services/api/api_service.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';

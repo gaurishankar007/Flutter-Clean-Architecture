@@ -2,11 +2,13 @@ import 'package:clean_architecture/shared_ui/utils/service_mixin.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// The status of a bloc state when there is only a single state
-/// * loading
-/// * completed
-/// * noInternet
-enum StateStatus { initial, loading, loaded, noInternet }
+/// The status of a page/cubit.
+/// * [initial] - The initial state.
+/// * [loading] - The state when loading is in progress.
+/// * [loaded] - The state when loading is complete.
+/// * [error] - The state when there is an error while loading the data.
+/// * [noInternet] - The state when there is no internet connection.
+enum StateStatus { initial, loading, loaded, error, noInternet }
 
 abstract class BaseState extends Equatable {
   const BaseState({this.status = StateStatus.initial});

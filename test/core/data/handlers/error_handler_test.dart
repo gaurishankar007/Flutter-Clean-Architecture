@@ -1,10 +1,10 @@
-import 'package:clean_architecture/core/data_handling/data_handler.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/data/handlers/data_handler.dart';
+import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../testing/mocks/external/external_mocks.dart';
+import '../../../../testing/mocks/external/external_mocks.dart';
 import 'data_handler_test.dart';
 
 void main() {

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:clean_architecture/core/data/models/responses/user_response.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/features/auth/data/data_sources/auth_local_data_source.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:flutter_test/flutter_test.dart';

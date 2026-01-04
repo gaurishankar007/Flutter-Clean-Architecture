@@ -1,4 +1,4 @@
-import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

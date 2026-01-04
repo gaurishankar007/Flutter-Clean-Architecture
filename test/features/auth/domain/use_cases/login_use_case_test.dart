@@ -1,4 +1,4 @@
-import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';

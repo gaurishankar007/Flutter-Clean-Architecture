@@ -1,5 +1,5 @@
 import 'package:clean_architecture/core/constants/app_colors.dart';
-import 'package:clean_architecture/core/data_states/data_state.dart';
+import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';

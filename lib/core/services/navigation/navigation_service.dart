@@ -1,7 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:auto_route/auto_route.dart';
-import 'package:clean_architecture/core/data_handling/data_handler.dart';
+import 'package:clean_architecture/core/data/handlers/data_handler.dart';
 import 'package:clean_architecture/routing/routes.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';

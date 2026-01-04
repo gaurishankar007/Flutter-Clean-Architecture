@@ -1,5 +1,5 @@
 import 'package:clean_architecture/config/injector/injector.dart';
-import 'package:clean_architecture/core/data_handling/data_handler.dart';
+import 'package:clean_architecture/core/data/handlers/data_handler.dart';
 import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
