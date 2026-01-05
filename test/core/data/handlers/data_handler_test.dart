@@ -64,7 +64,7 @@ void main() {
         isInternetConnected: false,
         remoteCallback: () async => const SuccessState(data: 1),
       );
-      expect(result.errorType, ErrorType.internetError);
+      expect(result.message, kNoInternet);
     });
 
     test('returns remote failure state when remote call fails', () async {
@@ -246,7 +246,7 @@ void main() {
             >(request: () async => mockResponse, fromJson: (json) => json);
 
         expect(result, isA<FailureState<Map<String, dynamic>>>());
-        expect(result.errorType, ErrorType.responseError);
+        expect(result.error, contains('Response missing expected key'));
       },
     );
 
@@ -319,7 +319,7 @@ void main() {
           >(request: () async => mockResponse, fromJson: (json) => json);
 
       expect(result, isA<FailureState<Map<String, dynamic>>>());
-      expect(result.errorType, ErrorType.responseError);
+      expect(result.error, contains('Bad response format'));
     });
 
     test('handles non-standard response structure', () async {
@@ -366,7 +366,7 @@ void main() {
       );
 
       expect(result, isA<FailureState<String>>());
-      expect(result.errorType, ErrorType.formatError);
+      expect(result.error, contains('Type mismatch'));
     });
   });
 }

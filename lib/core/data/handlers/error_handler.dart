@@ -61,15 +61,15 @@ abstract final class ErrorHandler {
       _debugError('Http Response: ${exception.response}');
       _debugError(exception, stackTrace);
       return _handleDioException<T>(exception);
-    } 
+    }
     // on FirebaseAuthException catch (exception, stackTrace) {
     //   _debugError(exception, stackTrace);
     //   return _handleFirebaseAuthException<T>(exception);
-    // } 
+    // }
     // on GoogleSignInException catch (exception, stackTrace) {
     //   _debugError(exception, stackTrace);
     //   return _handleGoogleSignInException<T>(exception);
-    // } 
+    // }
     catch (error, stackTrace) {
       _debugError(error, stackTrace);
       return FailureState<T>(error: error.toString());
@@ -111,7 +111,6 @@ abstract final class ErrorHandler {
     return FailureState(
       message: _dioErrorMessages[errorType.name],
       error: exception.toString(),
-      errorType: ErrorType.dioError,
       statusCode: response?.statusCode,
       response: response,
     );

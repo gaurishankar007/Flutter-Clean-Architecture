@@ -29,7 +29,6 @@ void main() {
         throw dioException;
       });
 
-      expect(result.errorType, ErrorType.requestError);
       expect(result.message, 'bad request');
       expect(result.statusCode, 400);
     });
@@ -46,7 +45,6 @@ void main() {
         throw dioException;
       });
 
-      expect(result.errorType, ErrorType.serverError);
       expect(result.message, 'server error');
       expect(result.statusCode, 500);
     });
@@ -63,7 +61,6 @@ void main() {
       });
 
       expect(result, isA<FailureState<int>>());
-      expect(result.errorType, ErrorType.dioError);
       expect(result.message, contains('Connection error'));
     });
 
@@ -77,7 +74,6 @@ void main() {
       });
 
       expect(result, isA<FailureState<int>>());
-      expect(result.errorType, ErrorType.dioError);
       expect(result.message, contains('Request was cancelled'));
     });
 
@@ -91,7 +87,6 @@ void main() {
       });
 
       expect(result, isA<FailureState<int>>());
-      expect(result.errorType, ErrorType.dioError);
       expect(result.message, contains('Receive timeout'));
     });
 
@@ -105,7 +100,6 @@ void main() {
       });
 
       expect(result, isA<FailureState<int>>());
-      expect(result.errorType, ErrorType.dioError);
       expect(result.message, contains('Send timeout'));
     });
 
@@ -123,7 +117,6 @@ void main() {
         });
 
         expect(result, isA<FailureState<int>>());
-        expect(result.errorType, ErrorType.dioError);
         expect(result.message, contains('Connection timeout'));
       },
     );
@@ -138,7 +131,6 @@ void main() {
       });
 
       expect(result, isA<FailureState<int>>());
-      expect(result.errorType, ErrorType.dioError);
       expect(result.message, contains('Bad certificate'));
     });
 
@@ -154,7 +146,6 @@ void main() {
         });
 
         expect(result, isA<FailureState<int>>());
-        expect(result.errorType, ErrorType.dioError);
         expect(result.message, isNotNull);
       },
     );

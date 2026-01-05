@@ -16,7 +16,6 @@ sealed class DataState<T> extends Equatable {
     this.data,
     this.message,
     this.error,
-    this.errorType,
     this.statusCode,
     this.response,
     this.hasData = false,
@@ -35,10 +34,6 @@ sealed class DataState<T> extends Equatable {
   /// is intended for logging or developer diagnostics rather than
   /// direct user display.
   final String? error;
-
-  /// Optional classification of the error to aid handling (network,
-  /// validation, auth, etc.). See `ErrorType` for possible values.
-  final ErrorType? errorType;
 
   /// Optional HTTP or transport status code associated with this
   /// response (when applicable).
@@ -59,7 +54,7 @@ sealed class DataState<T> extends Equatable {
   /// - `loading` is used for `LoadingState` and as a safe fallback.
   R when<R>({
     required R Function(T data) success,
-    required R Function(String? message, ErrorType? errorType) failure,
+    required R Function(String? message, String? error) failure,
     required R Function() loading,
   }) {
     if (this is SuccessState<T>) {
@@ -67,7 +62,7 @@ sealed class DataState<T> extends Equatable {
     } else if (this is FailureState<T>) {
       return failure(
         (this as FailureState<T>).message,
-        (this as FailureState<T>).errorType,
+        (this as FailureState<T>).error,
       );
     } else if (this is LoadingState<T>) {
       return loading();
@@ -110,7 +105,6 @@ sealed class DataState<T> extends Equatable {
       failure: (message, errorType) => FailureState<R>(
         message: message,
         error: error,
-        errorType: errorType,
         statusCode: statusCode,
         response: response,
       ),
@@ -123,7 +117,6 @@ sealed class DataState<T> extends Equatable {
     data,
     message,
     error,
-    errorType,
     statusCode,
     response,
     hasData,

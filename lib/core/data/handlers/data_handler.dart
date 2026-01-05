@@ -54,55 +54,51 @@ abstract final class DataHandler {
       String? responseMessage;
       T? data;
 
-      // Handle standard API response structure
+      FailureState<T> failure(String error) => FailureState.badResponse(
+        error: error,
+        statusCode: response.statusCode,
+        response: response,
+      );
+
+      // 1. Get message from the response if provided
+      if (rawData is MapDynamic) {
+        if (rawData['message'] case final String? message) {
+          responseMessage = message;
+        }
+      }
+
+      // 2. Handle standard API response structure if required
       if (isStandardResponse && staticData == null) {
         if (rawData is! MapDynamic) {
-          return FailureState.badResponse(
-            error: 'Bad response format: ${rawData.runtimeType}',
-            statusCode: response.statusCode,
-            response: response,
-          );
+          return failure('Bad response format: ${rawData.runtimeType}');
         }
-        // Returns bad response failure state if the response structure is not standard
         if (!rawData.containsKey(responseDataKey)) {
-          return FailureState.badResponse(
-            error: 'Response missing expected key: "$responseDataKey"',
-            statusCode: response.statusCode,
-            response: response,
-          );
+          return failure('Response missing expected key: "$responseDataKey"');
         }
 
-        responseMessage = rawData['message'] as String?;
         rawData = rawData[responseDataKey];
       }
 
-      // Handle static data return
+      // 3. Use static data if provided
       if (staticData != null || useStaticDataAsNull) {
         data = staticData as T;
       }
-      // Handle JSON deserialization
+      // 4. Handle JSON deserialization
       else if (fromJson != null) {
         if (rawData is MapDynamic) {
           data = fromJson(rawData) as T;
         } else if (rawData is List) {
           data = rawData.map((e) => fromJson(e as MapDynamic)).toList() as T;
         } else {
-          return FailureState.badResponse(
-            error: 'Expected Map or List but got ${rawData.runtimeType}',
-            statusCode: response.statusCode,
-            response: response,
-          );
+          return failure('Expected Map or List but got ${rawData.runtimeType}');
         }
       }
-      // Handle raw data without deserialization
+      // 5. Handle raw data without deserialization
       else if (rawData is T) {
         data = rawData;
       } else {
-        return FailureState(
-          message: 'Type mismatch: Expected $T, got ${rawData.runtimeType}',
-          errorType: ErrorType.formatError,
-          statusCode: response.statusCode,
-          response: response,
+        return failure(
+          'Type mismatch: Expected $T, got ${rawData.runtimeType}',
         );
       }
 

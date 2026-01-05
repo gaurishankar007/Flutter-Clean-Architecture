@@ -107,7 +107,7 @@ void main() {
 
         // Assert
         expect(result, isA<FailureState<UserData>>());
-        expect(result.errorType, ErrorType.internetError);
+        expect(result.error, kNoInternet);
         verify(() => mockInternetService.isConnected).called(1);
         verifyNoMoreInteractions(mockInternetService);
         verifyZeroInteractions(mockAuthRemoteDataSource);
@@ -200,7 +200,7 @@ void main() {
 
         // Assert
         expect(result, isA<FailureState<bool>>());
-        expect(result.errorType, ErrorType.internetError);
+        expect(result.error, kNoInternet);
         verify(() => mockInternetService.isConnected).called(1);
         verifyNoMoreInteractions(mockInternetService);
         verifyZeroInteractions(mockAuthRemoteDataSource);
