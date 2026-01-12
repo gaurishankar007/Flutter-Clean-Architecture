@@ -103,6 +103,17 @@ A collection of essential and frequently used git commands to boost your product
 
 ---
 
+## 8. Removing Files & Folders
+
+- ✅ `git rm <file>`: Removes a file from your working directory and stages the deletion.
+- ✅ `git rm -r <folder>`: Recursively removes a folder and its contents from your working directory and stages the deletion.
+- ✅ `git rm --cached <file>`: Untracks a file, removing it from the Git index (staging area) but keeping the file in your local working directory. This is useful for removing a file from the repository that should have been ignored.
+- ✅ `git rm -r --cached <folder>`: Untracks a folder recursively, removing it from the Git index but keeping it locally.
+- After using `git rm`, you must commit the change: `git commit -m "Remove file/folder"`.
+- To remove the file/folder from the remote repository, push the commit: `git push`.
+
+---
+
 With these commands, you're equipped to handle various aspects of git efficiently!
 
 ---
