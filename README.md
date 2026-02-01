@@ -293,8 +293,9 @@ graph TD
 
 ## Data Handling
 
-- **DataHandler**: A utility for making safe API calls, handling response validation, and parsing JSON. It wraps results in a `DataState`.
-- **ErrorHandler**: Catches various exceptions (e.g., Dio, Format) and converts them into a standardized `FailureState` with user-friendly messages.
+- **ApiHandler**: A dedicated executor for API operations in **Data Sources**, providing safe execution of HTTP requests, standard response normalization, and error mapping.
+- **RepositoryHandler**: A utility for **Repository** implementations to coordinate remote and local data sources while mapping DTOs to domain models (offline-first strategy).
+- **ErrorHandler**: A centralized utility that catches specific exceptions (e.g., Dio, Format) and converts them into a standardized `FailureState` with user-friendly messages.
 
 ## Data States
 
@@ -309,15 +310,15 @@ flowchart TD
   B -- calls --> C["Repository"]
   C -- calls --> D["Remote DataSource"] & E["Local DataSource"]
   C -- uses --> F["Internet Client"]
-  C -- wrapped by --> G["Data Handler"]
-  G -- handles --> H["Data State"]
+  C -- handled by --> G1["Repository Handler"]
+  G1 -- handles --> H["Data State"]
   D -- uses --> I["Http Client"]
-  D -- wrapped by --> G
+  D -- handled by --> G2["Api Handler"]
   I -- sends --> J["API"]
-  G -- wrapped by --> M["Error Handler"]
-  E -- uses --> K["Isar / Local Storage Client"]
-  E -- wrapped by --> M
+  G2 -- uses --> M["Error Handler"]
+  E -- handled by --> M
   M -- handles --> H
+  E -- uses --> K["Isar / Local Storage Client"]
   K -- sends --> L["Local Database / Preferences"]
 ```
 
@@ -325,31 +326,32 @@ flowchart TD
 
 1. **UI calls Cubit, which calls UseCase**
 2. **UseCase calls Repository**
-3. **Repository checks Internet availability** using `InternetClient`
-4. If online:
+3. **Repository coordinates data fetch** using `RepositoryHandler`
+4. **RepositoryHandler checks Internet availability** using `InternetClient`
+5. If online (or using `fetchWithFallback`):
    - Calls `RemoteDataSource`
-   - `RemoteDataSource` uses `HttpClient` to make HTTP requests
-   - Response handling is wrapped with `DataHandler.safeApiCall`
-   - Errors are caught via `ErrorHandler`
-5. If offline:
-   - Optionally falls back to `localCallback` using `LocalDataSource`
-6. **Repository may also call `LocalDataSource`** directly
-7. **All outcomes are returned as `DataState<T>`**: `SuccessState`, or `FailureState`
+   - `RemoteDataSource` uses `ApiHandler.call` to execute requests via `HttpClient`
+   - `ApiHandler` parses JSON into DTOs and handles API-specific errors
+6. If offline (or fallback triggered):
+   - Calls `LocalDataSource`
+7. **RepositoryHandler maps DTOs to Domain Entities** (if using `AndMap` variants)
+8. **All outcomes are returned as `DataState<T>`**: `SuccessState`, or `FailureState`
 
 ### Core Components
 
 - **Use Case**: Represents a single business action (e.g., `LoginUseCase`). It is called by the Presentation layer (Cubit) and orchestrates the flow of data by interacting with one or more Repositories. This encapsulates a specific piece of business logic, making it reusable and decoupled from the UI state management.
 
-- **Repository**: Acts as the single source of truth for the domain layer. It coordinates data from one or more data sources (remote, local) and decides where to fetch data from, often using `DataHandler.fetchWithFallbackAndMap` to check for internet connectivity. It is also responsible for mapping Data Transfer Objects (DTOs) from the data layer into clean domain models for the UI layer.
+- **Repository**: Acts as the single source of truth for the domain layer. It coordinates data from one or more data sources (remote, local) and decides where to fetch data from, often using `RepositoryHandler.fetchWithFallbackAndMap` to implement the offline-first strategy. It is also responsible for mapping Data Transfer Objects (DTOs) from the data layer into clean domain models for the UI layer.
 
 - **Data Sources (`Remote`, `Local`)**:
-  - **RemoteDataSource**: Handles communication with the backend REST API. It uses the `HttpClient` to make HTTP requests. Each method is wrapped in `DataHandler.safeApiCall` to safely parse responses and handle API-specific errors.
+  - **RemoteDataSource**: Handles communication with the backend REST API. It uses the `HttpClient` to make HTTP requests. Each method is wrapped in `ApiHandler.call` to safely parse responses and handle API-specific errors.
   - **LocalDataSource**: Manages data persistence on the device (e.g., user session, cached data). It uses `IsarDbClient` or `LocalStorageClient` and wraps its methods in `ErrorHandler.execute` to ensure consistent error handling.
 
 - **HttpClient**: An abstraction over the `Dio` HTTP client. It is configured with the base URL from `AppConfig` and includes interceptors. It provides standard methods like `get`, `post`, `put`, and `delete` for making API calls.
 
-- **DataHandler & ErrorHandler**: These two classes form the backbone of the application's error handling and data flow strategy.
-  - **DataHandler**: Provides high-level utility methods like `safeApiCall` (to execute API requests, parse JSON, and wrap results in a `DataState`) and `fetchWithFallbackAndMap` (to implement the offline-first strategy).
+- **ApiHandler, RepositoryHandler & ErrorHandler**: These classes form the backbone of the application's error handling and data flow strategy.
+  - **ApiHandler**: Provides utility methods like `call` (to execute API requests, parse JSON, and wrap results in a `DataState`). It handles standard response structures and mapping to DTOs.
+  - **RepositoryHandler**: Provides high-level utility methods like `fetchWithFallbackAndMap` (to implement the offline-first strategy) and `fetchFromLocalAndMap` to coordinate between data sources and map DTOs to domain models.
   - **ErrorHandler**: A centralized utility that catches specific exceptions (`DioException`, `FormatException`, etc.) and converts them into a standardized `FailureState` with a user-friendly error message. This ensures that the UI layer receives consistent error objects regardless of the error's origin.
 
 ### Example: Login Flow
@@ -404,10 +406,10 @@ flowchart TD
     D --> E
 
     subgraph "Remote Flow (Login)"
-        E -- "uses Data Handler" --> F{Has Internet?}
+        E -- "uses Repository Handler" --> F{Has Internet?}
         F -- Yes --> G[Auth Remote DataSource]
-        G -- "calls" --> H[Data Handler]
-        H -- "1. executes" --> I[Api Service]
+        G -- "calls" --> H[Api Handler]
+        H -- "1. executes" --> I[HttpClient]
         I -- "sends HTTP Request" --> J[API]
         H -- "2. parses & returns" --> K{Success?}
         K -- Yes --> L((Success State))
@@ -416,9 +418,9 @@ flowchart TD
     end
 
     subgraph "Local Flow (Save User)"
-        E -- saveUserData --> N[Auth Local DataSource]
+        E -- "saveUserData (uses Error Handler)" --> N[Auth Local DataSource]
         N -- "calls" --> O[Error Handler]
-        O -- "1. executes" --> P[Local Database Service]
+        O -- "1. executes" --> P[Local Database Client]
         P -- "Write/Read" --> Q[(Local Database)]
         O -- "2. returns" --> K
     end
