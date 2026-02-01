@@ -1,4 +1,6 @@
-import 'package:clean_architecture/core/services/api/api_service.dart';
+import 'package:clean_architecture/core/clients/remote/http/http_client.dart';
+import 'package:clean_architecture/core/data/handlers/api_handler.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:injectable/injectable.dart';
 
 abstract interface class {{feature.pascalCase()}}RemoteDataSource {}
@@ -6,8 +8,8 @@ abstract interface class {{feature.pascalCase()}}RemoteDataSource {}
 @LazySingleton(as: {{feature.pascalCase()}}RemoteDataSource)
 final class {{feature.pascalCase()}}RemoteDataSourceImpl implements {{feature.pascalCase()}}RemoteDataSource {
   const {{feature.pascalCase()}}RemoteDataSourceImpl({
-    required ApiService apiService,
-  }) : _apiService = apiService;
+    required HttpClient httpClient,
+  }) : _httpClient = httpClient;
 
-  final ApiService _apiService;
+  final HttpClient _httpClient;
 }
