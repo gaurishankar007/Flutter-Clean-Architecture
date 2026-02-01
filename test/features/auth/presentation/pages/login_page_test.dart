@@ -1,35 +1,44 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
-import 'package:clean_architecture/core/services/image_picker/image_picker_service.dart';
-import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
-import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
+import 'package:clean_architecture/features/auth/domain/repositories/session_repository.dart';
+import 'package:clean_architecture/features/auth/domain/use_cases/log_out_use_case.dart';
 import 'package:clean_architecture/features/auth/domain/use_cases/login_use_case.dart';
 import 'package:clean_architecture/features/auth/domain/use_cases/save_user_data_use_case.dart';
+import 'package:clean_architecture/features/auth/domain/use_cases/set_session_use_case.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart';
 import 'package:clean_architecture/features/auth/presentation/pages/login/login_page.dart';
+import 'package:clean_architecture/routing/helper/navigation_client.dart';
+import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/themes/theme.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol/patrol.dart';
 
+import '../../../../../testing/mocks/client_mocks.dart';
 import '../../../../../testing/mocks/external/router_mocks.dart';
-import '../../../../../testing/mocks/service_mocks.dart';
+import '../../../../../testing/mocks/repository_mocks.dart';
 import '../../../../../testing/mocks/use_case_mocks.dart';
 
 final locator = GetIt.I;
 
+class MockScreenObserverCubit extends MockCubit<ScreenObserverState>
+    implements ScreenObserverCubit {}
+
 void main() {
   late MockLoginUseCase mockLoginUseCase;
   late MockSaveUserDataUseCase mockSaveUserDataUseCase;
-  late MockSessionService mockSessionService;
-  late MockNavigationService mockNavigationService;
-  late MockImagePickerService mockImagePickerService;
+  late MockSetSessionUseCase mockSetSessionUseCase;
+  late MockLogOutUseCase mockLogOutUseCase;
+  late MockSessionRepository mockSessionRepository;
+  late MockNavigationClient mockNavigationClient;
   late UserData userData;
 
   setUpAll(() {
@@ -53,28 +62,32 @@ void main() {
   setUp(() {
     mockLoginUseCase = MockLoginUseCase();
     mockSaveUserDataUseCase = MockSaveUserDataUseCase();
-    mockSessionService = MockSessionService();
-    mockNavigationService = MockNavigationService();
-    mockImagePickerService = MockImagePickerService();
+    mockSetSessionUseCase = MockSetSessionUseCase();
+    mockLogOutUseCase = MockLogOutUseCase();
+    mockSessionRepository = MockSessionRepository();
+    mockNavigationClient = MockNavigationClient();
 
     locator
       ..registerSingleton<LoginUseCase>(mockLoginUseCase)
       ..registerSingleton<SaveUserDataUseCase>(mockSaveUserDataUseCase)
-      ..registerSingleton<SessionService>(mockSessionService)
-      ..registerSingleton<NavigationService>(mockNavigationService)
-      ..registerSingleton<ImagePickerService>(mockImagePickerService)
+      ..registerSingleton<SetSessionUseCase>(mockSetSessionUseCase)
+      ..registerSingleton<LogOutUseCase>(mockLogOutUseCase)
+      ..registerSingleton<SessionRepository>(mockSessionRepository)
+      ..registerSingleton<NavigationClient>(mockNavigationClient)
       ..registerFactory<LoginCubit>(
         () => LoginCubit(
-          sessionService: GetIt.I<SessionService>(),
           useCases: LoginCubitUseCases(
             login: mockLoginUseCase,
             saveUserData: mockSaveUserDataUseCase,
+            setSession: mockSetSessionUseCase,
+            logOut: mockLogOutUseCase,
           ),
         ),
       );
+
     const screenDetails = ScreenDetails(
-      logicalSize: Size(1030, 1280),
-      physicalSize: Size(1030, 1280),
+      logicalSize: Size(1920, 1280),
+      physicalSize: Size(1920, 1280),
       devicePixelRatio: 1,
     );
     ScreenUtil.I.configureScreen(screenDetails);
@@ -84,11 +97,10 @@ void main() {
 
   patrolWidgetTest('Login and save the user credential', ($) async {
     // Arrange
+    when(() => mockLogOutUseCase.call()).thenAnswer((_) {});
+    when(() => mockSetSessionUseCase.call(userData)).thenAnswer((_) {});
     when(
-      () => mockSessionService.setUserData = userData,
-    ).thenAnswer((_) => userData);
-    when(
-      () => mockNavigationService.replaceAllRoute(any()),
+      () => mockNavigationClient.replaceAllRoute(any()),
     ).thenAnswer((_) async {});
     when(
       () => mockLoginUseCase.call(any()),
@@ -97,8 +109,28 @@ void main() {
       () => mockSaveUserDataUseCase.call(any()),
     ).thenAnswer((_) async => const SuccessState(data: true));
 
+    final mockScreenObserverCubit = MockScreenObserverCubit();
+    when(
+      () => mockScreenObserverCubit.state,
+    ).thenReturn(ScreenObserverState.initial());
+    when(
+      () => mockScreenObserverCubit.stream,
+    ).thenAnswer((_) => const Stream.empty());
+
+    // Set the test binding surface size to match our screen configuration
+    // This ensures widgets are within the render tree bounds
+    await $.tester.binding.setSurfaceSize(const Size(1920, 1280));
+
     // Render the view
-    await $.pumpWidget(MaterialApp(theme: lightTheme, home: const LoginPage()));
+    await $.pumpWidget(
+      BlocProvider<ScreenObserverCubit>(
+        create: (_) => mockScreenObserverCubit,
+        child: MaterialApp(theme: lightTheme, home: const LoginPage()),
+      ),
+    );
+
+    // Wait for all animations and async operations to complete
+    await $.pumpAndSettle();
 
     // Expect the login button to be enabled initially
     expect($('Login'), findsOne);
@@ -110,18 +142,23 @@ void main() {
     expect($(TextButton), findsOneWidget);
     expect($(InkWell).$(Icons.visibility_off_outlined), findsOneWidget);
 
-    // Enter email and password
-    await $(TextField).at(0).enterText('username');
-    await $(TextField).at(1).enterText('password');
+    // Enter email and password using standard Flutter test approach
+    // This avoids hit-testability issues with Patrol's enterText in scrollable content
+    await $.tester.enterText(find.byType(TextField).first, 'username');
+    await $.tester.enterText(find.byType(TextField).at(1), 'password');
+    await $.pumpAndSettle();
 
-    await $(Checkbox).tap();
+    // Tap checkbox using standard Flutter test
+    await $.tester.tap(find.byType(Checkbox));
+    await $.pumpAndSettle();
 
     // Use the login cubit's login method in the login_button widget.
-    // Otherwise the test will fail.
-    await enabledButton.tap();
+    // Tap the login button using standard Flutter test
+    await $.tester.tap(find.byType(ElevatedButton));
+    await $.pumpAndSettle();
 
     verify(() => mockLoginUseCase.call(any())).called(1);
-    verify(() => mockSessionService.setUserData = any()).called(1);
-    verify(() => mockNavigationService.replaceAllRoute(any())).called(1);
+    verify(() => mockSetSessionUseCase.call(any())).called(1);
+    verify(() => mockNavigationClient.replaceAllRoute(any())).called(1);
   });
 }

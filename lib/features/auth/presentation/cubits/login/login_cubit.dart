@@ -1,8 +1,6 @@
-// import 'dart:io';
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
-import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/features/auth/domain/entities/authentication.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
@@ -13,13 +11,10 @@ part 'login_state.dart';
 
 @injectable
 class LoginCubit extends BaseCubit<LoginState> {
-  LoginCubit({
-    required SessionService sessionService,
-    required LoginCubitUseCases useCases,
-  }) : _sessionService = sessionService,
-       _useCases = useCases,
-       super(const LoginState.initial());
-  final SessionService _sessionService;
+  LoginCubit({required LoginCubitUseCases useCases})
+    : _useCases = useCases,
+      super(const LoginState.initial());
+
   final LoginCubitUseCases _useCases;
   bool _passwordVisibility = false;
   bool _saveUserCredential = false;
@@ -31,6 +26,13 @@ class LoginCubit extends BaseCubit<LoginState> {
       saveUserCredential: _saveUserCredential,
     );
     emit(newState);
+  }
+
+  /// Clear any stale session data when login page loads
+  /// This handles cases where the auth interceptor navigated to login
+  /// but couldn't clear the in-memory session data
+  void clearSession() {
+    _useCases.logOut.call();
   }
 
   void togglePasswordVisibility() {
@@ -55,7 +57,7 @@ class LoginCubit extends BaseCubit<LoginState> {
     showDataStateToast(dataState);
 
     if (dataState.hasData) {
-      _sessionService.setUserData = dataState.data!;
+      _useCases.setSession.call(dataState.data!);
       if (_saveUserCredential) {
         await _useCases.saveUserData.call(dataState.data!);
       }
@@ -83,7 +85,7 @@ class LoginCubit extends BaseCubit<LoginState> {
         ),
       ),
     );
-    _sessionService.setUserData = dataState.data!;
+    _useCases.setSession.call(dataState.data!);
     if (_saveUserCredential) {
       await _useCases.saveUserData.call(dataState.data!);
     }

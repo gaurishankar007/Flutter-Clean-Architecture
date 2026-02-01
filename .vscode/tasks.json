@@ -20,7 +20,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Flutter: Build build-runner",
+      "label": "Dart: Build build-runner",
       "detail": "",
       "type": "dart",
       "command": "dart",
@@ -29,7 +29,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Flutter: Watch builder-runner",
+      "label": "Dart: Watch builder-runner",
       "detail": "",
       "type": "dart",
       "command": "dart",

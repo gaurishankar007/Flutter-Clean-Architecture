@@ -1,4 +1,9 @@
-part of 'data_handler.dart';
+import 'dart:developer' show log;
+
+import 'package:clean_architecture/core/data/states/data_state.dart';
+import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 abstract final class ErrorHandler {
   /// Run an async callback and log any exceptions (does not rethrow).
@@ -61,12 +66,11 @@ abstract final class ErrorHandler {
       _debugError('Http Response: ${exception.response}');
       _debugError(exception, stackTrace);
       return _handleDioException<T>(exception);
-    }
+    } 
     // on FirebaseAuthException catch (exception, stackTrace) {
     //   _debugError(exception, stackTrace);
     //   return _handleFirebaseAuthException<T>(exception);
-    // }
-    // on GoogleSignInException catch (exception, stackTrace) {
+    // } on GoogleSignInException catch (exception, stackTrace) {
     //   _debugError(exception, stackTrace);
     //   return _handleGoogleSignInException<T>(exception);
     // }
@@ -124,7 +128,6 @@ abstract final class ErrorHandler {
   //   return FailureState(
   //     message: _firebaseAuthErrorMessages[firebaseAuthError],
   //     error: exception.toString(),
-  //     errorType: ErrorType.firebaseAuthError,
   //   );
   // }
 
@@ -136,7 +139,6 @@ abstract final class ErrorHandler {
   //   return FailureState(
   //     message: _googleSignInErrorMessages[errorCode],
   //     error: exception.toString(),
-  //     errorType: ErrorType.googleSignInError,
   //   );
   // }
 

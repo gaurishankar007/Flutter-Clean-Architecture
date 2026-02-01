@@ -1,4 +1,4 @@
-import 'package:clean_architecture/core/services/database/local_database_service.dart';
+import 'package:clean_architecture/core/clients/local/local_storage_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -7,20 +7,20 @@ import '../../../../testing/mocks/external/external_mocks.dart'
 
 void main() {
   late MockSharedPreferences mockSharedPreferences;
-  late LocalDatabaseServiceImpl localDatabaseService;
+  late LocalStorageClientImpl localStorageClient;
 
   setUp(() {
     mockSharedPreferences = MockSharedPreferences();
-    localDatabaseService = LocalDatabaseServiceImpl(
+    localStorageClient = LocalStorageClientImpl(
       sharedPreferences: mockSharedPreferences,
     );
   });
 
-  group('LocalDatabaseServiceImplementation', () {
+  group('LocalStorageClientImpl', () {
     test('getString returns value from SharedPreferences', () {
       when(() => mockSharedPreferences.getString('key')).thenReturn('value');
 
-      final result = localDatabaseService.getString('key');
+      final result = localStorageClient.getString('key');
 
       expect(result, 'value');
       verify(() => mockSharedPreferences.getString('key')).called(1);
@@ -29,7 +29,7 @@ void main() {
     test('getString returns null if key does not exist', () {
       when(() => mockSharedPreferences.getString('missing')).thenReturn(null);
 
-      final result = localDatabaseService.getString('missing');
+      final result = localStorageClient.getString('missing');
 
       expect(result, isNull);
       verify(() => mockSharedPreferences.getString('missing')).called(1);
@@ -40,7 +40,7 @@ void main() {
         () => mockSharedPreferences.setString('key', 'value'),
       ).thenAnswer((_) async => true);
 
-      await localDatabaseService.setString('key', 'value');
+      await localStorageClient.setString('key', 'value');
 
       verify(() => mockSharedPreferences.setString('key', 'value')).called(1);
     });
@@ -50,7 +50,7 @@ void main() {
         () => mockSharedPreferences.remove('key'),
       ).thenAnswer((_) async => true);
 
-      await localDatabaseService.remove('key');
+      await localStorageClient.remove('key');
 
       verify(() => mockSharedPreferences.remove('key')).called(1);
     });
@@ -58,7 +58,7 @@ void main() {
     test('clear calls clear on SharedPreferences', () async {
       when(() => mockSharedPreferences.clear()).thenAnswer((_) async => true);
 
-      await localDatabaseService.clear();
+      await localStorageClient.clear();
 
       verify(() => mockSharedPreferences.clear()).called(1);
     });

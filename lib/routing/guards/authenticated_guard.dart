@@ -1,13 +1,14 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:clean_architecture/core/services/session/session_service.dart';
+import 'package:clean_architecture/features/auth/domain/repositories/session_repository.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
+import 'package:get_it/get_it.dart';
 
 final class AuthenticatedGuard extends AutoRouteGuard {
   const AuthenticatedGuard();
 
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) {
-    if (SessionUtil.I.isLoggedIn) {
+    if (GetIt.I<SessionRepository>().isLoggedIn) {
       return resolver.next();
     }
 

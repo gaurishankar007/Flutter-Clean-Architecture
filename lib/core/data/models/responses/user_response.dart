@@ -1,7 +1,8 @@
 import 'package:clean_architecture/core/data/models/domain_convertible.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
+import 'package:equatable/equatable.dart';
 
-class UserResponse implements DomainConvertible<User> {
+class UserResponse extends Equatable implements DomainConvertible<User> {
   const UserResponse({
     required this.id,
     required this.firstName,
@@ -59,4 +60,14 @@ class UserResponse implements DomainConvertible<User> {
       isActive: isActive,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    firstName,
+    lastName,
+    username,
+    email,
+    isActive,
+  ];
 }

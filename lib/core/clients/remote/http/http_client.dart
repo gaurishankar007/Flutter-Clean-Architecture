@@ -1,26 +1,31 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:alice/alice.dart';
 import 'package:alice/model/alice_configuration.dart';
 import 'package:alice_dio/alice_dio_adapter.dart';
 import 'package:clean_architecture/config/app_config.dart';
+import 'package:clean_architecture/core/clients/local/local_storage_client.dart';
 import 'package:clean_architecture/core/constants/api_endpoints.dart';
+import 'package:clean_architecture/core/constants/local_db_keys.dart';
 import 'package:clean_architecture/core/data/models/requests/refresh_token_request.dart';
 import 'package:clean_architecture/core/data/models/responses/api_response.dart';
 import 'package:clean_architecture/core/data/models/responses/refresh_token_response.dart';
-import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
-import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
+import 'package:clean_architecture/routing/helper/navigation_client.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:injectable/injectable.dart';
 
-part 'auth_interceptor.dart';
-part 'multipart_service.dart';
+part 'http_auth_interceptor.dart';
+part 'multipart_client.dart';
 
 /// Convenience methods to make an HTTP PATCH request.
-abstract interface class ApiService {
+abstract interface class HttpClient {
   void updateBaseUrl({required String baseUrl});
 
   Future<Response<T>> get<T>(
@@ -73,7 +78,7 @@ abstract interface class ApiService {
 }
 
 @module
-abstract class ApiServiceModule {
+abstract class HttpClientModule {
   @lazySingleton
   Dio get dio => Dio();
 
@@ -81,13 +86,13 @@ abstract class ApiServiceModule {
   bool get addInterceptors => false;
 }
 
-@LazySingleton(as: ApiService)
-final class ApiServiceImpl implements ApiService {
-  ApiServiceImpl({
+@LazySingleton(as: HttpClient)
+final class HttpClientImpl implements HttpClient {
+  HttpClientImpl({
     required Dio dio,
     required AppConfig appConfig,
-    required AuthInterceptor authInterceptor,
-    required NavigationService navigationService,
+    required HttpAuthInterceptor authInterceptor,
+    required NavigationClient navigationClient,
     bool addInterceptors = false,
   }) : _dio = dio {
     _dio.options = BaseOptions(
@@ -102,7 +107,7 @@ final class ApiServiceImpl implements ApiService {
       /// Alice Configuration
       final alice = Alice(
         configuration: AliceConfiguration(
-          navigatorKey: navigationService.navigatorKey,
+          navigatorKey: navigationClient.navigatorKey,
         ),
       );
       final aliceDioAdapter = AliceDioAdapter();

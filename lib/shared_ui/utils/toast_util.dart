@@ -1,13 +1,13 @@
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
-import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
+import 'package:clean_architecture/routing/helper/navigation_client.dart';
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sliding_toast/flutter_sliding_toast.dart';
 
 abstract interface class ToastUtil {
-  static final _navigationService = NavigationUtil.I;
+  static final _navigationClient = NavigationUtil.I;
   static const _toastSetting = SlidingToastSetting(
     displayDuration: Duration(milliseconds: 2500),
     toastStartPosition: ToastPosition.top,
@@ -22,7 +22,7 @@ abstract interface class ToastUtil {
 
   static void showSuccess(String message, {Duration? duration}) {
     InteractiveToast.slide(
-      overlayState: _navigationService.navigatorKey.currentState?.overlay,
+      overlayState: _navigationClient.navigatorKey.currentState?.overlay,
       title: Text(message),
       trailing: const Icon(
         Icons.check_circle_rounded,
@@ -40,7 +40,7 @@ abstract interface class ToastUtil {
 
   static void showError(String message, {Duration? duration}) {
     InteractiveToast.slide(
-      overlayState: _navigationService.navigatorKey.currentState?.overlay,
+      overlayState: _navigationClient.navigatorKey.currentState?.overlay,
       title: BaseText(message),
       trailing: const Icon(
         Icons.warning_rounded,

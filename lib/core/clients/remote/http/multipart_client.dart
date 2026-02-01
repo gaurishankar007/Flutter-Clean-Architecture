@@ -1,6 +1,6 @@
-part of 'api_service.dart';
+part of 'http_client.dart';
 
-abstract interface class MultiPartService {
+abstract interface class MultiPartClient {
   Future<MultipartFile> multipartFromFile(
     String filePath, {
     String? filename,
@@ -14,7 +14,7 @@ abstract interface class MultiPartService {
 ///
 /// MultipartFile is based on stream, and a stream can be read only once,
 /// so the same MultipartFile can't be read multiple times.
-final class MultiPartServiceImpl implements MultiPartService {
+final class MultiPartClientImpl implements MultiPartClient {
   @override
   Future<MultipartFile> multipartFromFile(
     String filePath, {

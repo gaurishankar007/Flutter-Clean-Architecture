@@ -9,21 +9,21 @@ import 'package:clean_architecture/features/auth/domain/entities/authentication.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../../testing/mocks/client_mocks.dart';
 import '../../../../../testing/mocks/data_source_mocks.dart';
-import '../../../../../testing/mocks/service_mocks.dart';
 
 void main() {
-  late MockInternetService mockInternetService;
+  late MockInternetClient mockInternetClient;
   late MockAuthRemoteDataSource mockAuthRemoteDataSource;
   late MockAuthLocalDataSource mockAuthLocalDataSource;
   late AuthRepositoryImpl repository;
 
   setUp(() {
-    mockInternetService = MockInternetService();
+    mockInternetClient = MockInternetClient();
     mockAuthRemoteDataSource = MockAuthRemoteDataSource();
     mockAuthLocalDataSource = MockAuthLocalDataSource();
     repository = AuthRepositoryImpl(
-      internet: mockInternetService,
+      internet: mockInternetClient,
       remoteDataSource: mockAuthRemoteDataSource,
       localDataSource: mockAuthLocalDataSource,
     );
@@ -76,7 +76,7 @@ void main() {
       'should call remoteDataSource.login when internet is connected and return its result mapped to domain',
       () async {
         // Arrange
-        when(() => mockInternetService.isConnected).thenReturn(true);
+        when(() => mockInternetClient.isConnected).thenReturn(true);
         when(
           () => mockAuthRemoteDataSource.login(any()),
         ).thenAnswer((_) async => SuccessState(data: tUserDataModel));
@@ -88,9 +88,9 @@ void main() {
         expect(result, isA<SuccessState<UserData>>());
         // repository maps DTO -> domain, so expect domain UserData
         expect(result.data, tUserData);
-        verify(() => mockInternetService.isConnected).called(1);
+        verify(() => mockInternetClient.isConnected).called(1);
         verify(() => mockAuthRemoteDataSource.login(any())).called(1);
-        verifyNoMoreInteractions(mockInternetService);
+        verifyNoMoreInteractions(mockInternetClient);
         verifyNoMoreInteractions(mockAuthRemoteDataSource);
         verifyZeroInteractions(mockAuthLocalDataSource);
       },
@@ -100,7 +100,7 @@ void main() {
       'should return FailureState.noInternet when internet is not connected',
       () async {
         // Arrange
-        when(() => mockInternetService.isConnected).thenReturn(false);
+        when(() => mockInternetClient.isConnected).thenReturn(false);
 
         // Act
         final result = await repository.login(tAuthentication);
@@ -108,8 +108,8 @@ void main() {
         // Assert
         expect(result, isA<FailureState<UserData>>());
         expect(result.error, kNoInternet);
-        verify(() => mockInternetService.isConnected).called(1);
-        verifyNoMoreInteractions(mockInternetService);
+        verify(() => mockInternetClient.isConnected).called(1);
+        verifyNoMoreInteractions(mockInternetClient);
         verifyZeroInteractions(mockAuthRemoteDataSource);
         verifyZeroInteractions(mockAuthLocalDataSource);
       },
@@ -135,7 +135,7 @@ void main() {
         // Use a flexible argument matcher to avoid fragile instance-equality.
         verify(() => mockAuthLocalDataSource.saveUserData(any())).called(1);
         verifyNoMoreInteractions(mockAuthLocalDataSource);
-        verifyZeroInteractions(mockInternetService);
+        verifyZeroInteractions(mockInternetClient);
         verifyZeroInteractions(mockAuthRemoteDataSource);
       },
     );
@@ -159,7 +159,7 @@ void main() {
         expect(result.data, tUserData);
         verify(() => mockAuthLocalDataSource.getUserData()).called(1);
         verifyNoMoreInteractions(mockAuthLocalDataSource);
-        verifyZeroInteractions(mockInternetService);
+        verifyZeroInteractions(mockInternetClient);
         verifyZeroInteractions(mockAuthRemoteDataSource);
       },
     );
@@ -170,7 +170,7 @@ void main() {
       'should call remoteDataSource.checkAUth when internet is connected and return its result',
       () async {
         // Arrange
-        when(() => mockInternetService.isConnected).thenReturn(true);
+        when(() => mockInternetClient.isConnected).thenReturn(true);
         when(
           () => mockAuthRemoteDataSource.checkAUth(),
         ).thenAnswer((_) async => const SuccessState(data: true));
@@ -181,9 +181,9 @@ void main() {
         // Assert
         expect(result, isA<SuccessState<bool>>());
         expect(result.data, true);
-        verify(() => mockInternetService.isConnected).called(1);
+        verify(() => mockInternetClient.isConnected).called(1);
         verify(() => mockAuthRemoteDataSource.checkAUth()).called(1);
-        verifyNoMoreInteractions(mockInternetService);
+        verifyNoMoreInteractions(mockInternetClient);
         verifyNoMoreInteractions(mockAuthRemoteDataSource);
         verifyZeroInteractions(mockAuthLocalDataSource);
       },
@@ -193,7 +193,7 @@ void main() {
       'should return FailureState.noInternet when internet is not connected',
       () async {
         // Arrange
-        when(() => mockInternetService.isConnected).thenReturn(false);
+        when(() => mockInternetClient.isConnected).thenReturn(false);
 
         // Act
         final result = await repository.checkAuth();
@@ -201,8 +201,8 @@ void main() {
         // Assert
         expect(result, isA<FailureState<bool>>());
         expect(result.error, kNoInternet);
-        verify(() => mockInternetService.isConnected).called(1);
-        verifyNoMoreInteractions(mockInternetService);
+        verify(() => mockInternetClient.isConnected).called(1);
+        verifyNoMoreInteractions(mockInternetClient);
         verifyZeroInteractions(mockAuthRemoteDataSource);
         verifyZeroInteractions(mockAuthLocalDataSource);
       },

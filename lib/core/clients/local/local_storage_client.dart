@@ -5,7 +5,7 @@ import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-abstract interface class LocalDatabaseService {
+abstract interface class LocalStorageClient {
   Future<void> setString(String key, String value);
   Future<void> setStringWithEncryption(String key, String value);
   String? getString(String key);
@@ -16,15 +16,15 @@ abstract interface class LocalDatabaseService {
 }
 
 @module
-abstract class LocalDatabaseServiceModule {
+abstract class LocalStorageClientModule {
   @preResolve
   Future<SharedPreferences> get sharedPreferences =>
       SharedPreferences.getInstance();
 }
 
-@LazySingleton(as: LocalDatabaseService)
-final class LocalDatabaseServiceImpl implements LocalDatabaseService {
-  const LocalDatabaseServiceImpl({required this.sharedPreferences});
+@LazySingleton(as: LocalStorageClient)
+final class LocalStorageClientImpl implements LocalStorageClient {
+  const LocalStorageClientImpl({required this.sharedPreferences});
   final SharedPreferences sharedPreferences;
 
   @override

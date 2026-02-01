@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:clean_architecture/core/clients/local/local_storage_client.dart';
 import 'package:clean_architecture/core/constants/local_db_keys.dart';
-import 'package:clean_architecture/core/data/handlers/data_handler.dart';
+import 'package:clean_architecture/core/data/handlers/error_handler.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
-import 'package:clean_architecture/core/services/database/local_database_service.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:injectable/injectable.dart';
@@ -16,9 +16,9 @@ abstract interface class AuthLocalDataSource {
 
 @LazySingleton(as: AuthLocalDataSource)
 final class AuthLocalDataSourceImpl implements AuthLocalDataSource {
-  const AuthLocalDataSourceImpl({required LocalDatabaseService localDatabase})
+  const AuthLocalDataSourceImpl({required LocalStorageClient localDatabase})
     : _localDatabase = localDatabase;
-  final LocalDatabaseService _localDatabase;
+  final LocalStorageClient _localDatabase;
 
   @override
   FutureBool saveUserData(UserDataResponse userDataModel) {

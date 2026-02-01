@@ -1,6 +1,6 @@
+import 'package:clean_architecture/core/clients/remote/http/http_client.dart';
 import 'package:clean_architecture/core/constants/api_endpoints.dart';
-import 'package:clean_architecture/core/data/handlers/data_handler.dart';
-import 'package:clean_architecture/core/services/api/api_service.dart';
+import 'package:clean_architecture/core/data/handlers/api_handler.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
@@ -14,14 +14,14 @@ abstract interface class AuthRemoteDataSource {
 
 @LazySingleton(as: AuthRemoteDataSource)
 final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  const AuthRemoteDataSourceImpl({required ApiService dioClient})
+  const AuthRemoteDataSourceImpl({required HttpClient dioClient})
     : _dioClient = dioClient;
-  final ApiService _dioClient;
+  final HttpClient _dioClient;
 
   @override
   FutureData<UserDataResponse> login(AuthenticationRequest request) {
-    return DataHandler.safeApiCall(
-      request: () => _dioClient.post(
+    return ApiHandler.call(
+      () => _dioClient.post(
         ApiEndpoints.login,
         data: request.toJson(),
         options: Options(
@@ -34,8 +34,8 @@ final class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   FutureBool checkAUth() {
-    return DataHandler.safeApiCall(
-      request: () => _dioClient.get(ApiEndpoints.checkAuth),
+    return ApiHandler.call(
+      () => _dioClient.get(ApiEndpoints.checkAuth),
       fromJson: (json) => true,
     );
   }

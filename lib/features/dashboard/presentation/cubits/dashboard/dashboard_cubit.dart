@@ -11,6 +11,7 @@ class DashboardCubit extends BaseCubit<DashboardState> {
   DashboardCubit({required DashboardCubitUseCases useCases})
     : _useCases = useCases,
       super(DashboardState.initial());
+
   final DashboardCubitUseCases _useCases;
   int _activeIndex = 0;
 
@@ -44,4 +45,9 @@ class DashboardCubit extends BaseCubit<DashboardState> {
 
   /// Check whether the token is expired or not
   FutureBool verifyToken() => _useCases.checkAuthentication.call();
+
+  Future<void> logOut() async {
+    _useCases.logOut();
+    await replaceAllRoute(const LoginRoute());
+  }
 }

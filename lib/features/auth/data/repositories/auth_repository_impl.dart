@@ -1,6 +1,6 @@
-import 'package:clean_architecture/core/data/handlers/data_handler.dart';
+import 'package:clean_architecture/core/clients/remote/internet_client.dart';
+import 'package:clean_architecture/core/data/handlers/repository_handler.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
-import 'package:clean_architecture/core/services/internet/internet_service.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/auth/data/data_sources/auth_local_data_source.dart';
 import 'package:clean_architecture/features/auth/data/data_sources/auth_remote_data_source.dart';
@@ -13,19 +13,20 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: AuthRepository)
 final class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
-    required InternetService internet,
+    required InternetClient internet,
     required AuthRemoteDataSource remoteDataSource,
     required AuthLocalDataSource localDataSource,
   }) : _localDataSource = localDataSource,
        _remoteDataSource = remoteDataSource,
        _internet = internet;
-  final InternetService _internet;
+       
+  final InternetClient _internet;
   final AuthRemoteDataSource _remoteDataSource;
   final AuthLocalDataSource _localDataSource;
 
   @override
   FutureData<UserData> login(Authentication authentication) {
-    return DataHandler.fetchWithFallbackAndMap(
+    return RepositoryHandler.fetchWithFallbackAndMap(
       isInternetConnected: _internet.isConnected,
       remoteCallback: () => _remoteDataSource.login(
         AuthenticationRequest.fromDomain(authentication),
@@ -39,14 +40,14 @@ final class AuthRepositoryImpl implements AuthRepository {
 
   @override
   FutureData<UserData> getUserData() {
-    return DataHandler.fetchFromLocalAndMap(
+    return RepositoryHandler.fetchFromLocalAndMap(
       localCallback: _localDataSource.getUserData,
     );
   }
 
   @override
   FutureBool checkAuth() {
-    return DataHandler.fetchWithFallback(
+    return RepositoryHandler.fetchWithFallback(
       isInternetConnected: _internet.isConnected,
       remoteCallback: _remoteDataSource.checkAUth,
     );

@@ -10,3 +10,5 @@ class MockDioException extends Mock implements DioException {}
 class MockInternetConnection extends Mock implements InternetConnection {}
 
 class MockSharedPreferences extends Mock implements SharedPreferences {}
+
+class MockResponse<T> extends Mock implements Response<T> {}

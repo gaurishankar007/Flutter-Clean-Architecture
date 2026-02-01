@@ -4,7 +4,7 @@
 
 // import '../../../features/auth/data/isar_collections/user_collection.dart';
 
-// abstract interface class IsarDatabaseService {
+// abstract interface class IsarDBClient {
 //   Future<void> put<T>(T collection);
 //   Future<void> putAll<T>(List<T> collection);
 //   Future<List<T>> getAll<T>();
@@ -25,11 +25,11 @@
 //   }
 // }
 
-// @LazySingleton(as: IsarDatabaseService)
-// final class IsarDatabaseServiceImpl implements IsarDatabaseService {
+// @LazySingleton(as: IsarDBClient)
+// final class IsarDBClientImpl implements IsarDBClient {
 //   final Isar _isar;
 
-//   const IsarDatabaseServiceImpl({required Isar isar}) : _isar = isar;
+//   const IsarDBClientImpl({required Isar isar}) : _isar = isar;
 
 //   @override
 //   Future<void> put<T>(T collection) async => await _isar.writeTxn(

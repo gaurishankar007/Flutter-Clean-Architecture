@@ -1,4 +1,4 @@
-import 'package:clean_architecture/shared_ui/utils/service_mixin.dart';
+import 'package:clean_architecture/shared_ui/utils/client_mixin.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,6 +18,6 @@ abstract class BaseState extends Equatable {
   List<Object?> get props => [status];
 }
 
-abstract class BaseCubit<T> extends Cubit<T> with ServiceMixin {
+abstract class BaseCubit<T> extends Cubit<T> with ClientMixin {
   BaseCubit(super.initialState);
 }

@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
-abstract interface class InternetService {
+abstract interface class InternetClient {
   bool get isConnected;
   Stream<InternetStatus>? get connectivityStream;
   Future<bool> checkConnection();
@@ -13,15 +13,15 @@ abstract interface class InternetService {
 }
 
 @module
-abstract class InternetServiceModule {
+abstract class InternetClientModule {
   @lazySingleton
   InternetConnection get internetConnection => InternetConnection();
 }
 
 /// Check whether the device is online or offline
-@LazySingleton(as: InternetService)
-final class InternetServiceImpl implements InternetService {
-  InternetServiceImpl({required InternetConnection internetConnection})
+@LazySingleton(as: InternetClient)
+final class InternetClientImpl implements InternetClient {
+  InternetClientImpl({required InternetConnection internetConnection})
     : _internetConnection = internetConnection;
 
   final InternetConnection _internetConnection;
@@ -56,8 +56,8 @@ final class InternetServiceImpl implements InternetService {
   void unSubscriptionConnectivity() => _subscription?.cancel();
 }
 
-/// A util class for accessing [InternetService]
+/// A util class for accessing [InternetClient]
 abstract final class InternetUtil {
-  /// Returns the registered instance of [InternetService] which is always the same
-  static InternetService get I => GetIt.I<InternetService>();
+  /// Returns the registered instance of [InternetClient] which is always the same
+  static InternetClient get I => GetIt.I<InternetClient>();
 }

@@ -1,19 +1,19 @@
 import 'package:clean_architecture/config/app_config.dart';
-import 'package:clean_architecture/core/services/api/api_service.dart';
+import 'package:clean_architecture/core/clients/remote/http/http_client.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import '../../../../testing/mocks/client_mocks.dart';
 import '../../../../testing/mocks/external/external_mocks.dart';
-import '../../../../testing/mocks/service_mocks.dart';
 
 void main() {
   late MockDio mockDio;
   late MockAuthInterceptor mockAuthInterceptor;
-  late MockNavigationService mockNavigationService;
-  late ApiServiceImpl apiService;
+  late MockNavigationClient mockNavigationClient;
+  late HttpClientImpl httpClient;
   late AppConfig appConfig;
 
   setUpAll(() async {
@@ -21,20 +21,20 @@ void main() {
 
     mockDio = MockDio();
     mockAuthInterceptor = MockAuthInterceptor();
-    mockNavigationService = MockNavigationService();
+    mockNavigationClient = MockNavigationClient();
     appConfig = AppConfigDev();
   });
 
   setUp(() {
     when(
-      () => mockNavigationService.navigatorKey,
+      () => mockNavigationClient.navigatorKey,
     ).thenReturn(GlobalKey<NavigatorState>());
 
-    apiService = ApiServiceImpl(
+    httpClient = HttpClientImpl(
       appConfig: appConfig,
       authInterceptor: mockAuthInterceptor,
       dio: mockDio,
-      navigationService: mockNavigationService,
+      navigationClient: mockNavigationClient,
     );
   });
 
@@ -54,7 +54,7 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.get<dynamic>('/test', data: {'a': 1});
+      final result = await httpClient.get<dynamic>('/test', data: {'a': 1});
 
       expect(result, response);
       verify(() => mockDio.get<dynamic>('/test', data: {'a': 1})).called(1);
@@ -76,7 +76,7 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.post<dynamic>('/test', data: {'b': 2});
+      final result = await httpClient.post<dynamic>('/test', data: {'b': 2});
 
       expect(result, response);
       verify(() => mockDio.post<dynamic>('/test', data: {'b': 2})).called(1);
@@ -98,7 +98,7 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.put<dynamic>('/test', data: {'c': 3});
+      final result = await httpClient.put<dynamic>('/test', data: {'c': 3});
 
       expect(result, response);
       verify(() => mockDio.put<dynamic>('/test', data: {'c': 3})).called(1);
@@ -120,7 +120,7 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.patch<dynamic>('/test', data: {'d': 4});
+      final result = await httpClient.patch<dynamic>('/test', data: {'d': 4});
 
       expect(result, response);
       verify(() => mockDio.patch<dynamic>('/test', data: {'d': 4})).called(1);
@@ -140,7 +140,7 @@ void main() {
         ),
       ).thenAnswer((_) async => response);
 
-      final result = await apiService.delete<dynamic>('/test', data: {'e': 5});
+      final result = await httpClient.delete<dynamic>('/test', data: {'e': 5});
 
       expect(result, response);
       verify(() => mockDio.delete<dynamic>('/test', data: {'e': 5})).called(1);

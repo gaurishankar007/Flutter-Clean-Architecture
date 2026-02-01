@@ -1,8 +1,10 @@
 import 'package:clean_architecture/core/data/models/domain_convertible.dart';
 import 'package:clean_architecture/core/data/models/responses/user_response.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
+import 'package:equatable/equatable.dart';
 
-class UserDataResponse implements DomainConvertible<UserData> {
+class UserDataResponse extends Equatable
+    implements DomainConvertible<UserData> {
   const UserDataResponse({
     required this.user,
     required this.accessToken,
@@ -42,4 +44,7 @@ class UserDataResponse implements DomainConvertible<UserData> {
       refreshToken: refreshToken,
     );
   }
+
+  @override
+  List<Object?> get props => [user, accessToken, refreshToken];
 }

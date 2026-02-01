@@ -7,18 +7,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../../../testing/mocks/service_mocks.dart';
+import '../../../../../testing/mocks/client_mocks.dart';
 
 // A mock for Options is needed for `captureAny` with mocktail
 class MockOptions extends Mock implements Options {}
 
 void main() {
-  late MockApiService mockApiService;
+  late MockHttpClient mockHttpClient;
   late AuthRemoteDataSourceImpl dataSource;
 
   setUp(() {
-    mockApiService = MockApiService();
-    dataSource = AuthRemoteDataSourceImpl(dioClient: mockApiService);
+    mockHttpClient = MockHttpClient();
+    dataSource = AuthRemoteDataSourceImpl(dioClient: mockHttpClient);
     registerFallbackValue(MockOptions());
   });
 
@@ -52,7 +52,7 @@ void main() {
       () async {
         // Arrange
         when(
-          () => mockApiService.post<dynamic>(
+          () => mockHttpClient.post<dynamic>(
             any(),
             data: any(named: 'data'),
             options: any(named: 'options'),
@@ -76,7 +76,7 @@ void main() {
         expect(result.data!.refreshToken, 'refresh');
 
         final captured = verify(
-          () => mockApiService.post<dynamic>(
+          () => mockHttpClient.post<dynamic>(
             ApiEndpoints.login,
             data: captureAny(named: 'data'),
             options: captureAny(named: 'options'),
@@ -95,7 +95,7 @@ void main() {
       // This response is missing the 'data' key, which DataHandler will flag as an error.
       final tErrorResponseJson = {'message': 'Invalid credentials'};
       when(
-        () => mockApiService.post<dynamic>(
+        () => mockHttpClient.post<dynamic>(
           any(),
           data: any(named: 'data'),
           options: any(named: 'options'),
@@ -124,7 +124,7 @@ void main() {
           message: 'Connection failed',
         );
         when(
-          () => mockApiService.post<dynamic>(
+          () => mockHttpClient.post<dynamic>(
             any(),
             data: any(named: 'data'),
             options: any(named: 'options'),
@@ -145,7 +145,7 @@ void main() {
       'should return SuccessState with true when API call is successful',
       () async {
         // Arrange
-        when(() => mockApiService.get<dynamic>(any())).thenAnswer(
+        when(() => mockHttpClient.get<dynamic>(any())).thenAnswer(
           (_) async => Response(
             requestOptions: RequestOptions(path: ApiEndpoints.checkAuth),
             data: {
@@ -162,7 +162,9 @@ void main() {
         // Assert
         expect(result, isA<SuccessState<bool>>());
         expect(result.data, isTrue);
-        verify(() => mockApiService.get<dynamic>(ApiEndpoints.checkAuth)).called(1);
+        verify(
+          () => mockHttpClient.get<dynamic>(ApiEndpoints.checkAuth),
+        ).called(1);
       },
     );
 
@@ -174,7 +176,7 @@ void main() {
           requestOptions: RequestOptions(path: ApiEndpoints.checkAuth),
           message: 'Not authenticated',
         );
-        when(() => mockApiService.get<dynamic>(any())).thenThrow(dioException);
+        when(() => mockHttpClient.get<dynamic>(any())).thenThrow(dioException);
 
         // Act
         final result = await dataSource.checkAUth();

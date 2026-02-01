@@ -7,14 +7,14 @@ import 'package:clean_architecture/features/auth/data/models/responses/user_data
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../../../testing/mocks/service_mocks.dart';
+import '../../../../../testing/mocks/client_mocks.dart';
 
 void main() {
-  late MockLocalDatabaseService mockLocalDatabase;
+  late MockLocalStorageClient mockLocalDatabase;
   late AuthLocalDataSourceImpl dataSource;
 
   setUp(() {
-    mockLocalDatabase = MockLocalDatabaseService();
+    mockLocalDatabase = MockLocalStorageClient();
     dataSource = AuthLocalDataSourceImpl(localDatabase: mockLocalDatabase);
   });
 

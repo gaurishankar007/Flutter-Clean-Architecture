@@ -1,14 +1,16 @@
-part of 'api_service.dart';
+part of 'http_client.dart';
 
 /// Modifies http requests and responses. Used to
 /// * Add headers
 /// * Modify data
 /// * Refresh tokens
 @LazySingleton()
-interface class AuthInterceptor extends Interceptor {
-  AuthInterceptor();
-  // Access the session service lazily via the locator to break circular DI.
-  SessionService get _sessionManager => SessionUtil.I;
+interface class HttpAuthInterceptor extends Interceptor {
+  HttpAuthInterceptor();
+  // Access services lazily via the locator
+  LocalStorageClient get _localStorageClient => GetIt.I<LocalStorageClient>();
+  NavigationClient get _navigationClient => GetIt.I<NavigationClient>();
+
   final Dio _dio = Dio();
 
   /// This flag is to prevent multiple refresh token requests. If the request
@@ -20,13 +22,25 @@ interface class AuthInterceptor extends Interceptor {
   /// token is expired, each requests are retried after refreshing token
   final List<DioRequestData> _pendingRequests = [];
 
+  UserDataResponse? get _userData {
+    final stored = _localStorageClient.getString(LocalDbKeys.userData);
+    if (stored != null && stored.isNotEmpty) {
+      try {
+        final map = jsonDecode(stored) as Map<String, dynamic>;
+        return UserDataResponse.fromJson(map);
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
+  }
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     /// Add authorization token if the user is logged in
-    if (_sessionManager.isLoggedIn) {
-      options.headers.addAll({
-        'Authorization': 'Bearer ${_sessionManager.accessToken}',
-      });
+    final token = _userData?.accessToken;
+    if (token != null && token.isNotEmpty) {
+      options.headers.addAll({'Authorization': 'Bearer $token'});
     }
 
     return super.onRequest(options, handler);
@@ -80,28 +94,38 @@ interface class AuthInterceptor extends Interceptor {
   /// Try to refresh access token. Log out the user if it fails.
   Future<bool> _refreshToken(RequestOptions requestOptions) async {
     try {
-      final request = RefreshTokenRequest(
-        refreshToken: _sessionManager.refreshToken,
-      );
+      final userData = _userData;
+      if (userData == null) {
+        _clearSessionData();
+        return false;
+      }
+
+      final request = RefreshTokenRequest(refreshToken: userData.refreshToken);
       final response = await _dio.post<dynamic>(
         ApiEndpoints.refreshToken,
         data: request.toJson(),
         options: Options(headers: requestOptions.headers),
       );
 
-      /// If api response is successful, return the new accessToken
+      /// If api response is successful, update the accessToken
       final ApiResponse<MapDynamic> apiResponse = ApiResponse.fromResponse(
         response,
       );
       if (apiResponse.success) {
         final tokenResponse = RefreshTokenResponse.fromJson(apiResponse.data);
-        await _sessionManager.refreshAccessToken(tokenResponse.accessToken);
+        final newUserData = userData..toDomain().copyWith(
+          accessToken: tokenResponse.accessToken,
+        );
+        await _localStorageClient.setString(
+          LocalDbKeys.userData,
+          jsonEncode(newUserData.toJson()),
+        );
         return true;
       }
     } on DioException catch (_) {
-      _sessionManager.clearSessionData();
+      _clearSessionData();
     } catch (error) {
-      _sessionManager.clearSessionData();
+      _clearSessionData();
       if (kDebugMode) {
         log('Token refresh: $error');
       }
@@ -110,12 +134,18 @@ interface class AuthInterceptor extends Interceptor {
     return false;
   }
 
+  void _clearSessionData() {
+    _localStorageClient.remove(LocalDbKeys.userData);
+    _navigationClient.replaceAllRoute(const LoginRoute());
+  }
+
   Future<Response<dynamic>> _retryRequest(RequestOptions requestOptions) {
     /// Reset authorization header
     requestOptions.headers.remove('Authorization');
-    requestOptions.headers.addAll({
-      'Authorization': 'Bearer ${_sessionManager.accessToken}',
-    });
+    final token = _userData?.accessToken;
+    if (token != null) {
+      requestOptions.headers.addAll({'Authorization': 'Bearer $token'});
+    }
 
     /// RequestOptions with the same method, path, data,
     /// query parameters, but with new access token.

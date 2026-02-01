@@ -24,7 +24,10 @@ class LoginPage extends HookWidget {
     final formKey = useMemoized(GlobalKey<FormState>.new);
 
     return BlocProvider(
-      create: (context) => GetIt.I<LoginCubit>(),
+      create: (context) => GetIt.I<LoginCubit>()
+        // Clear any stale session data when login page loads
+        // This ensures fresh state after auth interceptor logout
+        ..clearSession(),
       child: BlocBuilder<ScreenObserverCubit, ScreenObserverState>(
         buildWhen: (previous, current) =>
             previous.screenTypeChanges != current.screenTypeChanges,

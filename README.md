@@ -60,13 +60,11 @@ This project demonstrates how to structure Flutter applications using **Clean Ar
 ### Core Layers
 
 1. **Presentation Layer**
-
    - Contains UI and state management (e.g., Cubits, Widgets, Pages).
    - Responsible for displaying data and handling user interactions.
    - May import domain/use-cases and core, but must NOT import feature data directly — always use repository interfaces / use-cases.
 
 2. **Domain Layer**
-
    - The heart of the application. Contains **Entities**, **UseCases**, and **Repositories**.
    - Focuses purely on business logic, independent of frameworks.
    - Must not import from data or presentation.
@@ -163,6 +161,10 @@ lib/
 │   ├── injector/
 │   └── app_config.dart
 ├── core/
+│   ├── clients/
+│   │   ├── local/
+│   │   └── remote/
+│   │       └── http/
 │   ├── constants/
 │   ├── data/
 │   │   ├── handlers/
@@ -171,25 +173,28 @@ lib/
 │   ├── domain/
 │   │   ├── entities/
 │   │   └── use_cases/
-│   ├── services/
-│   │   ├── api/
-│   │   ├── database/
-│   │   ├── image_picker/
-│   │   ├── internet/
-│   │   ├── navigation/
-│   │   └── session/
 │   ├── utils/
 │   │   ├── extensions/
-│   │   └── .....
+│   │   └── image_picker_util.dart
 │   └── app_initializer.dart
 ├── features/
 │   ├── auth/
 │   │   ├── data/
+│   │   │   ├── data_sources/
+│   │   │   │   ├── auth_local_data_source.dart
+│   │   │   │   ├── auth_remote_data_source.dart
+│   │   │   │   └── session_local_data_source.dart
+│   │   │   └── repositories/
+│   │   │       ├── auth_repository_impl.dart
+│   │   │       └── session_repository_impl.dart
 │   │   ├── domain/
-│   │   ├── presentation/
+│   │   └── presentation/
 │   ├── dashboard/
 │   └── ...
 ├── routing/
+│   ├── helper/
+│   │   └── navigation_client.dart
+│   └── routes.dart
 ├── shared_ui/
 │   ├── cubits/
 │   ├── models/
@@ -203,12 +208,12 @@ lib/
 ```
 
 - **`config/`**: Environment and platform setup (flavor configs), dependency injection (`injector/`), and any Pigeon-generated platform bindings. `app_config.dart` holds flavor-specific values (base URLs, feature flags).
-- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core services (API client, navigation service, session/local storage, connectivity/InternetService), and general-purpose utilities.
+- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core clients (HTTP client, local storage, connectivity/InternetClient), and general-purpose utilities.
 - **`features/`**: Each feature follows Clean Architecture and is self-contained with three layers:
-  - **`data/`**: Remote and local data sources, DTOs/models, and concrete repository implementations that map to domain entities.
+  - **`data/`**: Remote and local data sources (including repository pattern for session management), DTOs/models, and concrete repository implementations that map to domain entities.
   - **`domain/`**: Pure business logic (entities, use cases/interactors, and abstract repository interfaces). No Flutter or external deps here.
   - **`presentation/`**: Uses **Bloc (Cubit)** for state management. Contains `cubit/` (Cubit classes and their `State` classes), `views/` (pages/screens), and feature-specific `widgets/`.
-- **`routing/`**: Centralized navigation and route declarations (for example, `auto_route`), route guards, and route-based DI if required.
+- **`routing/`**: Centralized navigation and route declarations. Includes `NavigationClient` for context-free navigation.
 - **`shared_ui/`**: Shared presentation primitives — reusable widgets, UI models, themes, and optional global cubits (e.g., `ScreenObserverCubit`, `ThemeCubit`). `application.dart` composes the `MaterialApp`, provides global dependencies, and wires routing.
 - **Entry Points**:
   - `main.dart` → Production entry that initializes DI and runs `application.dart`.
@@ -218,8 +223,7 @@ lib/
 Notes:
 
 - Dependency injection typically uses `get_it` + `injectable` and is wired in `config/injector` and `app_initializer.dart`.
-- Presentation layer (Cubits) should only depend on domain use cases and core services (not on feature data implementations). Data layer implements domain repository interfaces.
-- Presentation layer (Cubits) should only depend on domain use cases and core services (not on feature data implementations). Data layer implements domain repository interfaces.
+- Presentation layer (Cubits) should only depend on domain use cases and navigation/UI utilities (not on feature data implementations). Data layer implements domain repository interfaces.
 
 ## State Management with Bloc (Cubit)
 
@@ -259,32 +263,33 @@ graph TD
     end
 ```
 
-## Core Services
+## Core Clients & Utilities
 
-### API
+### HTTP Client
 
-- `APIService` (using Dio) handles HTTP requests.
-- `AuthInterceptor` adds authentication tokens and can be extended for caching or retries.
+- `HttpClient` (using Dio) handles HTTP requests.
+- `HttpAuthInterceptor` adds authentication tokens and can be extended for caching or retries.
 
 ### Internet Status
 
-- `InternetService` tracks connectivity and exposes a stream for UI updates.
+- `InternetClient` tracks connectivity and exposes a stream for UI updates.
 - API calls are blocked and return a network `FailureState` if offline.
 
 ### Navigation
 
-- **Navigation**: Managed by `NavigationService` (context-free navigation).
+- **Navigation**: Managed by `NavigationClient` (context-free navigation).
 - **Routing**: Uses `auto_route` for declarative routing and guards to manage access based on user state.
 
-### Session and LocalDatabase
+### Session Management
 
-- `SessionService` manages user session and persists data using `LocalDatabase` (backed by `shared_preferences`).
-- Sensitive data, such as user details, is encrypted using AES-256 before being persisted. The `LocalDatabaseService` handles this by using `EncryptionUtils` to ensure that data at rest on the device is secure.
-- The `LocalDatabase` can be extended to use Hive, Isar, or SQLite for more complex data needs.
+- Session management is now part of the **Auth Feature** following the Repository pattern.
+- `SessionRepository` manages user session and persists data using `LocalDatabase` clients (`IsarDbClient` or `LocalStorageClient`).
+- Sensitive data, such as user details, is encrypted using AES-256 before being persisted. The `LocalStorageClient` handles this by using `EncryptionUtils` to ensure that data at rest on the device is secure.
+- The `IsarDbClient` provides a robust NoSQL database for more complex data storage needs.
 
 ### Image Picker
 
-- `ImagePickerService` provides an abstraction for selecting images from the gallery or camera, ensuring decoupling from specific plugin implementations.
+- `ImagePickerUtil` provides an abstraction for selecting images from the gallery or camera, ensuring decoupling from specific plugin implementations.
 
 ## Data Handling
 
@@ -303,27 +308,27 @@ flowchart TD
   A -- calls --> B["UseCase"]
   B -- calls --> C["Repository"]
   C -- calls --> D["Remote DataSource"] & E["Local DataSource"]
-  C -- uses --> F["Internet Service"]
+  C -- uses --> F["Internet Client"]
   C -- wrapped by --> G["Data Handler"]
   G -- handles --> H["Data State"]
-  D -- uses --> I["API Service"]
+  D -- uses --> I["Http Client"]
   D -- wrapped by --> G
   I -- sends --> J["API"]
   G -- wrapped by --> M["Error Handler"]
-  E -- uses --> K["Local Database Service"]
+  E -- uses --> K["Isar / Local Storage Client"]
   E -- wrapped by --> M
   M -- handles --> H
-  K -- sends --> L["Local Database"]
+  K -- sends --> L["Local Database / Preferences"]
 ```
 
 ### Data Flow Summary
 
 1. **UI calls Cubit, which calls UseCase**
 2. **UseCase calls Repository**
-3. **Repository checks Internet availability** using `InternetService`
+3. **Repository checks Internet availability** using `InternetClient`
 4. If online:
    - Calls `RemoteDataSource`
-   - `RemoteDataSource` uses `ApiService` to make HTTP requests
+   - `RemoteDataSource` uses `HttpClient` to make HTTP requests
    - Response handling is wrapped with `DataHandler.safeApiCall`
    - Errors are caught via `ErrorHandler`
 5. If offline:
@@ -338,11 +343,10 @@ flowchart TD
 - **Repository**: Acts as the single source of truth for the domain layer. It coordinates data from one or more data sources (remote, local) and decides where to fetch data from, often using `DataHandler.fetchWithFallbackAndMap` to check for internet connectivity. It is also responsible for mapping Data Transfer Objects (DTOs) from the data layer into clean domain models for the UI layer.
 
 - **Data Sources (`Remote`, `Local`)**:
+  - **RemoteDataSource**: Handles communication with the backend REST API. It uses the `HttpClient` to make HTTP requests. Each method is wrapped in `DataHandler.safeApiCall` to safely parse responses and handle API-specific errors.
+  - **LocalDataSource**: Manages data persistence on the device (e.g., user session, cached data). It uses `IsarDbClient` or `LocalStorageClient` and wraps its methods in `ErrorHandler.execute` to ensure consistent error handling.
 
-  - **RemoteDataSource**: Handles communication with the backend REST API. It uses the `ApiService` to make HTTP requests. Each method is wrapped in `DataHandler.safeApiCall` to safely parse responses and handle API-specific errors.
-  - **LocalDataSource**: Manages data persistence on the device (e.g., user session, cached data). It uses `LocalDatabaseService` (an abstraction over `shared_preferences`) and wraps its methods in `ErrorHandler.execute` to ensure consistent error handling.
-
-- **ApiService**: An abstraction over the `Dio` HTTP client. It is configured with the base URL from `AppConfig` and includes interceptors. It provides standard methods like `get`, `post`, `put`, and `delete` for making API calls.
+- **HttpClient**: An abstraction over the `Dio` HTTP client. It is configured with the base URL from `AppConfig` and includes interceptors. It provides standard methods like `get`, `post`, `put`, and `delete` for making API calls.
 
 - **DataHandler & ErrorHandler**: These two classes form the backbone of the application's error handling and data flow strategy.
   - **DataHandler**: Provides high-level utility methods like `safeApiCall` (to execute API requests, parse JSON, and wrap results in a `DataState`) and `fetchWithFallbackAndMap` (to implement the offline-first strategy).
@@ -426,7 +430,7 @@ flowchart TD
 
 ### Debugging Tools
 
-- **Alice** integrated into `ApiService` for easy request/response inspection.
+- **Alice** integrated into `HttpClient` for easy request/response inspection.
 
 ## Feature Template Generation with Mason
 
@@ -461,7 +465,6 @@ This project uses **Mason** to generate feature templates for consistent and eff
 ### What Do `cubit_feature` & `cubit_page` Do?
 
 - **`cubit_feature`**: Generates a feature template following Clean Architecture, including:
-
   - **Data Layer**: Data Sources, Models, Repositories
   - **Domain Layer**: Entities, Repositories, Use Cases
   - **Presentation Layer**: Cubits, Pages, Widgets
@@ -487,7 +490,7 @@ This project uses a multi-layered testing strategy to ensure robustness and main
 - **Isolating Layers**: The architecture makes it easy to test components independently:
   - When testing a `UseCase`, the `Repository` is mocked.
   - When testing a `Cubit`, the `UseCase`s are mocked.
-  - When testing a `DataSource`, the `ApiService` or `LocalDatabaseService` is mocked.
+  - When testing a `DataSource`, the `HttpClient` or `Local Storage / Isar DB Client` is mocked.
 
 ### Running Tests
 

@@ -1,14 +1,14 @@
 import 'dart:io' show Platform;
 
 import 'package:auto_route/auto_route.dart';
-import 'package:clean_architecture/core/data/handlers/data_handler.dart';
+import 'package:clean_architecture/core/data/handlers/error_handler.dart';
 import 'package:clean_architecture/routing/routes.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
-abstract interface class NavigationService {
+abstract interface class NavigationClient {
   AutoRouterDelegate get routerDelegate;
   DefaultRouteParser get routeInformationParser;
   GlobalKey<NavigatorState> get navigatorKey;
@@ -28,15 +28,14 @@ abstract interface class NavigationService {
 }
 
 @module
-abstract class NavigationServiceModule {
+abstract class NavigationClientModule {
   @lazySingleton
   AppRouter get appRouter => AppRouter();
 }
 
-@LazySingleton(as: NavigationService)
-final class NavigationServiceImpl implements NavigationService {
-  NavigationServiceImpl({required AppRouter appRouter})
-    : _appRouter = appRouter;
+@LazySingleton(as: NavigationClient)
+final class NavigationClientImpl implements NavigationClient {
+  NavigationClientImpl({required AppRouter appRouter}) : _appRouter = appRouter;
 
   final AppRouter _appRouter;
 
@@ -144,8 +143,8 @@ final class NavigationServiceImpl implements NavigationService {
       );
 }
 
-/// A util class for accessing [NavigationService]
+/// A util class for accessing [NavigationClient]
 abstract final class NavigationUtil {
-  /// Returns the registered instance of [NavigationService] which is always the same
-  static NavigationService get I => GetIt.I<NavigationService>();
+  /// Returns the registered instance of [NavigationClient] which is always the same
+  static NavigationClient get I => GetIt.I<NavigationClient>();
 }

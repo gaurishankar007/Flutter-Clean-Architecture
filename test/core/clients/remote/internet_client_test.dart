@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:clean_architecture/core/services/internet/internet_service.dart';
+import 'package:clean_architecture/core/clients/remote/internet_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,11 +10,11 @@ import '../../../../testing/mocks/external/external_mocks.dart'
 
 void main() {
   late MockInternetConnection mockInternetConnection;
-  late InternetServiceImpl internetService;
+  late InternetClientImpl internetClient;
 
   setUpAll(() {
     mockInternetConnection = MockInternetConnection();
-    internetService = InternetServiceImpl(
+    internetClient = InternetClientImpl(
       internetConnection: mockInternetConnection,
     );
   });
@@ -25,7 +25,7 @@ void main() {
         () => mockInternetConnection.hasInternetAccess,
       ).thenAnswer((_) async => true);
 
-      final result = await internetService.checkConnection();
+      final result = await internetClient.checkConnection();
 
       expect(result, true);
       verify(() => mockInternetConnection.hasInternetAccess).called(1);
@@ -36,7 +36,7 @@ void main() {
         () => mockInternetConnection.hasInternetAccess,
       ).thenAnswer((_) async => false);
 
-      final result = await internetService.checkConnection();
+      final result = await internetClient.checkConnection();
 
       expect(result, false);
       verify(() => mockInternetConnection.hasInternetAccess).called(1);
@@ -55,14 +55,14 @@ void main() {
       ).thenAnswer((_) async => false);
 
       // Act: Subscribe to connectivity
-      await internetService.subscribeConnectivity();
+      await internetClient.subscribeConnectivity();
 
       // Emit a status change
       controller.add(InternetStatus.disconnected);
       // Wait for the async listener to process
       await Future<void>.delayed(const Duration(milliseconds: 10));
 
-      expect(internetService.isConnected, false);
+      expect(internetClient.isConnected, false);
 
       // Clean up
       await controller.close();
@@ -79,8 +79,8 @@ void main() {
         () => mockInternetConnection.hasInternetAccess,
       ).thenAnswer((_) async => true);
 
-      await internetService.subscribeConnectivity();
-      internetService.unSubscriptionConnectivity();
+      await internetClient.subscribeConnectivity();
+      internetClient.unSubscriptionConnectivity();
 
       // After cancelling, adding to the stream should not throw
       controller.add(InternetStatus.connected);
@@ -95,9 +95,9 @@ void main() {
         () => mockInternetConnection.onStatusChange,
       ).thenAnswer((_) => controller.stream);
 
-      await internetService.subscribeConnectivity();
+      await internetClient.subscribeConnectivity();
 
-      expect(internetService.connectivityStream, isNotNull);
+      expect(internetClient.connectivityStream, isNotNull);
 
       await controller.close();
     });

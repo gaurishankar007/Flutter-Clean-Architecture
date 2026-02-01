@@ -1,25 +1,25 @@
-import 'package:clean_architecture/core/services/navigation/navigation_service.dart';
+import 'package:clean_architecture/routing/helper/navigation_client.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../../testing/mocks/external/router_mocks.dart';
+import '../../testing/mocks/external/router_mocks.dart';
 
 void main() {
   late MockAppRouter mockAppRouter;
-  late NavigationServiceImpl navigationService;
+  late NavigationClientImpl navigationClient;
 
   setUpAll(() {
     mockAppRouter = MockAppRouter();
-    navigationService = NavigationServiceImpl(appRouter: mockAppRouter);
+    navigationClient = NavigationClientImpl(appRouter: mockAppRouter);
   });
 
   test('routerDelegate returns delegate from AppRouter', () {
     final delegate = MockAutoRouterDelegate();
     when(() => mockAppRouter.delegate()).thenReturn(delegate);
 
-    expect(navigationService.routerDelegate, delegate);
+    expect(navigationClient.routerDelegate, delegate);
     verify(() => mockAppRouter.delegate()).called(1);
   });
 
@@ -27,7 +27,7 @@ void main() {
     final parser = MockDefaultRouteParser();
     when(() => mockAppRouter.defaultRouteParser()).thenReturn(parser);
 
-    expect(navigationService.routeInformationParser, parser);
+    expect(navigationClient.routeInformationParser, parser);
     verify(() => mockAppRouter.defaultRouteParser()).called(1);
   });
 
@@ -35,7 +35,7 @@ void main() {
     final key = GlobalKey<NavigatorState>();
     when(() => mockAppRouter.navigatorKey).thenReturn(key);
 
-    expect(navigationService.navigatorKey, key);
+    expect(navigationClient.navigatorKey, key);
     verify(() => mockAppRouter.navigatorKey).called(1);
   });
 
@@ -44,7 +44,7 @@ void main() {
       () => mockAppRouter.maybePop<Object?>(any()),
     ).thenAnswer((_) async => true);
 
-    final result = await navigationService.maybePop<Object?>();
+    final result = await navigationClient.maybePop<Object?>();
 
     expect(result, true);
     verify(() => mockAppRouter.maybePop<Object?>()).called(1);
@@ -55,7 +55,7 @@ void main() {
       () => mockAppRouter.maybePopTop<Object?>(),
     ).thenAnswer((_) async => true);
 
-    final result = await navigationService.maybePopTop<Object?>();
+    final result = await navigationClient.maybePopTop<Object?>();
 
     expect(result, true);
     verify(() => mockAppRouter.maybePopTop<Object?>()).called(1);
@@ -66,7 +66,7 @@ void main() {
     when(() => mockAppRouter.back()).thenAnswer((_) {});
 
     // Act
-    navigationService.back();
+    navigationClient.back();
 
     // Assert
     verify(() => mockAppRouter.back()).called(1);
@@ -76,7 +76,7 @@ void main() {
     const route = MockPageRouteInfo();
     when(() => mockAppRouter.replaceAll([route])).thenAnswer((_) async {});
 
-    await navigationService.replaceAllRoute(route);
+    await navigationClient.replaceAllRoute(route);
 
     verify(() => mockAppRouter.replaceAll([route])).called(1);
   });
@@ -87,7 +87,7 @@ void main() {
       () => mockAppRouter.push<Object?>(route),
     ).thenAnswer((_) async => 'result');
 
-    final result = await navigationService.pushRoute<Object?>(route);
+    final result = await navigationClient.pushRoute<Object?>(route);
 
     expect(result, 'result');
     verify(() => mockAppRouter.push<Object?>(route)).called(1);
@@ -103,7 +103,7 @@ void main() {
         () => mockAppRouter.push<Object?>(route),
       ).thenAnswer((_) async => 'result');
 
-      final result = await navigationService.pushPlatformRoute<Object?>(
+      final result = await navigationClient.pushPlatformRoute<Object?>(
         androidRoute: route,
         iOSRoute: route,
         webRoute: webRoute,
@@ -119,7 +119,7 @@ void main() {
     const route = MockPageRouteInfo();
     when(() => mockAppRouter.push<Object?>(route)).thenThrow(Exception('fail'));
 
-    final result = await navigationService.pushRoute<Object?>(route);
+    final result = await navigationClient.pushRoute<Object?>(route);
 
     expect(result, null);
     verify(() => mockAppRouter.push<Object?>(route)).called(1);
@@ -130,7 +130,7 @@ void main() {
     when(() => mockAppRouter.replaceAll([route])).thenThrow(Exception('fail'));
 
     // Should not throw
-    await navigationService.replaceAllRoute(route);
+    await navigationClient.replaceAllRoute(route);
 
     verify(() => mockAppRouter.replaceAll([route])).called(1);
   });

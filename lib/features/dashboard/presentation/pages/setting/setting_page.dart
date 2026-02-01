@@ -1,6 +1,5 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/constants/app_colors.dart';
-import 'package:clean_architecture/core/services/session/session_service.dart';
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:clean_architecture/features/dashboard/presentation/pages/setting/widgets/blue_container.dart';
 import 'package:clean_architecture/features/dashboard/presentation/pages/setting/widgets/setting_items.dart';
@@ -16,8 +15,9 @@ class SettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dashboardCubit = context.read<DashboardCubit>();
     return BaseScaffold(
-      onPopInvokedWithResult: () => context.read<DashboardCubit>().setIndex(0),
+      onPopInvokedWithResult: () => dashboardCubit.setIndex(0),
       isScrollable: false,
       usePadding: false,
       body: Stack(
@@ -30,7 +30,7 @@ class SettingPage extends StatelessWidget {
                 const SettingItems(),
                 const Spacer(),
                 PrimaryButton(
-                  onTap: () async => SessionUtil.I.clearSessionData(),
+                  onTap: dashboardCubit.logOut,
                   text: 'Logout',
                   color: AppColors.error,
                   expandWidth: true,
