@@ -25,6 +25,9 @@ A collection of essential and frequently used git commands to boost your product
 - ✅ `git reset --hard HEAD^`: Resets the current HEAD to the previous commit.
 - ✅ `git revert <commit>`: Reverts a specific commit.
 - ✅ `git tag <tag_name>`: Creates a tag at the current commit.
+- ✅ `git commit --amend -m "new message"`: Update the most recent commit message.
+  - ✅ `git push`: Push the changes to repository if you haven't pushed the commit before updating it's message.
+  - ✅ `git push --force`: Push the changes to repository if you had already pushed the commit before updating it's message.
 
 ---
 
