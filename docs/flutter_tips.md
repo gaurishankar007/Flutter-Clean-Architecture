@@ -17,12 +17,10 @@ Flutter doesn't just have one tree, but three that work together.
 ### Rebuild vs. Repaint
 
 - **Rebuild**: Triggered by a state change (e.g., `setState()`), this is when Flutter calls the `build()` method to create a new tree of widgets. The Element tree then intelligently updates itself based on these conditions:
-
   - **If the new widget has a different type or key**: The old Element and RenderObject are discarded, and new ones are created. This is the most expensive outcome, as it involves tearing down and recreating a part of the tree.
   - **If the widget's properties don't change**: If a new widget has the same type and key, Flutter compares its properties to the old one. If they are identical, the underlying RenderObject is not updated. Using `const` is a key optimization because it allows Flutter to skip this comparison entirely, doing almost no work.
 
 - **Repaint**: This is the separate act of redrawing pixels on the screen. A rebuild only triggers a repaint if the RenderObject's visual properties change.
-
   - **A rebuild will not trigger a repaint** if the new widget configuration doesn't alter the visual properties of the underlying RenderObject. For example, if a counter value changes for a non-visual purpose (like an ID), but the resulting color, size, and text of the widget remain the same, no repaint will occur. However, if that counter value is displayed in a `Text` widget, its visual properties _have_ changed, and it will trigger a repaint.
   - **Light vs. Heavy Repainting**: The cost of a repaint depends on what changed. A simple color change is a "light" repaint. A size or position change is "heavier" because it can trigger a full layout pass, forcing the parent and potentially other widgets in the tree to recalculate their sizes and positions.
 
@@ -82,6 +80,10 @@ Follow these guidelines to keep your app fast and your codebase clean.
 
 - **DPI Awareness**: UI elements can render at different sizes on web versus mobile due to varying DPI. Always test on target browsers and adjust font sizes and layouts for a consistent appearance.
 - **Web Interop**: For platform-specific interactions, use the `web` package to interact with browser APIs. This allows you to access and utilize features unique to the web environment, such as local storage, cookies, and JavaScript functions.
+
+### Scrolling Behavior
+
+- **Consistent Drag Scrolling**: By default, mouse dragging to scroll is disabled on Flutter Web. To enable it and ensure widgets like `RefreshIndicator` work as they do on mobile, update the `scrollBehavior` in your `MaterialApp`:
 
 ## Offline Storage Strategies
 
