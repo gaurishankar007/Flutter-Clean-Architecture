@@ -14,27 +14,32 @@ A collection of essential and frequently used Flutter commands to boost your pro
 ## 2. Project Management
 
 ### Create Projects
+
 - ✅ `flutter create my_app`: Create a Flutter project with the name `my_app` and all supported platforms.
 - ✅ `flutter create --org com.example my_app`: Create a Flutter project with a specified organization name.
 - ✅ `flutter create --platforms=android,ios,web .`: Add platforms to an existing Flutter project.
 - ✅ `flutter create --platforms=android,ios,web my_app`: Create a Flutter project with specified platforms.
 - ✅ `dart create --template package my_package`: Create a Dart package.
+- ✅ `flutter create --template=plugin --platforms=android,ios,web -a kotlin -i swift my_plugin_name`: Create a Flutter plugin with specified platforms.
 
 ---
 
 ## 3. Dependency Management
 
 ### Fetch and Update Dependencies
+
 - ✅ `dart pub get`: Fetch project dependencies.
 - ✅ `flutter pub get`: Get project dependencies.
 - ✅ `flutter pub upgrade`: Upgrade dependencies to their latest compatible versions.
 - ✅ `flutter pub upgrade --major-versions`: Upgrade dependencies to their latest major versions.
 
 ### Add or Remove Dependencies
+
 - ✅ `flutter pub add <package_name>`: Add a new dependency.
 - ✅ `flutter pub remove <package_name>`: Remove a dependency.
 
 ### Analyze Dependencies
+
 - ✅ `flutter pub deps`: List all dependencies and their versions.
 - ✅ `flutter pub outdated`: Check for outdated dependencies.
 - ✅ `dart pub cache clean`: Clear the Dart pub dependency cache.
@@ -44,9 +49,11 @@ A collection of essential and frequently used Flutter commands to boost your pro
 ## 4. Code Quality and Testing
 
 ### Analyze Code
+
 - ✅ `flutter analyze`: Analyze the project for potential issues.
 
 ### Run Tests
+
 - ✅ `flutter test`: Run tests.
 - ✅ `flutter test integration_test`: Perform integration tests.
 - ✅ `flutter test --coverage`: Generate test coverage reports.
@@ -64,19 +71,24 @@ A collection of essential and frequently used Flutter commands to boost your pro
 ## 6. Running the App
 
 ### Debug Mode
+
 - ✅ `flutter run`: Run in debug mode.
 - ✅ `flutter run --debug -d android/ios/chrome`: Run on a specific platform.
 
 ### Profile Mode
+
 - ✅ `flutter run --profile`: Run in profile mode.
 
 ### Release Mode
+
 - ✅ `flutter run --release`: Run in release mode.
 
 ### Flavors
+
 - ✅ `flutter run --flavor production --target lib/main_prod.dart`: Run with "production" flavor.
 
 ### Web Options
+
 - ✅ `flutter run -d chrome --web-browser-flag "--disable-web-security"`: Run on Chrome with web security disabled.
 
 ---
@@ -84,6 +96,7 @@ A collection of essential and frequently used Flutter commands to boost your pro
 ## 7. Building the App
 
 ### Build for Platforms
+
 - ✅ `flutter build apk --release`: Build a release APK.
 - ✅ `flutter build appbundle --release`: Build an app bundle for Play Store uploads.
 - ✅ `flutter build ios --release`: Build a release version of the iOS app.
@@ -91,6 +104,7 @@ A collection of essential and frequently used Flutter commands to boost your pro
 - ✅ `flutter build windows`: Build a Windows executable.
 
 ### Analyze Build Size
+
 - ✅ `flutter build apk --analyze-size`: Analyze APK size.
 - ✅ `flutter build appbundle --analyze-size`: Analyze app bundle size.
 - ✅ `flutter build ios --analyze-size`: Analyze iOS app size.
