@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
-import 'package:clean_architecture/routing/helper/navigation_client.dart';
+import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:clean_architecture/shared_ui/utils/toast_util.dart';
 import 'package:flutter/foundation.dart';
 

@@ -27,9 +27,7 @@ void showCloseAppDialog(BuildContext context) {
             color: AppColors.red600,
             onTap: () async {
               Navigator.pop(dialogContext);
-              await SystemChannels.platform.invokeMethod(
-                'SystemNavigator.pop',
-              );
+              await SystemChannels.platform.invokeMethod('SystemNavigator.pop');
             },
             text: 'Yes',
           ),

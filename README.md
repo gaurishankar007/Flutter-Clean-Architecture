@@ -28,20 +28,24 @@ For more details on specific commands and guidelines, refer to the following doc
   - [State Management with Bloc (Cubit)](#state-management-with-bloc-cubit)
   - [App Flavors](#app-flavors)
   - [Responsiveness](#responsiveness)
-  - [Core Services](#core-services)
-    - [API](#api)
+  - [Core Clients \& Utilities](#core-clients--utilities)
+    - [HTTP Client](#http-client)
     - [Internet Status](#internet-status)
     - [Navigation](#navigation)
-    - [Session and LocalDatabase](#session-and-localdatabase)
+    - [Session Management](#session-management)
     - [Image Picker](#image-picker)
-  - [Data Handling](#data-handling)
+    - [App Error Logging](#app-error-logging)
   - [Data States](#data-states)
+  - [Error Handling Architecture](#error-handling-architecture)
+  - [Data Handling Operations](#data-handling-operations)
   - [API Workflow Overview](#api-workflow-overview)
     - [Data Flow Summary](#data-flow-summary)
     - [Core Components](#core-components)
     - [Example: Login Flow](#example-login-flow)
       - [Internal Flow](#internal-flow)
     - [Debugging Tools](#debugging-tools)
+  - [Feature Template Generation with Mason](#feature-template-generation-with-mason)
+    - [How to Generate a Feature](#how-to-generate-a-feature)
     - [What Do `cubit_feature` \& `cubit_page` Do?](#what-do-cubit_feature--cubit_page-do)
     - [Configuration](#configuration)
   - [Testing](#testing)
@@ -118,9 +122,10 @@ For more detailed information and real-world examples, see the [**SOLID Principl
 - 🛡️ **SOLID Principles**: Ensures scalable, maintainable, and testable code.
 - 🏗️ **Clean Architecture**: Divides code into layers (Data, Domain, Presentation) for clear separation of concerns.
 - 🍴 **Build Flavors**: Supports Development, Staging, and Production environments.
-- 🔧 **Robust Error Handling**: Comprehensive API and internal error management.
+- 🔧 **Robust Error Handling**: Centralized exception translation and normalization using `ErrorHandler`.
+- 🐞 **App Error Logging**: Real-time tracking of uncaught framework and asynchronous errors with a dedicated UI for log inspection and management.
 - 🔄 **Automated Request/Response Handling**: Includes token refreshing and request inspection.
-- 📡 **Core Services**: Navigation, Internet, Local Database, Image Picker, Toast Messages, and User Credential management.
+- 📡 **Core Services**: Navigation, Internet, Local Database, Image Picker, App Error Logs, Toast Messages, and User Credential management.
 - 🎨 **Reusable UI Components**: Customizable themes and reusable widgets.
 - ⚙️ **Utilities**: Screen size handling, extensions, mixins, generics, and form validation utilities.
 
@@ -167,12 +172,16 @@ lib/
 │   │       └── http/
 │   ├── constants/
 │   ├── data/
-│   │   ├── handlers/
+│   │   ├── operations/
 │   │   ├── states/
 │   │   └── models/
 │   ├── domain/
 │   │   ├── entities/
 │   │   └── use_cases/
+│   ├── errors/
+│   │   ├── error_recorders/
+│   │   ├── error_translators/
+│   │   └── error_handler.dart
 │   ├── utils/
 │   │   ├── extensions/
 │   │   └── image_picker_util.dart
@@ -229,9 +238,9 @@ Notes:
 
 - The app uses **Bloc** (specifically Cubit) for state management within the Presentation Layer of its Clean Architecture.
 - Every Cubit extends `BaseCubit`, and its state extends `BaseState`.
-- `BaseCubit` includes shared functionality (e.g., navigation, showing toasts) via `ServiceMixin`.
+- `BaseCubit` includes shared functionality (e.g., navigation, showing toasts) via `ClientMixin`.
 - `BaseState` provides `StateStatus` (for UI state like `initial`, `loading`, `loaded`).
-- The UI can use `showDataStateToast` from the `ServiceMixin` to display messages based on the `DataState` returned from use cases.
+- The UI can use `showDataStateToast` from the `ClientMixin` to display messages based on the `DataState` returned from use cases.
 
 ## App Flavors
 
@@ -291,15 +300,30 @@ graph TD
 
 - `ImagePickerUtil` provides an abstraction for selecting images from the gallery or camera, ensuring decoupling from specific plugin implementations.
 
-## Data Handling
+### App Error Logging
 
-- **ApiHandler**: A dedicated executor for API operations in **Data Sources**, providing safe execution of HTTP requests, standard response normalization, and error mapping.
-- **RepositoryHandler**: A utility for **Repository** implementations to coordinate remote and local data sources while mapping DTOs to domain models (offline-first strategy).
-- **ErrorHandler**: A centralized utility that catches specific exceptions (e.g., Dio, Format) and converts them into a standardized `FailureState` with user-friendly messages.
+- `AppErrorRecorder` captures and persists uncaught `FlutterError`s and asynchronous errors locally.
+- A dedicated **App Error Logs** page in the dashboard allows developers to inspect stack traces, error details, and environment metadata (flavor, version) in real-time.
 
 ## Data States
 
 - **DataState<T>**: A sealed class representing the state of a data operation. It has three main states: `SuccessState<T>`, `FailureState<T>`, and `LoadingState<T>`, which allows the UI to react consistently to different outcomes.
+
+**State types location**: `lib/core/data/states` — `data_state.dart`, `failure_state.dart`, `loading_state.dart`, `success_state.dart`.
+
+## Error Handling Architecture
+
+- **ErrorHandler**: A centralized error-handling service composed of **ErrorTranslator**(s) and **ErrorRecorder**(s). Error translators map platform/library exceptions (e.g. Dio, FirebaseAuth) into `FailureState<T>` instances; error recorders report or record errors (Crashlytics, logs). The service is exposed via `ErrorHandlerProvider.I` and provides helpers such as `execute<T>()` (wraps async calls and returns `FailureState<T>` on error), `executeSafe()` and `executeSafeReturn()` for non-propagating logging.
+
+**Implementations**: `lib/core/errors` — `error_handler.dart`.
+
+## Data Handling Operations
+
+- **ApiExecutor**: Handles the http requests and transforms the response into a `DataState` with api models. It provides standard response normalization and error mapping.
+
+- **RepositoryFetcher**: Handles the data flow from the repository to the UI layer. It provides high-level utility methods like `fetchWithFallbackAndMap` that calls the api service or fallback to local service if offline, while coordinating DTO-to-Domain mapping.
+
+**Implementations**: `lib/core/data/operations` — `api_executor.dart`, `repository_fetcher.dart`.
 
 ## API Workflow Overview
 
@@ -310,10 +334,10 @@ flowchart TD
   B -- calls --> C["Repository"]
   C -- calls --> D["Remote DataSource"] & E["Local DataSource"]
   C -- uses --> F["Internet Client"]
-  C -- handled by --> G1["Repository Handler"]
+  C -- handled by --> G1["Repository Fetcher"]
   G1 -- handles --> H["Data State"]
   D -- uses --> I["Http Client"]
-  D -- handled by --> G2["Api Handler"]
+  D -- handled by --> G2["Api Executor"]
   I -- sends --> J["API"]
   G2 -- uses --> M["Error Handler"]
   E -- handled by --> M
@@ -326,32 +350,32 @@ flowchart TD
 
 1. **UI calls Cubit, which calls UseCase**
 2. **UseCase calls Repository**
-3. **Repository coordinates data fetch** using `RepositoryHandler`
-4. **RepositoryHandler checks Internet availability** using `InternetClient`
+3. **Repository coordinates data fetch** using `RepositoryFetcher`
+4. **RepositoryFetcher checks Internet availability** using `InternetClient`
 5. If online (or using `fetchWithFallback`):
    - Calls `RemoteDataSource`
-   - `RemoteDataSource` uses `ApiHandler.call` to execute requests via `HttpClient`
-   - `ApiHandler` parses JSON into DTOs and handles API-specific errors
+   - `RemoteDataSource` uses `ApiExecutor.call` to execute requests via `HttpClient`
+   - `ApiExecutor` parses JSON into DTOs and handles API-specific errors
 6. If offline (or fallback triggered):
    - Calls `LocalDataSource`
-7. **RepositoryHandler maps DTOs to Domain Entities** (if using `AndMap` variants)
+7. **RepositoryFetcher maps DTOs to Domain Entities** (if using `AndMap` variants)
 8. **All outcomes are returned as `DataState<T>`**: `SuccessState`, or `FailureState`
 
 ### Core Components
 
 - **Use Case**: Represents a single business action (e.g., `LoginUseCase`). It is called by the Presentation layer (Cubit) and orchestrates the flow of data by interacting with one or more Repositories. This encapsulates a specific piece of business logic, making it reusable and decoupled from the UI state management.
 
-- **Repository**: Acts as the single source of truth for the domain layer. It coordinates data from one or more data sources (remote, local) and decides where to fetch data from, often using `RepositoryHandler.fetchWithFallbackAndMap` to implement the offline-first strategy. It is also responsible for mapping Data Transfer Objects (DTOs) from the data layer into clean domain models for the UI layer.
+- **Repository**: Acts as the single source of truth for the domain layer. It coordinates data from one or more data sources (remote, local) and decides where to fetch data from, often using `RepositoryFetcher.fetchWithFallbackAndMap` to implement the offline-first strategy. It is also responsible for mapping Data Transfer Objects (DTOs) from the data layer into clean domain models for the UI layer.
 
 - **Data Sources (`Remote`, `Local`)**:
-  - **RemoteDataSource**: Handles communication with the backend REST API. It uses the `HttpClient` to make HTTP requests. Each method is wrapped in `ApiHandler.call` to safely parse responses and handle API-specific errors.
+  - **RemoteDataSource**: Handles communication with the backend REST API. It uses the `HttpClient` to make HTTP requests. Each method is wrapped in `ApiExecutor.call` to safely parse responses and handle API-specific errors.
   - **LocalDataSource**: Manages data persistence on the device (e.g., user session, cached data). It uses `IsarDbClient` or `LocalStorageClient` and wraps its methods in `ErrorHandler.execute` to ensure consistent error handling.
 
 - **HttpClient**: An abstraction over the `Dio` HTTP client. It is configured with the base URL from `AppConfig` and includes interceptors. It provides standard methods like `get`, `post`, `put`, and `delete` for making API calls.
 
-- **ApiHandler, RepositoryHandler & ErrorHandler**: These classes form the backbone of the application's error handling and data flow strategy.
-  - **ApiHandler**: Provides utility methods like `call` (to execute API requests, parse JSON, and wrap results in a `DataState`). It handles standard response structures and mapping to DTOs.
-  - **RepositoryHandler**: Provides high-level utility methods like `fetchWithFallbackAndMap` (to implement the offline-first strategy) and `fetchFromLocalAndMap` to coordinate between data sources and map DTOs to domain models.
+- **ApiExecutor, RepositoryFetcher & ErrorHandler**: These classes form the backbone of the application's error handling and data flow strategy.
+  - **ApiExecutor**: Provides utility methods like `call` (to execute API requests, parse JSON, and wrap results in a `DataState`). It handles standard response structures and mapping to DTOs.
+  - **RepositoryFetcher**: Provides high-level utility methods like `fetchWithFallbackAndMap` (to implement the offline-first strategy) and `fetchFromLocalAndMap` to coordinate between data sources and map DTOs to domain models.
   - **ErrorHandler**: A centralized utility that catches specific exceptions (`DioException`, `FormatException`, etc.) and converts them into a standardized `FailureState` with a user-friendly error message. This ensures that the UI layer receives consistent error objects regardless of the error's origin.
 
 ### Example: Login Flow
@@ -406,9 +430,9 @@ flowchart TD
     D --> E
 
     subgraph "Remote Flow (Login)"
-        E -- "uses Repository Handler" --> F{Has Internet?}
+        E -- "uses Repository Fetcher" --> F{Has Internet?}
         F -- Yes --> G[Auth Remote DataSource]
-        G -- "calls" --> H[Api Handler]
+        G -- "calls" --> H[Api Executor]
         H -- "1. executes" --> I[HttpClient]
         I -- "sends HTTP Request" --> J[API]
         H -- "2. parses & returns" --> K{Success?}
@@ -428,11 +452,8 @@ flowchart TD
 
 ### Debugging Tools
 
-````
-
-### Debugging Tools
-
 - **Alice** integrated into `HttpClient` for easy request/response inspection.
+- **App Error Logs**: In-app dashboard for viewing and managing application-level errors and stack traces.
 
 ## Feature Template Generation with Mason
 
@@ -444,7 +465,7 @@ This project uses **Mason** to generate feature templates for consistent and eff
 
    ```bash
    dart pub global activate mason_cli
-````
+   ```
 
 2. **Fetch the bricks for the project**:
 
@@ -464,7 +485,7 @@ This project uses **Mason** to generate feature templates for consistent and eff
    mason make cubit_page -c config.json
    ```
 
-### What Do `cubit_feature` & `cubit_page` Do?
+### What Do `cubit_feature` \& `cubit_page` Do?
 
 - **`cubit_feature`**: Generates a feature template following Clean Architecture, including:
   - **Data Layer**: Data Sources, Models, Repositories
@@ -498,7 +519,7 @@ This project uses a multi-layered testing strategy to ensure robustness and main
 
 The project includes a suite of automated tests to ensure code quality and functionality.
 
-#### Unit & Widget Tests
+#### Unit \& Widget Tests
 
 - **Run all tests**:
 

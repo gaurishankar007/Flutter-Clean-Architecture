@@ -4,15 +4,19 @@ import 'package:mocktail/mocktail.dart';
 
 import '../../../../testing/mocks/external/external_mocks.dart'
     show MockSharedPreferences;
+import '../../../../testing/mocks/service_mocks.dart';
 
 void main() {
   late MockSharedPreferences mockSharedPreferences;
+  late MockEncryptionService mockEncryptionService;
   late LocalStorageClientImpl localStorageClient;
 
   setUp(() {
     mockSharedPreferences = MockSharedPreferences();
+    mockEncryptionService = MockEncryptionService();
     localStorageClient = LocalStorageClientImpl(
       sharedPreferences: mockSharedPreferences,
+      encryptionService: mockEncryptionService,
     );
   });
 

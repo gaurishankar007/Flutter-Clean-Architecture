@@ -10,7 +10,6 @@ void main() {
       expect(state.hasError, false);
       expect(state.data, isNull);
       expect(state.message, isNull);
-      expect(state.statusCode, isNull);
     });
 
     test('should be equatable', () {

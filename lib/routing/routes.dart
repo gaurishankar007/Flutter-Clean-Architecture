@@ -19,6 +19,7 @@ class AppRouter extends RootStackRouter {
       children: [
         AutoRoute(path: kHomePath, page: HomeRoute.page, initial: true),
         AutoRoute(path: kSettingPath, page: SettingRoute.page),
+        AutoRoute(path: kAppErrorPath, page: AppErrorRoute.page),
       ],
     ),
   ];

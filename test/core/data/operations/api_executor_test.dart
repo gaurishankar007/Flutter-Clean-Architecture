@@ -1,13 +1,24 @@
-import 'package:clean_architecture/core/data/handlers/api_handler.dart';
+import 'package:clean_architecture/core/data/operations/api_executor.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
+import 'package:clean_architecture/core/errors/error_handler.dart';
+import 'package:clean_architecture/core/errors/error_translators/dio_error_translator.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockResponse<T> extends Mock implements Response<T> {}
 
 void main() {
-  group('ApiHandler.call', () {
+  setUpAll(() {
+    ErrorHandlerProvider.register(errorTranslators: [DioErrorTranslator()]);
+  });
+
+  tearDownAll(() {
+    GetIt.I.reset();
+  });
+
+  group('ApiExecutor.call', () {
     test('returns SuccessState on valid standard response', () async {
       final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn({
@@ -17,7 +28,7 @@ void main() {
       when(() => mockResponse.statusCode).thenReturn(200);
 
       final result =
-          await ApiHandler.call<Map<String, dynamic>, Map<String, dynamic>>(
+          await ApiExecutor.call<Map<String, dynamic>, Map<String, dynamic>>(
             () async => mockResponse,
             fromJson: (json) => json,
           );
@@ -25,7 +36,6 @@ void main() {
       expect(result, isA<SuccessState<Map<String, dynamic>>>());
       expect(result.data, {'id': 1});
       expect(result.message, 'ok');
-      expect(result.statusCode, 200);
     });
 
     test(
@@ -36,7 +46,7 @@ void main() {
         when(() => mockResponse.statusCode).thenReturn(200);
 
         final result =
-            await ApiHandler.call<Map<String, dynamic>, Map<String, dynamic>>(
+            await ApiExecutor.call<Map<String, dynamic>, Map<String, dynamic>>(
               () async => mockResponse,
               fromJson: (json) => json,
             );
@@ -58,7 +68,7 @@ void main() {
       when(() => mockResponse.statusCode).thenReturn(200);
 
       final result =
-          await ApiHandler.call<
+          await ApiExecutor.call<
             List<Map<String, dynamic>>,
             Map<String, dynamic>
           >(() async => mockResponse, fromJson: (json) => json);
@@ -77,7 +87,7 @@ void main() {
       when(() => mockResponse.statusCode).thenReturn(200);
 
       final result =
-          await ApiHandler.call<Map<String, dynamic>, Map<String, dynamic>>(
+          await ApiExecutor.call<Map<String, dynamic>, Map<String, dynamic>>(
             () async => mockResponse,
             fromJson: (json) => json,
           );
@@ -92,7 +102,7 @@ void main() {
       when(() => mockResponse.statusCode).thenReturn(200);
 
       final result =
-          await ApiHandler.call<Map<String, dynamic>, Map<String, dynamic>>(
+          await ApiExecutor.call<Map<String, dynamic>, Map<String, dynamic>>(
             () async => mockResponse,
             fromJson: (json) => json,
             isStandardResponse: false,
@@ -107,7 +117,7 @@ void main() {
       when(() => mockResponse.data).thenReturn('raw_string');
       when(() => mockResponse.statusCode).thenReturn(200);
 
-      final result = await ApiHandler.call<String, String>(
+      final result = await ApiExecutor.call<String, String>(
         () async => mockResponse,
         isStandardResponse: false,
       );
@@ -121,7 +131,7 @@ void main() {
       when(() => mockResponse.data).thenReturn({'id': 1});
       when(() => mockResponse.statusCode).thenReturn(200);
 
-      final result = await ApiHandler.call<String, String>(
+      final result = await ApiExecutor.call<String, String>(
         () async => mockResponse,
         isStandardResponse: false,
       );
@@ -131,27 +141,26 @@ void main() {
     });
   });
 
-  group('ApiHandler.voidCall', () {
+  group('ApiExecutor.voidCall', () {
     test('returns SuccessState<void> on successful request', () async {
       final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn({'message': 'deleted'});
       when(() => mockResponse.statusCode).thenReturn(204);
 
-      final result = await ApiHandler.voidCall(() async => mockResponse);
+      final result = await ApiExecutor.voidCall(() async => mockResponse);
 
       expect(result, isA<SuccessState<void>>());
       expect(result.message, 'deleted');
-      expect(result.statusCode, 204);
     });
   });
 
-  group('ApiHandler.staticCall', () {
+  group('ApiExecutor.staticCall', () {
     test('returns success with static data', () async {
       final mockResponse = MockResponse<dynamic>();
       when(() => mockResponse.data).thenReturn({'message': 'ok'});
       when(() => mockResponse.statusCode).thenReturn(200);
 
-      final result = await ApiHandler.staticCall<bool>(
+      final result = await ApiExecutor.staticCall<bool>(
         () async => mockResponse,
         staticData: true,
       );

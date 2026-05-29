@@ -4,10 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('FailureState', () {
     test('should have correct message and hasError true', () {
-      const state = FailureState<int>(message: 'Failed', statusCode: 400);
+      const state = FailureState<int>(message: 'Failed');
 
       expect(state.message, 'Failed');
-      expect(state.statusCode, 400);
       expect(state.hasError, true);
       expect(state.hasData, false);
     });
@@ -20,8 +19,8 @@ void main() {
     });
 
     test('should be equatable', () {
-      const state1 = FailureState<int>(message: 'msg', statusCode: 500);
-      const state2 = FailureState<int>(message: 'msg', statusCode: 500);
+      const state1 = FailureState<int>(message: 'msg');
+      const state2 = FailureState<int>(message: 'msg');
 
       expect(state1, equals(state2));
     });
@@ -36,12 +35,10 @@ void main() {
       final state = FailureState<int>.badRequest(
         message: 'Custom msg',
         error: 'Custom err',
-        statusCode: 400,
       );
 
       expect(state.message, 'Custom msg');
       expect(state.error, 'Custom err');
-      expect(state.statusCode, 400);
     });
 
     test('tokenExpired factory returns correct FailureState', () {
@@ -60,12 +57,10 @@ void main() {
       final state = FailureState<int>.badResponse(
         message: 'Custom response msg',
         error: 'Custom response err',
-        statusCode: 502,
       );
 
       expect(state.message, 'Custom response msg');
       expect(state.error, 'Custom response err');
-      expect(state.statusCode, 502);
     });
 
     test('serverError factory returns correct default FailureState', () {
@@ -78,12 +73,10 @@ void main() {
       final state = FailureState<int>.serverError(
         message: 'Custom server msg',
         error: 'Custom server err',
-        statusCode: 500,
       );
 
       expect(state.message, 'Custom server msg');
       expect(state.error, 'Custom server err');
-      expect(state.statusCode, 500);
     });
 
     test('noInternet factory returns correct FailureState', () {

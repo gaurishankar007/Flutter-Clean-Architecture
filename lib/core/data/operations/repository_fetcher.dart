@@ -4,7 +4,7 @@ import 'package:clean_architecture/core/utils/type_defs.dart';
 
 /// A utility for repository implementations to coordinate remote and local
 /// data sources while mapping DTOs to domain models.
-abstract final class RepositoryHandler {
+abstract final class RepositoryFetcher {
   /// Fetches data with a network fallback strategy: tries [remoteCallback]
   /// if connected, otherwise falls back to [localCallback].
   static FutureData<T> fetchWithFallback<T>({

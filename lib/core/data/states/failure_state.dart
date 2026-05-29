@@ -7,24 +7,18 @@ const String kNoInternet = 'No internet access. Please try again later.';
 
 /// A failure data state when error occurs
 final class FailureState<T> extends DataState<T> {
-  const FailureState({
-    String? message,
-    super.error,
-    super.statusCode,
-    super.response,
-  }) : super(message: message ?? kErrorMessage, hasError: true);
+  const FailureState({String? message, super.error, super.extra})
+    : super(message: message ?? kErrorMessage, hasError: true);
 
   /// A failure data state when invalid data is provided to the server
   factory FailureState.badRequest({
     String? message,
     String? error,
-    int? statusCode,
-    Response<dynamic>? response,
+    dynamic extra,
   }) => FailureState(
     message: message ?? 'Bad client request. Please try again',
     error: error,
-    statusCode: statusCode,
-    response: response,
+    extra: extra,
   );
 
   /// A failure data state when the user's token is expired
@@ -35,26 +29,22 @@ final class FailureState<T> extends DataState<T> {
   factory FailureState.badResponse({
     String? message,
     String? error,
-    int? statusCode,
-    Response<dynamic>? response,
+    dynamic extra,
   }) => FailureState(
     message: message ?? 'Bad server response.',
     error: error,
-    statusCode: statusCode,
-    response: response,
+    extra: extra,
   );
 
   /// A failure data state when error occurs in the server
   factory FailureState.serverError({
     String? message,
     String? error,
-    int? statusCode,
-    Response<dynamic>? response,
+    dynamic extra,
   }) => FailureState(
     message: message ?? 'Server error occurred. $kCustomerSupport',
     error: error,
-    statusCode: statusCode,
-    response: response,
+    extra: extra,
   );
 
   /// A failure data state when there is no internet access

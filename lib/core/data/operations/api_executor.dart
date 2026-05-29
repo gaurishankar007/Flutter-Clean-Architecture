@@ -1,11 +1,11 @@
-import 'package:clean_architecture/core/data/handlers/error_handler.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
+import 'package:clean_architecture/core/errors/error_handler.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:dio/dio.dart';
 
 /// A dedicated executor for API operations, providing safe execution of
 /// HTTP requests, standard response normalization, and error mapping.
-abstract final class ApiHandler {
+abstract final class ApiExecutor {
   /// Executes a request and parses the response into [T].
   ///
   /// Use [fromJson] to deserialize the data. If [isStandardResponse] is true,
@@ -16,22 +16,15 @@ abstract final class ApiHandler {
     bool isStandardResponse = true,
     String responseDataKey = 'data',
   }) {
-    return ErrorHandler.execute(() async {
+    return ErrorHandlerProvider.I.execute(() async {
       final response = await request();
       dynamic rawData = response.data;
       String? responseMessage;
 
-      FailureState<T> failure(String error) => FailureState.badResponse(
-        error: error,
-        statusCode: response.statusCode,
-        response: response,
-      );
-      SuccessState<T> success(T data) => SuccessState(
-        data: data,
-        message: responseMessage,
-        statusCode: response.statusCode,
-        response: response,
-      );
+      FailureState<T> failure(String error) =>
+          FailureState.badResponse(error: error, extra: response);
+      SuccessState<T> success(T data) =>
+          SuccessState(data: data, message: responseMessage, extra: response);
 
       // 1. Get message from the response if provided
       if (rawData is MapDynamic) {
@@ -74,7 +67,7 @@ abstract final class ApiHandler {
   ///
   /// Useful for endpoints where the response body is not needed.
   static FutureVoid voidCall(Future<Response<dynamic>> Function() request) {
-    return ErrorHandler.execute(() async {
+    return ErrorHandlerProvider.I.execute(() async {
       final response = await request();
       final rawData = response.data;
       String? responseMessage;
@@ -89,8 +82,8 @@ abstract final class ApiHandler {
       return SuccessState<void>(
         data: null,
         message: responseMessage,
-        statusCode: response.statusCode,
-        response: response,
+
+        extra: response,
       );
     });
   }
@@ -102,7 +95,7 @@ abstract final class ApiHandler {
     Future<Response<dynamic>> Function() request, {
     required T staticData,
   }) {
-    return ErrorHandler.execute(() async {
+    return ErrorHandlerProvider.I.execute(() async {
       final response = await request();
       final rawData = response.data;
       String? responseMessage;
@@ -117,8 +110,8 @@ abstract final class ApiHandler {
       return SuccessState<T>(
         data: staticData,
         message: responseMessage,
-        statusCode: response.statusCode,
-        response: response,
+
+        extra: response,
       );
     });
   }

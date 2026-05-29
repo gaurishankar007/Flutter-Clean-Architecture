@@ -6,5 +6,5 @@ class {{cubit.pascalCase()}}State extends BaseState {
   const {{cubit.pascalCase()}}State.empty();
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [...super.props];
 }

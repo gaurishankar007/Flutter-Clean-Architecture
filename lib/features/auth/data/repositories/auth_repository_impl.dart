@@ -1,5 +1,5 @@
 import 'package:clean_architecture/core/clients/remote/internet_client.dart';
-import 'package:clean_architecture/core/data/handlers/repository_handler.dart';
+import 'package:clean_architecture/core/data/operations/repository_fetcher.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/auth/data/data_sources/auth_local_data_source.dart';
@@ -19,14 +19,14 @@ final class AuthRepositoryImpl implements AuthRepository {
   }) : _localDataSource = localDataSource,
        _remoteDataSource = remoteDataSource,
        _internet = internet;
-       
+
   final InternetClient _internet;
   final AuthRemoteDataSource _remoteDataSource;
   final AuthLocalDataSource _localDataSource;
 
   @override
   FutureData<UserData> login(Authentication authentication) {
-    return RepositoryHandler.fetchWithFallbackAndMap(
+    return RepositoryFetcher.fetchWithFallbackAndMap(
       isInternetConnected: _internet.isConnected,
       remoteCallback: () => _remoteDataSource.login(
         AuthenticationRequest.fromDomain(authentication),
@@ -40,14 +40,14 @@ final class AuthRepositoryImpl implements AuthRepository {
 
   @override
   FutureData<UserData> getUserData() {
-    return RepositoryHandler.fetchFromLocalAndMap(
+    return RepositoryFetcher.fetchFromLocalAndMap(
       localCallback: _localDataSource.getUserData,
     );
   }
 
   @override
   FutureBool checkAuth() {
-    return RepositoryHandler.fetchWithFallback(
+    return RepositoryFetcher.fetchWithFallback(
       isInternetConnected: _internet.isConnected,
       remoteCallback: _remoteDataSource.checkAUth,
     );

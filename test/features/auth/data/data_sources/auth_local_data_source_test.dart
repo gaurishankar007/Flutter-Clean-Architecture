@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:clean_architecture/core/data/models/responses/user_response.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
+import 'package:clean_architecture/core/errors/error_handler.dart';
 import 'package:clean_architecture/features/auth/data/data_sources/auth_local_data_source.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../../testing/mocks/client_mocks.dart';
@@ -13,9 +15,13 @@ void main() {
   late MockLocalStorageClient mockLocalDatabase;
   late AuthLocalDataSourceImpl dataSource;
 
-  setUp(() {
+  setUpAll(() {
+    ErrorHandlerProvider.register();
     mockLocalDatabase = MockLocalStorageClient();
-    dataSource = AuthLocalDataSourceImpl(localDatabase: mockLocalDatabase);
+    dataSource = AuthLocalDataSourceImpl(
+      errorHandler: GetIt.I(),
+      localDatabase: mockLocalDatabase,
+    );
   });
 
   const tStorageKey = 'userData';

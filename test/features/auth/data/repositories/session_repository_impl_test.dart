@@ -80,10 +80,10 @@ void main() {
         ).thenAnswer((_) async {});
 
         // Set some initial state
-        sessionRepository..setUserData = userData
-
-        // Act
-        ..clearSessionData();
+        sessionRepository
+          ..setUserData = userData
+          // Act
+          ..clearSessionData();
 
         // Assert
         verify(() => mockSessionLocalDataSource.clearUserData()).called(1);

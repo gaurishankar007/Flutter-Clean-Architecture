@@ -13,7 +13,7 @@ import 'package:clean_architecture/core/data/models/responses/api_response.dart'
 import 'package:clean_architecture/core/data/models/responses/refresh_token_response.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
-import 'package:clean_architecture/routing/helper/navigation_client.dart';
+import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';

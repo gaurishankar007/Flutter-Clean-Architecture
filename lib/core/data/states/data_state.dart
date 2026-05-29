@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart' show immutable;
 
@@ -16,10 +15,9 @@ sealed class DataState<T> extends Equatable {
     this.data,
     this.message,
     this.error,
-    this.statusCode,
-    this.response,
     this.hasData = false,
     this.hasError = false,
+    this.extra,
   });
 
   /// The payload for successful operations. May be `null` for
@@ -35,18 +33,13 @@ sealed class DataState<T> extends Equatable {
   /// direct user display.
   final String? error;
 
-  /// Optional HTTP or transport status code associated with this
-  /// response (when applicable).
-  final int? statusCode;
-
-  /// The raw network response object (e.g. Dio Response), if available.
-  final Response<dynamic>? response;
-
   /// Whether this state currently carries non-null data.
   final bool hasData;
 
   /// Whether this state represents an error condition.
   final bool hasError;
+
+  final dynamic extra;
 
   /// Executes the matching callback depending on runtime subtype.
   /// - `success` receives the unwrapped `data` for `SuccessState`.
@@ -99,27 +92,14 @@ sealed class DataState<T> extends Equatable {
       success: (data) => SuccessState<R>(
         data: transform(data),
         message: message,
-        statusCode: statusCode,
-        response: response,
+        extra: extra,
       ),
-      failure: (message, errorType) => FailureState<R>(
-        message: message,
-        error: error,
-        statusCode: statusCode,
-        response: response,
-      ),
+      failure: (message, errorType) =>
+          FailureState<R>(message: message, error: error, extra: extra),
       loading: LoadingState<R>.new,
     );
   }
 
   @override
-  List<Object?> get props => [
-    data,
-    message,
-    error,
-    statusCode,
-    response,
-    hasData,
-    hasError,
-  ];
+  List<Object?> get props => [data, message, error, extra, hasData, hasError];
 }

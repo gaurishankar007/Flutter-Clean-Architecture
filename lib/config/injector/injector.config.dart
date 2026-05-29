@@ -16,6 +16,11 @@ import 'package:clean_architecture/core/clients/remote/http/http_client.dart'
     as _i244;
 import 'package:clean_architecture/core/clients/remote/internet_client.dart'
     as _i9;
+import 'package:clean_architecture/core/errors/error_handler.dart' as _i662;
+import 'package:clean_architecture/core/services/encryption_service.dart'
+    as _i285;
+import 'package:clean_architecture/core/services/package_info_service.dart'
+    as _i494;
 import 'package:clean_architecture/features/auth/data/data_sources/auth_local_data_source.dart'
     as _i322;
 import 'package:clean_architecture/features/auth/data/data_sources/auth_remote_data_source.dart'
@@ -46,12 +51,13 @@ import 'package:clean_architecture/features/auth/presentation/cubits/login/login
     as _i912;
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart'
     as _i123;
+import 'package:clean_architecture/features/dashboard/presentation/cubits/app_error/app_error_cubit.dart'
+    as _i761;
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart'
     as _i278;
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit_use_cases.dart'
     as _i134;
-import 'package:clean_architecture/routing/helper/navigation_client.dart'
-    as _i389;
+import 'package:clean_architecture/routing/navigation_client.dart' as _i192;
 import 'package:clean_architecture/routing/routes.dart' as _i671;
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart'
     as _i640;
@@ -82,6 +88,7 @@ extension GetItInjectableX on _i174.GetIt {
       preResolve: true,
     );
     gh.factory<bool>(() => httpClientModule.addInterceptors);
+    gh.factory<_i761.AppErrorCubit>(() => _i761.AppErrorCubit());
     gh.factory<_i640.ScreenObserverCubit>(() => _i640.ScreenObserverCubit());
     gh.lazySingleton<_i361.Dio>(() => httpClientModule.dio);
     gh.lazySingleton<_i244.HttpAuthInterceptor>(
@@ -91,47 +98,49 @@ extension GetItInjectableX on _i174.GetIt {
       () => internetClientModule.internetConnection,
     );
     gh.lazySingleton<_i671.AppRouter>(() => navigationClientModule.appRouter);
-    gh.lazySingleton<_i389.NavigationClient>(
-      () => _i389.NavigationClientImpl(appRouter: gh<_i671.AppRouter>()),
+    gh.lazySingleton<_i285.EncryptionService>(
+      () => _i285.EncryptionServiceImpl(),
+    );
+    gh.lazySingleton<_i494.PackageInfoService>(
+      () => _i494.PackageInfoServiceImpl(),
     );
     gh.lazySingleton<_i37.AppConfig>(
       () => _i37.AppConfigStg(),
       registerFor: {_staging},
-    );
-    gh.lazySingleton<_i37.AppConfig>(
-      () => _i37.AppConfigDev(),
-      registerFor: {_development},
-    );
-    gh.lazySingleton<_i1009.LocalStorageClient>(
-      () => _i1009.LocalStorageClientImpl(
-        sharedPreferences: gh<_i460.SharedPreferences>(),
-      ),
-    );
-    gh.lazySingleton<_i322.AuthLocalDataSource>(
-      () => _i322.AuthLocalDataSourceImpl(
-        localDatabase: gh<_i1009.LocalStorageClient>(),
-      ),
-    );
-    gh.lazySingleton<_i37.AppConfig>(
-      () => _i37.AppConfigProd(),
-      registerFor: {_production},
     );
     gh.lazySingleton<_i9.InternetClient>(
       () => _i9.InternetClientImpl(
         internetConnection: gh<_i161.InternetConnection>(),
       ),
     );
-    gh.lazySingleton<_i16.SessionLocalDataSource>(
-      () => _i16.SessionLocalDataSourceImpl(gh<_i1009.LocalStorageClient>()),
+    gh.lazySingleton<_i37.AppConfig>(
+      () => _i37.AppConfigDev(),
+      registerFor: {_development},
+    );
+    gh.lazySingleton<_i192.NavigationClient>(
+      () => _i192.NavigationClientImpl(appRouter: gh<_i671.AppRouter>()),
+    );
+    gh.lazySingleton<_i37.AppConfig>(
+      () => _i37.AppConfigProd(),
+      registerFor: {_production},
+    );
+    gh.lazySingleton<_i1009.LocalStorageClient>(
+      () => _i1009.LocalStorageClientImpl(
+        sharedPreferences: gh<_i460.SharedPreferences>(),
+        encryptionService: gh<_i285.EncryptionService>(),
+      ),
     );
     gh.lazySingleton<_i244.HttpClient>(
       () => _i244.HttpClientImpl(
         dio: gh<_i361.Dio>(),
         appConfig: gh<_i37.AppConfig>(),
         authInterceptor: gh<_i244.HttpAuthInterceptor>(),
-        navigationClient: gh<_i389.NavigationClient>(),
+        navigationClient: gh<_i192.NavigationClient>(),
         addInterceptors: gh<bool>(),
       ),
+    );
+    gh.lazySingleton<_i16.SessionLocalDataSource>(
+      () => _i16.SessionLocalDataSourceImpl(gh<_i1009.LocalStorageClient>()),
     );
     gh.lazySingleton<_i141.AuthRemoteDataSource>(
       () => _i141.AuthRemoteDataSourceImpl(dioClient: gh<_i244.HttpClient>()),
@@ -141,11 +150,11 @@ extension GetItInjectableX on _i174.GetIt {
         localDataSource: gh<_i16.SessionLocalDataSource>(),
       ),
     );
-    gh.lazySingleton<_i294.LogOutUseCase>(
-      () => _i294.LogOutUseCase(gh<_i150.SessionRepository>()),
-    );
-    gh.lazySingleton<_i636.SetSessionUseCase>(
-      () => _i636.SetSessionUseCase(gh<_i150.SessionRepository>()),
+    gh.lazySingleton<_i322.AuthLocalDataSource>(
+      () => _i322.AuthLocalDataSourceImpl(
+        errorHandler: gh<_i662.ErrorHandler>(),
+        localDatabase: gh<_i1009.LocalStorageClient>(),
+      ),
     );
     gh.lazySingleton<_i1003.AuthRepository>(
       () => _i526.AuthRepositoryImpl(
@@ -153,6 +162,12 @@ extension GetItInjectableX on _i174.GetIt {
         remoteDataSource: gh<_i141.AuthRemoteDataSource>(),
         localDataSource: gh<_i322.AuthLocalDataSource>(),
       ),
+    );
+    gh.lazySingleton<_i294.LogOutUseCase>(
+      () => _i294.LogOutUseCase(gh<_i150.SessionRepository>()),
+    );
+    gh.lazySingleton<_i636.SetSessionUseCase>(
+      () => _i636.SetSessionUseCase(gh<_i150.SessionRepository>()),
     );
     gh.lazySingleton<_i481.CheckAuthenticationUseCase>(
       () => _i481.CheckAuthenticationUseCase(
@@ -171,17 +186,17 @@ extension GetItInjectableX on _i174.GetIt {
         authRepository: gh<_i1003.AuthRepository>(),
       ),
     );
-    gh.lazySingleton<_i134.DashboardCubitUseCases>(
-      () => _i134.DashboardCubitUseCases(
-        checkAuthentication: gh<_i481.CheckAuthenticationUseCase>(),
-        logOut: gh<_i294.LogOutUseCase>(),
-      ),
-    );
     gh.lazySingleton<_i123.LoginCubitUseCases>(
       () => _i123.LoginCubitUseCases(
         login: gh<_i68.LoginUseCase>(),
         saveUserData: gh<_i661.SaveUserDataUseCase>(),
         setSession: gh<_i636.SetSessionUseCase>(),
+        logOut: gh<_i294.LogOutUseCase>(),
+      ),
+    );
+    gh.lazySingleton<_i134.DashboardCubitUseCases>(
+      () => _i134.DashboardCubitUseCases(
+        checkAuthentication: gh<_i481.CheckAuthenticationUseCase>(),
         logOut: gh<_i294.LogOutUseCase>(),
       ),
     );
@@ -201,4 +216,4 @@ class _$HttpClientModule extends _i244.HttpClientModule {}
 
 class _$InternetClientModule extends _i9.InternetClientModule {}
 
-class _$NavigationClientModule extends _i389.NavigationClientModule {}
+class _$NavigationClientModule extends _i192.NavigationClientModule {}

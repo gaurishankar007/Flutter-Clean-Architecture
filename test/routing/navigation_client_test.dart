@@ -1,4 +1,5 @@
-import 'package:clean_architecture/routing/helper/navigation_client.dart';
+import 'package:clean_architecture/core/errors/error_handler.dart';
+import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,7 @@ void main() {
   late NavigationClientImpl navigationClient;
 
   setUpAll(() {
+    ErrorHandlerProvider.register();
     mockAppRouter = MockAppRouter();
     navigationClient = NavigationClientImpl(appRouter: mockAppRouter);
   });

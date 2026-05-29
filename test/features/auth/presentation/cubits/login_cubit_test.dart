@@ -10,7 +10,7 @@ import 'package:clean_architecture/features/auth/domain/use_cases/save_user_data
 import 'package:clean_architecture/features/auth/domain/use_cases/set_session_use_case.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart';
-import 'package:clean_architecture/routing/helper/navigation_client.dart';
+import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';

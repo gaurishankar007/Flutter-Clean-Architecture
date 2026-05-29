@@ -1,5 +1,3 @@
-part of 'encryption_utils.dart';
-
 class EncryptedData {
   const EncryptedData({required this.ivBase64, required this.encryptedBase64});
 
@@ -7,8 +5,8 @@ class EncryptedData {
 
   factory EncryptedData.fromJson(Map<String, dynamic> map) {
     return EncryptedData(
-      ivBase64: map['initializationVector'] as String? ?? '',
-      encryptedBase64: map['encryption'] as String? ?? '',
+      ivBase64: map['initializationVector'] as String,
+      encryptedBase64: map['encryption'] as String,
     );
   }
 

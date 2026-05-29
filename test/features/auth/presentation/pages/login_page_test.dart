@@ -11,7 +11,7 @@ import 'package:clean_architecture/features/auth/domain/use_cases/set_session_us
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart';
 import 'package:clean_architecture/features/auth/presentation/pages/login/login_page.dart';
-import 'package:clean_architecture/routing/helper/navigation_client.dart';
+import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/themes/theme.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';

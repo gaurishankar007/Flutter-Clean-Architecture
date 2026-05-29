@@ -113,9 +113,8 @@ interface class HttpAuthInterceptor extends Interceptor {
       );
       if (apiResponse.success) {
         final tokenResponse = RefreshTokenResponse.fromJson(apiResponse.data);
-        final newUserData = userData..toDomain().copyWith(
-          accessToken: tokenResponse.accessToken,
-        );
+        final newUserData = userData
+          ..toDomain().copyWith(accessToken: tokenResponse.accessToken);
         await _localStorageClient.setString(
           LocalDbKeys.userData,
           jsonEncode(newUserData.toJson()),

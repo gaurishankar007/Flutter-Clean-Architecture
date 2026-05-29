@@ -1,7 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:auto_route/auto_route.dart';
-import 'package:clean_architecture/core/data/handlers/error_handler.dart';
+import 'package:clean_architecture/core/errors/error_handler.dart';
 import 'package:clean_architecture/routing/routes.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -93,15 +93,12 @@ final class NavigationClientImpl implements NavigationClient {
   /// Replace all previous routes the new route
   @override
   Future<void> replaceAllRoute(PageRouteInfo route) =>
-      ErrorHandler.executeSafe(() => _appRouter.replaceAll([route]));
+      ErrorHandlerProvider.I.executeSafe(() => _appRouter.replaceAll([route]));
 
   /// Adds the corresponding page to the given route
   @override
-  Future<T?> pushRoute<T>(PageRouteInfo<T> route) =>
-      ErrorHandler.executeSafeReturn(
-        () => _appRouter.push(route),
-        valueOnError: null,
-      );
+  Future<T?> pushRoute<T>(PageRouteInfo<T> route) => ErrorHandlerProvider.I
+      .executeSafeReturn(() => _appRouter.push(route), valueOnError: null);
 
   /// Adds the corresponding page to the given route based on the current platform
   @override
@@ -112,7 +109,7 @@ final class NavigationClientImpl implements NavigationClient {
     PageRouteInfo<T>? webRoute,
     String? platform,
   }) {
-    return ErrorHandler.executeSafeReturn(() async {
+    return ErrorHandlerProvider.I.executeSafeReturn(() async {
       platform ??= kIsWeb
           ? 'web'
           : Platform.isAndroid
@@ -136,11 +133,8 @@ final class NavigationClientImpl implements NavigationClient {
   }
 
   @override
-  Future<T?> replaceRoute<T>(PageRouteInfo<T> route) =>
-      ErrorHandler.executeSafeReturn(
-        () => _appRouter.replace(route),
-        valueOnError: null,
-      );
+  Future<T?> replaceRoute<T>(PageRouteInfo<T> route) => ErrorHandlerProvider.I
+      .executeSafeReturn(() => _appRouter.replace(route), valueOnError: null);
 }
 
 /// A util class for accessing [NavigationClient]

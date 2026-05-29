@@ -5,7 +5,7 @@ final class SlidingAutoRoute extends CustomRoute<dynamic> {
   SlidingAutoRoute({
     required super.page,
     required super.path,
-    super.durationInMilliseconds = 350,
+    super.duration = const Duration(milliseconds: 350),
     AxisDirection slideToward = AxisDirection.left,
   }) : super(
          transitionsBuilder: (context, animation, secondaryAnimation, child) {

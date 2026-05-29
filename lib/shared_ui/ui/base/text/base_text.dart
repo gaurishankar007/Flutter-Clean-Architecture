@@ -69,17 +69,14 @@ class BaseText extends StatelessWidget {
     fontWeight: fontWeight ?? FontWeight.w400,
   );
 
-  factory BaseText.title(
-    String text, {
-    TextAlign? textAlign,
-    Color? color,
-  }) => BaseText(
-    text,
-    textAlign: textAlign,
-    color: color,
-    textType: TextType.titleSmall,
-    fontWeight: FontWeight.w600,
-  );
+  factory BaseText.title(String text, {TextAlign? textAlign, Color? color}) =>
+      BaseText(
+        text,
+        textAlign: textAlign,
+        color: color,
+        textType: TextType.titleSmall,
+        fontWeight: FontWeight.w600,
+      );
 
   factory BaseText.titleMedium(
     String text, {

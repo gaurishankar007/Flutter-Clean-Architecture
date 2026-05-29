@@ -1,5 +1,5 @@
 import 'package:clean_architecture/core/clients/remote/internet_client.dart';
-import 'package:clean_architecture/core/data/handlers/repository_handler.dart';
+import 'package:clean_architecture/core/data/operations/repository_fetcher.dart';
 import 'package:clean_architecture/core/utils/type_defs.dart';
 import 'package:clean_architecture/features/{{feature.snakeCase()}}/data/data_sources/{{feature.snakeCase()}}_local_data_source.dart';
 import 'package:clean_architecture/features/{{feature.snakeCase()}}/data/data_sources/{{feature.snakeCase()}}_remote_data_source.dart';

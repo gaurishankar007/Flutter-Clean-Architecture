@@ -1,5 +1,5 @@
-import 'package:clean_architecture/core/data/handlers/repository_handler.dart';
 import 'package:clean_architecture/core/data/models/domain_convertible.dart';
+import 'package:clean_architecture/core/data/operations/repository_fetcher.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,9 +12,9 @@ class FakeDto implements DomainConvertible<String> {
 }
 
 void main() {
-  group('RepositoryHandler.fetchWithFallback', () {
+  group('RepositoryFetcher.fetchWithFallback', () {
     test('returns remote data when online', () async {
-      final result = await RepositoryHandler.fetchWithFallback<int>(
+      final result = await RepositoryFetcher.fetchWithFallback<int>(
         isInternetConnected: true,
         remoteCallback: () async => const SuccessState(data: 42),
       );
@@ -24,7 +24,7 @@ void main() {
 
     test('calls onRemoteSuccess when data is present', () async {
       int? callbackValue;
-      await RepositoryHandler.fetchWithFallback<int>(
+      await RepositoryFetcher.fetchWithFallback<int>(
         isInternetConnected: true,
         remoteCallback: () async => const SuccessState(data: 99),
         onRemoteSuccess: (data) => callbackValue = data,
@@ -34,7 +34,7 @@ void main() {
 
     test('does not call onRemoteSuccess when data is null', () async {
       var wasCalled = false;
-      await RepositoryHandler.fetchWithFallback<int>(
+      await RepositoryFetcher.fetchWithFallback<int>(
         isInternetConnected: true,
         remoteCallback: () async => const SuccessState(data: null),
         onRemoteSuccess: (data) => wasCalled = true,
@@ -45,7 +45,7 @@ void main() {
     test(
       'returns local data when offline and localCallback is provided',
       () async {
-        final result = await RepositoryHandler.fetchWithFallback<String>(
+        final result = await RepositoryFetcher.fetchWithFallback<String>(
           isInternetConnected: false,
           remoteCallback: () async => const SuccessState(data: 'remote'),
           localCallback: () async => const SuccessState(data: 'local'),
@@ -56,7 +56,7 @@ void main() {
     );
 
     test('returns NoInternetState when offline and no localCallback', () async {
-      final result = await RepositoryHandler.fetchWithFallback<double>(
+      final result = await RepositoryFetcher.fetchWithFallback<double>(
         isInternetConnected: false,
         remoteCallback: () async => const SuccessState(data: 1),
       );
@@ -64,7 +64,7 @@ void main() {
     });
 
     test('returns remote failure state when remote call fails', () async {
-      final result = await RepositoryHandler.fetchWithFallback<String>(
+      final result = await RepositoryFetcher.fetchWithFallback<String>(
         isInternetConnected: true,
         remoteCallback: () async => const FailureState(message: 'Remote error'),
       );
@@ -73,10 +73,10 @@ void main() {
     });
   });
 
-  group('RepositoryHandler.fetchWithFallbackAndMap', () {
+  group('RepositoryFetcher.fetchWithFallbackAndMap', () {
     test('maps remote data successfully when online', () async {
       final result =
-          await RepositoryHandler.fetchWithFallbackAndMap<FakeDto, String>(
+          await RepositoryFetcher.fetchWithFallbackAndMap<FakeDto, String>(
             isInternetConnected: true,
             remoteCallback: () async => const SuccessState(data: FakeDto(42)),
           );
@@ -87,7 +87,7 @@ void main() {
     test('calls onRemoteSuccess with raw data before mapping', () async {
       FakeDto? rawData;
       final result =
-          await RepositoryHandler.fetchWithFallbackAndMap<FakeDto, String>(
+          await RepositoryFetcher.fetchWithFallbackAndMap<FakeDto, String>(
             isInternetConnected: true,
             remoteCallback: () async => const SuccessState(data: FakeDto(99)),
             onRemoteSuccess: (data) => rawData = data,
@@ -98,7 +98,7 @@ void main() {
 
     test('maps local data when offline', () async {
       final result =
-          await RepositoryHandler.fetchWithFallbackAndMap<FakeDto, String>(
+          await RepositoryFetcher.fetchWithFallbackAndMap<FakeDto, String>(
             isInternetConnected: false,
             remoteCallback: () async => const SuccessState(data: FakeDto(100)),
             localCallback: () async => const SuccessState(data: FakeDto(50)),
@@ -108,10 +108,10 @@ void main() {
     });
   });
 
-  group('RepositoryHandler.fetchWithFallbackAndMapList', () {
+  group('RepositoryFetcher.fetchWithFallbackAndMapList', () {
     test('maps remote list data successfully when online', () async {
       final result =
-          await RepositoryHandler.fetchWithFallbackAndMapList<FakeDto, String>(
+          await RepositoryFetcher.fetchWithFallbackAndMapList<FakeDto, String>(
             isInternetConnected: true,
             remoteCallback: () async =>
                 const SuccessState(data: [FakeDto(1), FakeDto(2)]),
@@ -123,7 +123,7 @@ void main() {
     test('calls onRemoteSuccess with raw list before mapping', () async {
       List<FakeDto>? rawData;
       final result =
-          await RepositoryHandler.fetchWithFallbackAndMapList<FakeDto, String>(
+          await RepositoryFetcher.fetchWithFallbackAndMapList<FakeDto, String>(
             isInternetConnected: true,
             remoteCallback: () async => const SuccessState(data: [FakeDto(3)]),
             onRemoteSuccess: (data) => rawData = data,
@@ -134,10 +134,10 @@ void main() {
     });
   });
 
-  group('RepositoryHandler.fetchFromLocalAndMap', () {
+  group('RepositoryFetcher.fetchFromLocalAndMap', () {
     test('maps local data successfully', () async {
       final result =
-          await RepositoryHandler.fetchFromLocalAndMap<FakeDto, String>(
+          await RepositoryFetcher.fetchFromLocalAndMap<FakeDto, String>(
             localCallback: () async => const SuccessState(data: FakeDto(123)),
           );
       expect(result, isA<SuccessState<String>>());
@@ -146,7 +146,7 @@ void main() {
 
     test('propagates local failure state', () async {
       final result =
-          await RepositoryHandler.fetchFromLocalAndMap<FakeDto, String>(
+          await RepositoryFetcher.fetchFromLocalAndMap<FakeDto, String>(
             localCallback: () async =>
                 const FailureState(message: 'Local storage error'),
           );
@@ -155,10 +155,10 @@ void main() {
     });
   });
 
-  group('RepositoryHandler.fetchFromLocalAndMapList', () {
+  group('RepositoryFetcher.fetchFromLocalAndMapList', () {
     test('maps local list data successfully', () async {
       final result =
-          await RepositoryHandler.fetchFromLocalAndMapList<FakeDto, String>(
+          await RepositoryFetcher.fetchFromLocalAndMapList<FakeDto, String>(
             localCallback: () async =>
                 const SuccessState(data: [FakeDto(5), FakeDto(6)]),
           );
@@ -168,7 +168,7 @@ void main() {
 
     test('propagates local failure state for list', () async {
       final result =
-          await RepositoryHandler.fetchFromLocalAndMapList<FakeDto, String>(
+          await RepositoryFetcher.fetchFromLocalAndMapList<FakeDto, String>(
             localCallback: () async =>
                 const FailureState(message: 'Local list error'),
           );

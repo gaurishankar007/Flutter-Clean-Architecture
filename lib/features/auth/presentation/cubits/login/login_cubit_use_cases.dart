@@ -12,7 +12,7 @@ class LoginCubitUseCases {
     required this.setSession,
     required this.logOut,
   });
-  
+
   final LoginUseCase login;
   final SaveUserDataUseCase saveUserData;
   final SetSessionUseCase setSession;

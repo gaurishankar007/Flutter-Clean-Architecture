@@ -2,8 +2,8 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Flutter: Clean build",
-      "detail": "",
+      "label": "Flutter: clean",
+      "detail": "Runs flutter clean to reset build outputs",
       "type": "flutter",
       "command": "flutter",
       "args": ["clean"],
@@ -11,8 +11,8 @@
       "problemMatcher": []
     },
     {
-      "label": "Flutter: Get dependencies",
-      "detail": "",
+      "label": "Flutter: pub get",
+      "detail": "Resolves Flutter dependencies with pub get",
       "type": "flutter",
       "command": "flutter",
       "args": ["pub", "get"],
@@ -20,8 +20,8 @@
       "problemMatcher": []
     },
     {
-      "label": "Dart: Build build-runner",
-      "detail": "",
+      "label": "Dart: build_runner",
+      "detail": "Runs build_runner once to generate code artifacts",
       "type": "dart",
       "command": "dart",
       "args": ["run", "build_runner", "build", "--delete-conflicting-outputs"],
@@ -29,8 +29,8 @@
       "problemMatcher": []
     },
     {
-      "label": "Dart: Watch builder-runner",
-      "detail": "",
+      "label": "Dart: watch build_runner",
+      "detail": "Runs build_runner in watch mode for incremental code generation",
       "type": "dart",
       "command": "dart",
       "args": ["run", "build_runner", "watch", "--delete-conflicting-outputs"],
@@ -38,8 +38,8 @@
       "problemMatcher": []
     },
     {
-      "label": "Flutter: build release staging APK",
-      "detail": "",
+      "label": "Flutter: Android staging APK",
+      "detail": "Builds the release APK for the Android staging flavor",
       "type": "flutter",
       "command": "flutter",
       "args": [
@@ -55,8 +55,8 @@
       "problemMatcher": []
     },
     {
-      "label": "Flutter: Build release production APK",
-      "detail": "",
+      "label": "Flutter: Android prod APK",
+      "detail": "Builds the release APK for the Android production flavor",
       "type": "flutter",
       "command": "flutter",
       "args": [
@@ -72,8 +72,8 @@
       "problemMatcher": []
     },
     {
-      "label": "Flutter: Build release production app bundle",
-      "detail": "",
+      "label": "Flutter: Android prod AAB",
+      "detail": "Builds the release Android App Bundle for the production flavor",
       "type": "flutter",
       "command": "flutter",
       "args": [
@@ -89,20 +89,95 @@
       "problemMatcher": []
     },
     {
-      "label": "Mason: Make a feature",
-      "detail": "",
-      "type": "shell",
-      "command": "mason",
-      "args": ["make", "cubit_feature", "-c", "config.json"],
+      "label": "Flutter: iOS stg IPA",
+      "detail": "Builds a release iOS IPA for uploading to Firebase App Distribution for staging flavor",
+      "type": "flutter",
+      "command": "flutter",
+      "args": [
+        "build",
+        "ipa",
+        "--release",
+        "--flavor",
+        "staging",
+        "--target",
+        "lib/main_stg.dart",
+        "--export-method",
+        "ad-hoc"
+      ],
       "group": "build",
       "problemMatcher": []
     },
     {
-      "label": "Mason: Make a cubit page",
-      "detail": "",
+      "label": "Flutter: iOS prod IPA",
+      "detail": "Builds a release iOS IPA for uploading to Firebase App Distribution",
+      "type": "flutter",
+      "command": "flutter",
+      "args": [
+        "build",
+        "ipa",
+        "--release",
+        "--flavor",
+        "production",
+        "--target",
+        "lib/main.dart",
+        "--export-method",
+        "ad-hoc"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Mason: feature",
+      "detail": "Generates a Riverpod feature scaffold from the mason brick",
       "type": "shell",
       "command": "mason",
-      "args": ["make", "cubit_page", "-c", "config.json"],
+      "args": ["make", "riverpod_feature", "-c", "config.json"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Mason: view",
+      "detail": "Generates a Riverpod view scaffold from the mason brick",
+      "type": "shell",
+      "command": "mason",
+      "args": ["make", "riverpod_view", "-c", "config.json"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Mason: model",
+      "detail": "Generates a domain data model from the mason brick",
+      "type": "shell",
+      "command": "mason",
+      "args": ["make", "domain_data_model", "-c", "config.json"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Dart: pose api android",
+      "detail": "Generates the Android Pigeon bindings for pose API",
+      "type": "dart",
+      "command": "dart",
+      "args": [
+        "run",
+        "pigeon",
+        "--input",
+        "./lib/config/pigeon/pose_android_client_config.dart"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Dart: pose api ios",
+      "detail": "Generates the iOS Pigeon bindings for pose API",
+      "type": "dart",
+      "command": "dart",
+      "args": [
+        "run",
+        "pigeon",
+        "--input",
+        "./lib/config/pigeon/pose_ios_client_config.dart"
+      ],
       "group": "build",
       "problemMatcher": []
     }
