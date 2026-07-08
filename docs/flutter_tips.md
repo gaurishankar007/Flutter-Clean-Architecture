@@ -53,6 +53,8 @@ Flutter doesn't just have one tree, but three that work together.
 
 - **PointerInterceptor:** When using `HtmlElementView` to display web content, it can block interactions with Flutter widgets layered on top (like a `FloatingActionButton` or a dialog). To solve this, wrap the overlapping Flutter widget with `PointerInterceptor` from the `pointer_interceptor` package. This ensures your Flutter widgets remain interactive.
 
+- **KeyedSubtree:** Use `KeyedSubtree` to assign a `Key` to a widget you don't own or can't modify directly (e.g., a third-party widget or one returned by a builder). It wraps the child and applies the key to the subtree, letting Flutter track widget identity across rebuilds—preserving state when items reorder and forcing a clean rebuild when the key changes. If you own the widget, prefer setting the key directly on it (e.g., `MyWidget(key: ValueKey(id))`); `KeyedSubtree` is the fallback for when direct key assignment isn't possible.
+
 ### General Best Practices
 
 Follow these guidelines to keep your app fast and your codebase clean.
