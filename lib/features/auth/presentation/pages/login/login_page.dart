@@ -5,6 +5,7 @@ import 'package:clean_architecture/features/auth/presentation/pages/login/widget
 import 'package:clean_architecture/features/auth/presentation/widgets/welcome_logo.dart';
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
+import 'package:clean_architecture/shared_ui/utils/cubit_message_listener.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -22,12 +23,16 @@ class LoginPage extends HookWidget {
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
     final formKey = useMemoized(GlobalKey<FormState>.new);
-
-    return BlocProvider(
-      create: (context) => GetIt.I<LoginCubit>()
+    final cubit = useMemoized(
+      () => GetIt.I<LoginCubit>()
         // Clear any stale session data when login page loads
         // This ensures fresh state after auth interceptor logout
         ..clearSession(),
+    );
+    useCubitMessageListener(cubit);
+
+    return BlocProvider.value(
+      value: cubit,
       child: BlocBuilder<ScreenObserverCubit, ScreenObserverState>(
         buildWhen: (previous, current) =>
             previous.screenTypeChanges != current.screenTypeChanges,

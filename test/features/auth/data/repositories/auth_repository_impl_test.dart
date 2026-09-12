@@ -123,14 +123,13 @@ void main() {
         // Arrange
         when(
           () => mockAuthLocalDataSource.saveUserData(any()),
-        ).thenAnswer((_) async => const SuccessState(data: true));
+        ).thenAnswer((_) async => SuccessState.nil);
 
         // Act
         final result = await repository.saveUserData(tUserData);
 
         // Assert
-        expect(result, isA<SuccessState<bool>>());
-        expect(result.data, true);
+        expect(result, isA<SuccessState<void>>());
         // repository currently passes a DTO built from domain to the local data source.
         // Use a flexible argument matcher to avoid fragile instance-equality.
         verify(() => mockAuthLocalDataSource.saveUserData(any())).called(1);

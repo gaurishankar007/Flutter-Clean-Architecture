@@ -1,6 +1,6 @@
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/errors/error_handler.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:dio/dio.dart';
 
 /// A dedicated executor for API operations, providing safe execution of
@@ -12,7 +12,7 @@ abstract final class ApiExecutor {
   /// it extracts the payload from [responseDataKey] before parsing.
   static FutureData<T> call<T, R>(
     Future<Response<dynamic>> Function() request, {
-    R Function(MapDynamic json)? fromJson,
+    R Function(JsonMap json)? fromJson,
     bool isStandardResponse = true,
     String responseDataKey = 'data',
   }) {
@@ -27,7 +27,7 @@ abstract final class ApiExecutor {
           SuccessState(data: data, message: responseMessage, extra: response);
 
       // 1. Get message from the response if provided
-      if (rawData is MapDynamic) {
+      if (rawData is JsonMap) {
         if (rawData['message'] case final String? message) {
           responseMessage = message;
         }
@@ -35,7 +35,7 @@ abstract final class ApiExecutor {
 
       // 2. Handle standard API response structure if required
       if (isStandardResponse) {
-        if (rawData is! MapDynamic) {
+        if (rawData is! JsonMap) {
           return failure('Bad response format: ${rawData.runtimeType}');
         }
         if (!rawData.containsKey(responseDataKey)) {
@@ -45,11 +45,11 @@ abstract final class ApiExecutor {
       }
       // 3. Handle JSON deserialization
       if (fromJson != null) {
-        if (rawData is MapDynamic) {
+        if (rawData is JsonMap) {
           return success(fromJson(rawData) as T);
         } else if (rawData is List) {
           return success(
-            rawData.map((e) => fromJson(e as MapDynamic)).toList() as T,
+            rawData.map((e) => fromJson(e as JsonMap)).toList() as T,
           );
         }
         return failure('Expected Map or List but got ${rawData.runtimeType}');
@@ -73,7 +73,7 @@ abstract final class ApiExecutor {
       String? responseMessage;
 
       // 1. Get message from the response if provided
-      if (rawData is MapDynamic) {
+      if (rawData is JsonMap) {
         if (rawData['message'] case final String? message) {
           responseMessage = message;
         }
@@ -101,7 +101,7 @@ abstract final class ApiExecutor {
       String? responseMessage;
 
       // 1. Get message from the response if provided
-      if (rawData is MapDynamic) {
+      if (rawData is JsonMap) {
         if (rawData['message'] case final String? message) {
           responseMessage = message;
         }

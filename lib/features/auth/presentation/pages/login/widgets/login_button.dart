@@ -1,4 +1,6 @@
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
+import 'package:clean_architecture/routing/navigation_client.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:clean_architecture/shared_ui/ui/base/buttons/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,10 +27,13 @@ class LoginButton extends StatelessWidget {
         }
         FocusManager.instance.primaryFocus?.unfocus();
 
-        await context.read<LoginCubit>().fakeLogin(
+        final success = await context.read<LoginCubit>().fakeLogin(
           username: usernameController.text,
           password: passwordController.text,
         );
+        if (success) {
+          await NavigationUtil.I.replaceAllRoute(const HomeRoute());
+        }
       },
       text: 'LOGIN',
     );

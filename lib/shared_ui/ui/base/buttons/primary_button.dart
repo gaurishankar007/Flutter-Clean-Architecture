@@ -1,6 +1,7 @@
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/shared_ui/ui/base/loading_circle.dart';
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
+import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -56,7 +57,7 @@ class PrimaryButton extends HookWidget {
     });
 
     return SizedBox(
-      height: height ?? 50,
+      height: height ?? ScreenUtil.I.actionHeight,
       width: expandWidth ? double.maxFinite : width,
       child: ValueListenableBuilder(
         valueListenable: loadingNotifier,

@@ -124,6 +124,7 @@ class BaseText extends StatelessWidget {
       text,
       textAlign: textAlign,
       overflow: overflow,
+      maxLines: maxLines,
       style: TextStyle(
         color: color,
         fontSize: textType.size,

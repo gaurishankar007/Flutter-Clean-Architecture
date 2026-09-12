@@ -4,6 +4,7 @@ class LoginState extends BaseState {
   const LoginState({
     required this.passwordVisibility,
     required this.saveUserCredential,
+    super.message,
   });
 
   const LoginState.initial()
@@ -13,5 +14,5 @@ class LoginState extends BaseState {
   final bool saveUserCredential;
 
   @override
-  List<Object> get props => [passwordVisibility, saveUserCredential];
+  List<Object?> get props => [passwordVisibility, saveUserCredential, message];
 }

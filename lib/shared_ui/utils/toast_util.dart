@@ -1,6 +1,7 @@
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/routing/navigation_client.dart';
+import 'package:clean_architecture/shared_ui/cubits/base/base_cubit.dart';
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
 import 'package:flutter/material.dart';
@@ -56,12 +57,47 @@ abstract interface class ToastUtil {
     );
   }
 
+  static void showWarning(String message, {Duration? duration}) {
+    InteractiveToast.slide(
+      overlayState: _navigationClient.navigatorKey.currentState?.overlay,
+      title: BaseText(message),
+      trailing: const Icon(
+        Icons.warning_amber_rounded,
+        color: AppColors.warning,
+        size: 20,
+      ),
+      toastSetting: _toastSetting.copyWith(displayDuration: duration),
+      toastStyle: ToastStyle(
+        padding: _padding,
+        progressBarColor: AppColors.warning,
+        boxShadow: const [_boxShadow],
+      ),
+    );
+  }
+
   /// Shows success or error message based on success and failure state
-  static void showMessage<T>(DataState<T> dataState, {String message = ''}) {
+  static void showDataStateToast<T>(
+    DataState<T> dataState, {
+    String message = '',
+  }) {
     if (dataState is! SuccessState) {
       showError(dataState.message!);
     } else if (message.isNotEmpty) {
       showSuccess(message);
+    }
+  }
+
+  /// Shows [message] via the matching toast style. Does nothing for `null`.
+  static void showStateMessage(StateMessage? message) {
+    switch (message) {
+      case SuccessMessage(:final text):
+        showSuccess(text);
+      case ErrorMessage(:final text):
+        showError(text);
+      case WarningMessage(:final text):
+        showWarning(text);
+      case null:
+        break;
     }
   }
 }

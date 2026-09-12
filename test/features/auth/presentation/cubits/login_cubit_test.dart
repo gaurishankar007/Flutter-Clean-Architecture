@@ -10,13 +10,11 @@ import 'package:clean_architecture/features/auth/domain/use_cases/save_user_data
 import 'package:clean_architecture/features/auth/domain/use_cases/set_session_use_case.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit.dart';
 import 'package:clean_architecture/features/auth/presentation/cubits/login/login_cubit_use_cases.dart';
-import 'package:clean_architecture/routing/navigation_client.dart';
+import 'package:clean_architecture/shared_ui/cubits/base/base_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
-import '../../../../../testing/mocks/client_mocks.dart';
-import '../../../../../testing/mocks/external/router_mocks.dart';
 import '../../../../../testing/mocks/repository_mocks.dart';
 import '../../../../../testing/mocks/use_case_mocks.dart';
 
@@ -28,7 +26,6 @@ void main() {
   late MockSetSessionUseCase mockSetSessionUseCase;
   late MockLogOutUseCase mockLogOutUseCase;
   late MockSessionRepository mockSessionRepository;
-  late MockNavigationClient mockNavigationClient;
   late LoginCubit loginCubit;
   late UserData userData;
 
@@ -46,7 +43,6 @@ void main() {
       refreshToken: '',
     );
     registerFallbackValue(const Authentication(username: '', password: ''));
-    registerFallbackValue(const MockPageRouteInfo());
     registerFallbackValue(userData);
   });
 
@@ -56,15 +52,13 @@ void main() {
     mockSaveUserDataUseCase = MockSaveUserDataUseCase();
     mockLogOutUseCase = MockLogOutUseCase();
     mockSessionRepository = MockSessionRepository();
-    mockNavigationClient = MockNavigationClient();
 
     locator
       ..registerSingleton<LoginUseCase>(mockLoginUseCase)
       ..registerSingleton<SaveUserDataUseCase>(mockSaveUserDataUseCase)
       ..registerSingleton<SetSessionUseCase>(mockSetSessionUseCase)
       ..registerSingleton<LogOutUseCase>(mockLogOutUseCase)
-      ..registerSingleton<SessionRepository>(mockSessionRepository)
-      ..registerSingleton<NavigationClient>(mockNavigationClient);
+      ..registerSingleton<SessionRepository>(mockSessionRepository);
 
     final useCases = LoginCubitUseCases(
       login: mockLoginUseCase,
@@ -95,65 +89,94 @@ void main() {
     ],
   );
 
-  blocTest<LoginCubit, LoginState>(
-    'login should call login use case and navigate without saving user data',
-    build: () {
-      // Arrange
-      when(() => mockSetSessionUseCase.call(userData)).thenAnswer((_) {});
-      when(() => mockNavigationClient.replaceAllRoute(any())).thenAnswer((
-        _,
-      ) async {
-        return;
-      });
-      when(
-        () => mockLoginUseCase.call(any()),
-      ).thenAnswer((_) async => SuccessState(data: userData));
+  group('login', () {
+    late bool loginResult;
 
-      return loginCubit;
-    },
-    act: (cubit) async {
-      // Act
-      await cubit.login(username: 'test', password: '123');
-    },
-    verify: (_) {
-      // Assert
-      verify(() => mockLoginUseCase.call(any())).called(1);
-      verify(() => mockSetSessionUseCase.call(any())).called(1);
-      verify(() => mockNavigationClient.replaceAllRoute(any())).called(1);
-      verifyNever(() => mockSaveUserDataUseCase.call(any()));
-    },
-  );
+    blocTest<LoginCubit, LoginState>(
+      'returns true and does not save user data by default, without '
+      'setting a state message',
+      build: () {
+        // Arrange
+        when(() => mockSetSessionUseCase.call(userData)).thenAnswer((_) {});
+        when(
+          () => mockLoginUseCase.call(any()),
+        ).thenAnswer((_) async => SuccessState(data: userData));
 
-  blocTest<LoginCubit, LoginState>(
-    'login should save user data when saveUserCredential = true',
-    build: () {
-      // Arrange
-      when(() => mockSetSessionUseCase.call(userData)).thenAnswer((_) {});
-      when(() => mockNavigationClient.replaceAllRoute(any())).thenAnswer((
-        _,
-      ) async {
-        return;
-      });
-      when(
-        () => mockLoginUseCase.call(any()),
-      ).thenAnswer((_) async => SuccessState(data: userData));
-      when(
-        () => mockSaveUserDataUseCase.call(any()),
-      ).thenAnswer((_) async => const SuccessState(data: true));
+        return loginCubit;
+      },
+      act: (cubit) async {
+        // Act
+        loginResult = await cubit.login(username: 'test', password: '123');
+      },
+      expect: () => [
+        const LoginState(passwordVisibility: false, saveUserCredential: false),
+      ],
+      verify: (_) {
+        // Assert
+        expect(loginResult, isTrue);
+        verify(() => mockLoginUseCase.call(any())).called(1);
+        verify(() => mockSetSessionUseCase.call(any())).called(1);
+        verifyNever(() => mockSaveUserDataUseCase.call(any()));
+      },
+    );
 
-      return loginCubit;
-    },
-    act: (cubit) async {
-      // Act
-      cubit.toggleUserCredentialSaving();
-      await cubit.login(username: 'test', password: '123');
-    },
-    verify: (_) {
-      // Assert
-      verify(() => mockLoginUseCase.call(any())).called(1);
-      verify(() => mockSetSessionUseCase.call(any())).called(1);
-      verify(() => mockSaveUserDataUseCase.call(any())).called(1);
-      verify(() => mockNavigationClient.replaceAllRoute(any())).called(1);
-    },
-  );
+    blocTest<LoginCubit, LoginState>(
+      'saves user data when saveUserCredential = true',
+      build: () {
+        // Arrange
+        when(() => mockSetSessionUseCase.call(userData)).thenAnswer((_) {});
+        when(
+          () => mockLoginUseCase.call(any()),
+        ).thenAnswer((_) async => SuccessState(data: userData));
+        when(
+          () => mockSaveUserDataUseCase.call(any()),
+        ).thenAnswer((_) async => SuccessState.nil);
+
+        return loginCubit;
+      },
+      act: (cubit) async {
+        // Act
+        cubit.toggleUserCredentialSaving();
+        loginResult = await cubit.login(username: 'test', password: '123');
+      },
+      verify: (_) {
+        // Assert
+        expect(loginResult, isTrue);
+        verify(() => mockLoginUseCase.call(any())).called(1);
+        verify(() => mockSetSessionUseCase.call(any())).called(1);
+        verify(() => mockSaveUserDataUseCase.call(any())).called(1);
+      },
+    );
+
+    blocTest<LoginCubit, LoginState>(
+      'returns false and sets an error message when the login use case '
+      'fails, without touching the session',
+      build: () {
+        // Arrange
+        when(() => mockLoginUseCase.call(any())).thenAnswer(
+          (_) async => const FailureState(message: 'Invalid credentials'),
+        );
+
+        return loginCubit;
+      },
+      act: (cubit) async {
+        // Act
+        loginResult = await cubit.login(username: 'test', password: '123');
+      },
+      expect: () => [
+        const LoginState(
+          passwordVisibility: false,
+          saveUserCredential: false,
+          message: ErrorMessage('Invalid credentials'),
+        ),
+      ],
+      verify: (_) {
+        // Assert
+        expect(loginResult, isFalse);
+        verify(() => mockLoginUseCase.call(any())).called(1);
+        verifyNever(() => mockSetSessionUseCase.call(any()));
+        verifyNever(() => mockSaveUserDataUseCase.call(any()));
+      },
+    );
+  });
 }

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:clean_architecture/core/data/models/encrypted_data.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
@@ -65,7 +65,7 @@ final class EncryptionServiceImpl implements EncryptionService {
   String decryptYoutubeUrl(String encodedEncryptedData) {
     final jsonBytes = base64Url.decode(encodedEncryptedData);
     final jsonString = utf8.decode(jsonBytes);
-    final encryptedJson = jsonDecode(jsonString) as MapDynamic;
+    final encryptedJson = jsonDecode(jsonString) as JsonMap;
     final encryptedData = EncryptedData.fromJson(encryptedJson);
     return decrypt(encryptedData);
   }

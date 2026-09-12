@@ -50,7 +50,7 @@ void main() {
 
   group('saveUserData', () {
     test(
-      'should return SuccessState(true) when data is saved successfully',
+      'should return SuccessState.nil when data is saved successfully',
       () async {
         // Arrange
         when(
@@ -61,8 +61,7 @@ void main() {
         final result = await dataSource.saveUserData(tUserDataModel);
 
         // Assert
-        expect(result, isA<SuccessState<bool>>());
-        expect(result.data, isTrue);
+        expect(result, isA<SuccessState<void>>());
       },
     );
 
@@ -79,7 +78,7 @@ void main() {
         final result = await dataSource.saveUserData(tUserDataModel);
 
         // Assert
-        expect(result, isA<FailureState<bool>>());
+        expect(result, isA<FailureState<void>>());
       },
     );
   });
@@ -138,7 +137,7 @@ void main() {
 
   group('removeUserData', () {
     test(
-      'should return SuccessState(true) when data is removed successfully',
+      'should return SuccessState.nil when data is removed successfully',
       () async {
         // Arrange
         when(
@@ -149,8 +148,7 @@ void main() {
         final result = await dataSource.removeUserData();
 
         // Assert
-        expect(result, isA<SuccessState<bool>>());
-        expect(result.data, isTrue);
+        expect(result, isA<SuccessState<void>>());
         verify(() => mockLocalDatabase.remove(tStorageKey)).called(1);
       },
     );
@@ -166,7 +164,7 @@ void main() {
         final result = await dataSource.removeUserData();
 
         // Assert
-        expect(result, isA<FailureState<bool>>());
+        expect(result, isA<FailureState<void>>());
       },
     );
   });

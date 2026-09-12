@@ -1,6 +1,8 @@
 import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/core/constants/app_icons.dart';
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
+import 'package:clean_architecture/routing/navigation_client.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
@@ -31,7 +33,10 @@ class DashboardDrawer extends StatelessWidget {
                       BaseText.headline('Dashboard'),
                       UIHelpers.spaceV16,
                       ListTile(
-                        onTap: () => context.read<DashboardCubit>().setIndex(0),
+                        onTap: () {
+                          context.read<DashboardCubit>().setIndex(0);
+                          NavigationUtil.I.replaceAllRoute(const HomeRoute());
+                        },
                         visualDensity: VisualDensity.standard,
                         horizontalTitleGap: 8,
                         leading: Icon(
@@ -49,7 +54,12 @@ class DashboardDrawer extends StatelessWidget {
                         ),
                       ),
                       ListTile(
-                        onTap: () => context.read<DashboardCubit>().setIndex(1),
+                        onTap: () {
+                          context.read<DashboardCubit>().setIndex(1);
+                          NavigationUtil.I.replaceAllRoute(
+                            const SettingRoute(),
+                          );
+                        },
                         visualDensity: VisualDensity.standard,
                         horizontalTitleGap: 8,
                         leading: Icon(

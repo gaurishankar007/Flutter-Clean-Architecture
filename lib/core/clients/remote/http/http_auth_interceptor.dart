@@ -108,7 +108,7 @@ interface class HttpAuthInterceptor extends Interceptor {
       );
 
       /// If api response is successful, update the accessToken
-      final ApiResponse<MapDynamic> apiResponse = ApiResponse.fromResponse(
+      final ApiResponse<JsonMap> apiResponse = ApiResponse.fromResponse(
         response,
       );
       if (apiResponse.success) {
