@@ -9,13 +9,14 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+
 import 'package:clean_architecture/config/app_config.dart' as _i37;
 import 'package:clean_architecture/core/clients/local/local_storage_client.dart'
     as _i1009;
+import 'package:clean_architecture/core/clients/remote/connectivity_client.dart'
+    as _i398;
 import 'package:clean_architecture/core/clients/remote/http/http_client.dart'
     as _i244;
-import 'package:clean_architecture/core/clients/remote/internet_client.dart'
-    as _i9;
 import 'package:clean_architecture/core/errors/error_handler.dart' as _i662;
 import 'package:clean_architecture/core/services/encryption_service.dart'
     as _i285;
@@ -61,11 +62,10 @@ import 'package:clean_architecture/routing/navigation_client.dart' as _i192;
 import 'package:clean_architecture/routing/routes.dart' as _i671;
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart'
     as _i640;
+import 'package:connectivity_plus/connectivity_plus.dart' as _i895;
 import 'package:dio/dio.dart' as _i361;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart'
-    as _i161;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 const String _staging = 'staging';
@@ -81,7 +81,7 @@ extension GetItInjectableX on _i174.GetIt {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final localStorageClientModule = _$LocalStorageClientModule();
     final httpClientModule = _$HttpClientModule();
-    final internetClientModule = _$InternetClientModule();
+    final connectivityClientModule = _$ConnectivityClientModule();
     final navigationClientModule = _$NavigationClientModule();
     await gh.factoryAsync<_i460.SharedPreferences>(
       () => localStorageClientModule.sharedPreferences,
@@ -90,14 +90,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<bool>(() => httpClientModule.addInterceptors);
     gh.factory<_i761.AppErrorCubit>(() => _i761.AppErrorCubit());
     gh.factory<_i640.ScreenObserverCubit>(() => _i640.ScreenObserverCubit());
+    gh.lazySingleton<_i895.Connectivity>(
+      () => connectivityClientModule.connectivity,
+    );
     gh.lazySingleton<_i361.Dio>(() => httpClientModule.dio);
     gh.lazySingleton<_i244.HttpAuthInterceptor>(
       () => _i244.HttpAuthInterceptor(),
     );
-    gh.lazySingleton<_i161.InternetConnection>(
-      () => internetClientModule.internetConnection,
-    );
     gh.lazySingleton<_i671.AppRouter>(() => navigationClientModule.appRouter);
+    gh.lazySingleton<_i398.ConnectivityClient>(
+      () =>
+          _i398.ConnectivityClientImpl(connectivity: gh<_i895.Connectivity>()),
+    );
     gh.lazySingleton<_i285.EncryptionService>(
       () => _i285.EncryptionServiceImpl(),
     );
@@ -107,11 +111,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i37.AppConfig>(
       () => _i37.AppConfigStg(),
       registerFor: {_staging},
-    );
-    gh.lazySingleton<_i9.InternetClient>(
-      () => _i9.InternetClientImpl(
-        internetConnection: gh<_i161.InternetConnection>(),
-      ),
     );
     gh.lazySingleton<_i37.AppConfig>(
       () => _i37.AppConfigDev(),
@@ -158,7 +157,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i1003.AuthRepository>(
       () => _i526.AuthRepositoryImpl(
-        internet: gh<_i9.InternetClient>(),
+        internet: gh<_i398.ConnectivityClient>(),
         remoteDataSource: gh<_i141.AuthRemoteDataSource>(),
         localDataSource: gh<_i322.AuthLocalDataSource>(),
       ),
@@ -214,6 +213,6 @@ class _$LocalStorageClientModule extends _i1009.LocalStorageClientModule {}
 
 class _$HttpClientModule extends _i244.HttpClientModule {}
 
-class _$InternetClientModule extends _i9.InternetClientModule {}
+class _$ConnectivityClientModule extends _i398.ConnectivityClientModule {}
 
 class _$NavigationClientModule extends _i192.NavigationClientModule {}

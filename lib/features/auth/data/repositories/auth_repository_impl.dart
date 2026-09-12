@@ -1,4 +1,4 @@
-import 'package:clean_architecture/core/clients/remote/internet_client.dart';
+import 'package:clean_architecture/core/clients/remote/connectivity_client.dart';
 import 'package:clean_architecture/core/data/operations/repository_fetcher.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
 import 'package:clean_architecture/core/types/types.dart';
@@ -13,14 +13,14 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: AuthRepository)
 final class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
-    required InternetClient internet,
+    required ConnectivityClient internet,
     required AuthRemoteDataSource remoteDataSource,
     required AuthLocalDataSource localDataSource,
   }) : _localDataSource = localDataSource,
        _remoteDataSource = remoteDataSource,
        _internet = internet;
 
-  final InternetClient _internet;
+  final ConnectivityClient _internet;
   final AuthRemoteDataSource _remoteDataSource;
   final AuthLocalDataSource _localDataSource;
 

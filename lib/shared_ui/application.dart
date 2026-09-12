@@ -1,5 +1,5 @@
 import 'package:clean_architecture/config/app_config.dart';
-import 'package:clean_architecture/core/clients/remote/internet_client.dart';
+import 'package:clean_architecture/core/clients/remote/connectivity_client.dart';
 import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/themes/theme.dart';
@@ -27,7 +27,7 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
     WidgetsBinding.instance.addObserver(this);
     // Listen for internet connectivity changes.
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => InternetUtil.I.subscribeConnectivity(),
+      (_) => ConnectivityProvider.I.subscribeConnectivity(),
     );
   }
 
