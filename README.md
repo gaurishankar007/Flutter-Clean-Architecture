@@ -8,6 +8,7 @@ For more details on specific commands and guidelines, refer to the following doc
 - [**Flutter Commands Cheat Sheet**](docs/flutter_commands_cheat_sheet.md): A collection of essential and frequently used Flutter commands to boost your productivity.
 - [**Flutter Configuration Guidelines**](docs/flutter_configuration_guidelines.md): Guidelines for setting up the Flutter environment, including activating pub commands, and managing the Java SDK location.
 - [**Git Commands Cheat Sheet**](docs/git_commands_cheat_sheet.md): A collection of essential and frequently used git commands to boost your productivity.
+- [**Testing Guide**](docs/testing.md): Conventions for unit, widget, and integration tests — mocking, `bloc_test`, `patrol_finders`, and how to test the Cubit/UI-separation pattern.
 
 ## Table of Contents 📌
 
@@ -52,6 +53,8 @@ For more details on specific commands and guidelines, refer to the following doc
     - [Running Tests](#running-tests)
       - [Unit \& Widget Tests](#unit--widget-tests)
       - [Integration Tests (Patrol)](#integration-tests-patrol)
+  - [CI/CD \& Release](#cicd--release)
+    - [Required Secrets](#required-secrets)
 
 ## Introduction
 
@@ -121,6 +124,7 @@ For more detailed information and real-world examples, see the [**SOLID Principl
 
 - 🛡️ **SOLID Principles**: Ensures scalable, maintainable, and testable code.
 - 🏗️ **Clean Architecture**: Divides code into layers (Data, Domain, Presentation) for clear separation of concerns.
+- 🧩 **Cubit/UI Separation**: Cubits never show toasts or navigate directly — they set a one-shot `BaseState.message`, and the page reacts to it (`useCubitMessageListener`) and to returned results (`NavigationUtil.I`).
 - 🍴 **Build Flavors**: Supports Development, Staging, and Production environments.
 - 🔧 **Robust Error Handling**: Centralized exception translation and normalization using `ErrorHandler`.
 - 🐞 **App Error Logging**: Real-time tracking of uncaught framework and asynchronous errors with a dedicated UI for log inspection and management.
@@ -182,6 +186,8 @@ lib/
 │   │   ├── error_recorders/
 │   │   ├── error_translators/
 │   │   └── error_handler.dart
+│   ├── types/
+│   │   └── types.dart
 │   ├── utils/
 │   │   ├── extensions/
 │   │   └── image_picker_util.dart
@@ -217,7 +223,7 @@ lib/
 ```
 
 - **`config/`**: Environment and platform setup (flavor configs), dependency injection (`injector/`), and any Pigeon-generated platform bindings. `app_config.dart` holds flavor-specific values (base URLs, feature flags).
-- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core clients (HTTP client, local storage, connectivity/InternetClient), and general-purpose utilities.
+- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core clients (HTTP client, local storage, connectivity/InternetClient), and general-purpose utilities. `types/types.dart` holds the shared typedefs (`FutureData<T>`, `FutureVoid`, `JsonMap`, etc.) used across every layer.
 - **`features/`**: Each feature follows Clean Architecture and is self-contained with three layers:
   - **`data/`**: Remote and local data sources (including repository pattern for session management), DTOs/models, and concrete repository implementations that map to domain entities.
   - **`domain/`**: Pure business logic (entities, use cases/interactors, and abstract repository interfaces). No Flutter or external deps here.
@@ -237,10 +243,10 @@ Notes:
 ## State Management with Bloc (Cubit)
 
 - The app uses **Bloc** (specifically Cubit) for state management within the Presentation Layer of its Clean Architecture.
-- Every Cubit extends `BaseCubit`, and its state extends `BaseState`.
-- `BaseCubit` includes shared functionality (e.g., navigation, showing toasts) via `ClientMixin`.
-- `BaseState` provides `StateStatus` (for UI state like `initial`, `loading`, `loaded`).
-- The UI can use `showDataStateToast` from the `ClientMixin` to display messages based on the `DataState` returned from use cases.
+- Every Cubit extends `BaseCubit<T>` (`shared_ui/cubits/base/base_cubit.dart`), and its state extends `BaseState`, which carries a `StateStatus` (`initial`/`loading`/`loaded`/`noInternet`/`error`) and a one-shot `StateMessage? message` (`SuccessMessage`/`ErrorMessage`/`WarningMessage`).
+- **Cubits never show messages or navigate themselves** — both are UI-layer concerns. A Cubit reports an outcome by setting `state.message`, typically derived from a `DataState` via `stateMessageFromDataState(dataState, {message: '...'})`. A state's `copyWith`/constructor must **never** preserve the previous `message` (`message: message`, never `message ?? this.message`), so a message is shown exactly once.
+- The page providing the Cubit wires `useCubitMessageListener(cubit)` (`shared_ui/utils/cubit_message_listener.dart`, a `flutter_hooks` hook) to actually display that message via `ToastUtil` — never a raw `SnackBar`.
+- A Cubit method that used to navigate itself instead returns a result — typically `Future<bool>` (did it succeed), or an `enum` for more than one outcome — and the calling widget awaits it and navigates via `NavigationUtil.I`. See `LoginCubit`/`LoginPage` (and `login_button.dart`) for a worked example, and [`docs/testing.md`](docs/testing.md) for how to test both halves of the split.
 
 ## App Flavors
 
@@ -325,6 +331,8 @@ graph TD
 
 **Implementations**: `lib/core/data/operations` — `api_executor.dart`, `repository_fetcher.dart`.
 
+- Use `FutureVoid` (`Future<DataState<void>>`, from `core/types/types.dart`) for data source/repository/use-case methods whose result no caller reads — never `FutureBool` (`Future<DataState<bool>>`) just to signal "did it work" when the caller only checks `hasData`/`errorType`. Return `SuccessState.nil` (never `SuccessState(data: null)` or `SuccessState(data: true)`) as the success value for a `FutureVoid`-typed method.
+
 ## API Workflow Overview
 
 ```mermaid
@@ -383,41 +391,48 @@ flowchart TD
 ```dart
 @injectable
 class LoginCubit extends BaseCubit<LoginState> {
+  LoginCubit({required LoginCubitUseCases useCases})
+    : _useCases = useCases,
+      super(const LoginState.initial());
+
   final LoginCubitUseCases _useCases;
 
-  LoginCubit({
-    required LoginCubitUseCases useCases,
-  })  : _useCases = useCases,
-        super(const LoginState.initial());
+  /// Returns whether login succeeded — the calling widget decides whether
+  /// to navigate. Never called by the Cubit itself.
+  Future<bool> login({
+    required String username,
+    required String password,
+  }) async {
+    final authentication = Authentication(username: username, password: password);
+    final dataState = await _useCases.login.call(authentication);
 
-  Future<void> login({required String username, required String password}) async {
-    final dataState = await _useCases.login.call(
-      Authentication(username: username, password: password),
-    );
+    // Sets an ErrorMessage on failure (silent on success — the widget's
+    // navigation is feedback enough); the page's `useCubitMessageListener`
+    // shows it via `ToastUtil`.
+    emit(state.copyWith(message: stateMessageFromDataState(dataState)));
 
-    dataState.when(
-      success: (user) => print("Login success"),
-      failure: (msg, type) => print("Login failed: $msg"),
-      loading: () => print("Logging in..."),
-    );
-
-    if (dataState.hasData) {
-      saveUserData(dataState.data!);
-    } else if (dataState.hasError) {
-      // Handle error
+    if (!dataState.hasData) {
+      return false;
     }
-  }
 
-  Future<void> saveUserData(UserData userData) async {
-    final dataState = await _useCases.saveUserData.call(userData);
-
-    if (dataState.hasData) {
-      // Handle success
-    } else if (dataState.hasError) {
-      // Handle error
-    }
+    _useCases.setSession.call(dataState.data!);
+    return true;
   }
 }
+```
+
+The widget then reacts to the returned `bool`:
+
+```dart
+onTap: () async {
+  final success = await context.read<LoginCubit>().login(
+    username: usernameController.text,
+    password: passwordController.text,
+  );
+  if (success) {
+    await NavigationUtil.I.replaceAllRoute(const HomeRoute());
+  }
+},
 ```
 
 #### Internal Flow
@@ -500,7 +515,7 @@ The generation process relies on a `config.json` file, which includes details su
 
 ## Testing
 
-This project uses a multi-layered testing strategy to ensure robustness and maintainability.
+This project uses a multi-layered testing strategy to ensure robustness and maintainability. See [`docs/testing.md`](docs/testing.md) for the full conventions, including how to test the Cubit/UI-separation pattern (asserting on `state.message` rather than a mocked navigation/toast call, and keeping `StateMessage` subclasses `Equatable` so `blocTest`'s exact-state checks work).
 
 - **Mocking with `mocktail`**: Dependencies are mocked using the `mocktail` package. This allows for testing each layer in isolation. For example, when testing a `Repository`, the `RemoteDataSource` and `LocalDataSource` are mocked. The tests demonstrate how to mock dependencies and stub method calls to return specific data or states.
 
@@ -544,3 +559,35 @@ Ensure an emulator or physical device is running before executing these tests.
   ```shell
   patrol test --target path/to/your/integration_test.dart
   ```
+
+## CI/CD & Release
+
+Android APK builds are delivered via GitHub Actions to
+[Firebase App Distribution](https://firebase.google.com/docs/app-distribution):
+
+- **`.github/actions/build-android/action.yml`**: a composite action that
+  sets up Java/Flutter, writes `.env` from secrets, runs `flutter analyze`
+  and `flutter test`, then `flutter build apk --release --flavor <flavor>
+  --target <entrypoint>`.
+- **`.github/workflows/firebase_app_distribution.yml`**:
+  - Push to `staging` → builds the `staging` flavor (`lib/main_stg.dart`) and distributes it.
+  - Push to `master` → builds the `production` flavor (`lib/main.dart`) and distributes it.
+  - Can also be triggered manually (`workflow_dispatch`) with custom release notes.
+
+### Required Secrets
+
+Configure these under **Settings → Secrets and variables → Actions** before the workflow can run:
+
+| Secret                        | Purpose                                                          |
+| ------------------------------ | ----------------------------------------------------------------- |
+| `BASE_PRODUCTION_URL`          | Production API base URL, written into `.env` (`BASE_PRODUCTION`)  |
+| `BASE_STAGING_URL`             | Staging API base URL, written into `.env` (`BASE_STAGING`)        |
+| `BASE_DEVELOPMENT_URL`         | Development API base URL, written into `.env` (`BASE_DEVELOPMENT`)|
+| `ENCRYPTION_KEY`               | AES key used by `EncryptionService`, written into `.env`           |
+| `FIREBASE_APP_ID_STAGING`      | Firebase App ID for the staging Android app                       |
+| `FIREBASE_APP_ID_PRODUCTION`   | Firebase App ID for the production Android app                    |
+| `CREDENTIAL_FILE_CONTENT`      | Contents of a Firebase service account JSON with App Distribution access |
+
+The distributed APK is signed with the debug key by default (see
+`android/app/build.gradle.kts`) — add your own release signing config before
+distributing to real testers/users.
