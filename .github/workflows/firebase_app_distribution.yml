@@ -1,0 +1,81 @@
+name: "Deploy App To Firebase App Distribution"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        type: string
+        required: false
+        default: ""
+        description: "Release Notes"
+
+  push:
+    branches:
+      - staging
+      - master
+
+env:
+  RELEASE_NOTES: |
+    • Bug fixes and performance improvements.
+  TESTER_GROUP: testers
+
+jobs:
+  build_and_distribute_staging:
+    name: Distribute Staging APK
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, 'master') }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Ensures full git history for build number calculation and changelog generation
+
+      - name: Build APK (Staging)
+        uses: ./.github/actions/build-android
+        with:
+          flavor: staging
+          target: lib/main_stg.dart
+          base_production: ${{ secrets.BASE_PRODUCTION_URL }}
+          base_development: ${{ secrets.BASE_DEVELOPMENT_URL }}
+          base_staging: ${{ secrets.BASE_STAGING_URL }}
+          encryption_key: ${{ secrets.ENCRYPTION_KEY }}
+
+      - name: Distribute App To Firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_STAGING }}
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          groups: ${{ env.TESTER_GROUP }}
+          file: build/app/outputs/flutter-apk/app-staging-release.apk
+          releaseNotes: ${{ inputs.release_notes || env.RELEASE_NOTES }}
+
+  build_and_distribute_production:
+    name: Distribute Production APK
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'master')
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0 # Ensures full git history for build number calculation and changelog generation
+
+      - name: Build APK (Production)
+        uses: ./.github/actions/build-android
+        with:
+          flavor: production
+          target: lib/main.dart
+          base_production: ${{ secrets.BASE_PRODUCTION_URL }}
+          base_development: ${{ secrets.BASE_DEVELOPMENT_URL }}
+          base_staging: ${{ secrets.BASE_STAGING_URL }}
+          encryption_key: ${{ secrets.ENCRYPTION_KEY }}
+
+      - name: Distribute App To Firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.7.0
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_PRODUCTION }}
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          groups: ${{ env.TESTER_GROUP }}
+          file: build/app/outputs/flutter-apk/app-production-release.apk
+          releaseNotes: ${{ inputs.release_notes || env.RELEASE_NOTES }}

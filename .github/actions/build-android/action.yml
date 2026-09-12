@@ -1,0 +1,62 @@
+name: "Build Android APK"
+description: "Setup, create .env file, analyze, test, and build the APK"
+
+inputs:
+  flavor:
+    description: "The flavor of the build (e.g., production, staging, development)"
+    required: true
+  target:
+    description: "The main entrypoint Dart file for the build (e.g., lib/main_stg.dart)"
+    required: true
+  base_production:
+    description: "The production base URL for the .env file"
+    required: true
+  base_development:
+    description: "The development base URL for the .env file"
+    required: true
+  base_staging:
+    description: "The staging base URL for the .env file"
+    required: true
+  encryption_key:
+    description: "The AES encryption key for the .env file"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v5
+      with:
+        distribution: "temurin"
+        java-version: 17
+        cache: "gradle"
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: "stable"
+        flutter-version: 3.47.2
+
+    - name: Create .env File
+      shell: bash
+      run: |
+        echo "BASE_PRODUCTION=${{ inputs.base_production }}" > .env
+        echo "BASE_DEVELOPMENT=${{ inputs.base_development }}" >> .env
+        echo "BASE_STAGING=${{ inputs.base_staging }}" >> .env
+        echo "ENCRYPTION_KEY=${{ inputs.encryption_key }}" >> .env
+
+    - name: Install Dependencies
+      shell: bash
+      run: flutter pub get
+
+    - name: Analyze Code
+      shell: bash
+      run: flutter analyze
+
+    - name: Run Tests
+      shell: bash
+      run: flutter test
+
+    - name: Build APK
+      shell: bash
+      run: flutter build apk --release --flavor ${{ inputs.flavor }} --target ${{ inputs.target }}
