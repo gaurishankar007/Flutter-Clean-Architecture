@@ -1,6 +1,6 @@
 import 'package:clean_architecture/core/clients/remote/http/http_client.dart';
 import 'package:clean_architecture/core/data/operations/api_executor.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:injectable/injectable.dart';
 
 abstract interface class {{feature.pascalCase()}}RemoteDataSource {}

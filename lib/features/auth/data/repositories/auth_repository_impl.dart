@@ -1,7 +1,7 @@
 import 'package:clean_architecture/core/clients/remote/internet_client.dart';
 import 'package:clean_architecture/core/data/operations/repository_fetcher.dart';
 import 'package:clean_architecture/core/domain/entities/user_data.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:clean_architecture/features/auth/data/data_sources/auth_local_data_source.dart';
 import 'package:clean_architecture/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';
@@ -35,7 +35,7 @@ final class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  FutureBool saveUserData(UserData userData) =>
+  FutureVoid saveUserData(UserData userData) =>
       _localDataSource.saveUserData(UserDataResponse.fromDomain(userData));
 
   @override
@@ -54,5 +54,5 @@ final class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  FutureBool removeUserData() => _localDataSource.removeUserData();
+  FutureVoid removeUserData() => _localDataSource.removeUserData();
 }

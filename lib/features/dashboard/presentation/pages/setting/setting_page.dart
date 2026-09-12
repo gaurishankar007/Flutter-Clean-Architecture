@@ -3,6 +3,8 @@ import 'package:clean_architecture/core/constants/app_colors.dart';
 import 'package:clean_architecture/features/dashboard/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:clean_architecture/features/dashboard/presentation/pages/setting/widgets/blue_container.dart';
 import 'package:clean_architecture/features/dashboard/presentation/pages/setting/widgets/setting_items.dart';
+import 'package:clean_architecture/routing/navigation_client.dart';
+import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
 import 'package:clean_architecture/shared_ui/ui/base/buttons/primary_button.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
@@ -17,7 +19,10 @@ class SettingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final dashboardCubit = context.read<DashboardCubit>();
     return BaseScaffold(
-      onPopInvokedWithResult: () => dashboardCubit.setIndex(0),
+      onPopInvokedWithResult: () {
+        dashboardCubit.setIndex(0);
+        NavigationUtil.I.replaceAllRoute(const HomeRoute());
+      },
       isScrollable: false,
       usePadding: false,
       body: Stack(
@@ -30,7 +35,12 @@ class SettingPage extends StatelessWidget {
                 const SettingItems(),
                 const Spacer(),
                 PrimaryButton(
-                  onTap: dashboardCubit.logOut,
+                  onTap: () async {
+                    dashboardCubit.logOut();
+                    await NavigationUtil.I.replaceAllRoute(
+                      const LoginRoute(),
+                    );
+                  },
                   text: 'Logout',
                   color: AppColors.error,
                   expandWidth: true,

@@ -1,7 +1,7 @@
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/errors/error_recorders/error_recorder.dart';
 import 'package:clean_architecture/core/errors/error_translators/error_translator.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:get_it/get_it.dart';
 
 abstract interface class ErrorHandler {

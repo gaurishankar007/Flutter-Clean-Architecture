@@ -1,7 +1,7 @@
 import 'package:clean_architecture/core/clients/remote/http/http_client.dart';
 import 'package:clean_architecture/core/constants/api_endpoints.dart';
 import 'package:clean_architecture/core/data/operations/api_executor.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:clean_architecture/features/auth/data/models/requests/authentication_request.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:dio/dio.dart';

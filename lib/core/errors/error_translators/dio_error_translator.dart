@@ -1,6 +1,6 @@
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/errors/error_translators/error_translator.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:dio/dio.dart';
 
 final class DioErrorTranslator implements ErrorTranslator<DioException> {
@@ -52,10 +52,10 @@ final class DioErrorTranslator implements ErrorTranslator<DioException> {
   /// Returns the error message from the DioException response data if present.
   String? _getErrorMessage(DioException exception) {
     try {
-      // Check whether the response body is a MapDynamic or not.
-      if (exception.response?.data case final MapDynamic body) {
+      // Check whether the response body is a JsonMap or not.
+      if (exception.response?.data case final JsonMap body) {
         // Check whether the response body contains the 'errors' key.
-        if (body['errors'] case final MapDynamic errors) {
+        if (body['errors'] case final JsonMap errors) {
           var errorMessage = '';
 
           // Check if the error message is in the form of a list of strings.

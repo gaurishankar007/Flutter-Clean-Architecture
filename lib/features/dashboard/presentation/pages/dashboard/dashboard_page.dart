@@ -25,7 +25,7 @@ class DashboardPage extends StatelessWidget {
         buildWhen: (previous, current) =>
             previous.desktopLayoutChanges != current.desktopLayoutChanges,
         builder: (context, state) {
-          final isDesktopLargeScreen = ScreenUtil.I.isWebDesktopScreen;
+          final isDesktopLargeScreen = ScreenUtil.I.isDesktopView;
           return Row(
             children: [
               if (isDesktopLargeScreen) const DashboardDrawer(),

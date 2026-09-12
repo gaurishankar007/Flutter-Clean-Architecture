@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 part 'screen_details.dart';
@@ -9,16 +10,23 @@ class ScreenUtil {
   factory ScreenUtil() => _singleton;
   ScreenUtil._();
   static final ScreenUtil _singleton = ScreenUtil._();
-  static ScreenUtil I = ScreenUtil();
+  // Returning the field directly (rather than the `ScreenUtil()` factory,
+  // which is equivalent) so this isn't flagged as a static accessor that
+  // simply wraps a constructor call.
+  static ScreenUtil get I => _singleton;
 
   double _width = 0;
   double _height = 0;
   double _devicePixelRatio = 0;
   double _statusBarHeight = 0;
   ScreenType _type = ScreenType.unknown;
+  Orientation _orientation = Orientation.portrait;
 
   double get height => _height;
   double get width => _width;
+
+  /// Whether the screen is currently in portrait or landscape orientation.
+  Orientation get orientation => _orientation;
 
   /// Physical pixels on the screen ↔️ Logical (Flutter) pixels you work with.
   ///
@@ -44,6 +52,9 @@ class ScreenUtil {
     _devicePixelRatio = screenDetails.devicePixelRatio;
     _statusBarHeight = 0;
     _type = _getScreenType();
+    _orientation = _height > _width
+        ? Orientation.portrait
+        : Orientation.landscape;
   }
 
   ScreenDetails _getScreenDetails() {
@@ -117,7 +128,7 @@ class ScreenUtil {
   }
 
   /// Get adapted values for compact and small screens otherwise use [base]
-  T getMobileValue<T>({required T base, required T mobile}) =>
+  T valueForCompactOrPhone<T>({required T base, required T mobile}) =>
       getResponsiveValue(
         base: base,
         screens: {
@@ -125,20 +136,68 @@ class ScreenUtil {
         },
       );
 
-  /// Whether the screen is smartphone screen
-  bool get _isPhoneScreen => _type.index <= ScreenType.phone.index;
+  /// Locks the app to portrait orientation while the screen is phone-sized
+  /// (shortest side <= 600), optionally still allowing landscape too.
+  /// Has no effect on tablet/desktop-sized screens.
+  void setPhoneViewGlobalOrientation({bool allowLandscape = false}) {
+    if (!isWithinActualPhoneView) {
+      return;
+    }
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      if (allowLandscape) ...[
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ],
+    ]);
+  }
 
-  /// Whether the screen is desktop screen in web view
-  bool get isWebDesktopScreen => kIsWeb && _type == ScreenType.desktop;
+  /// Whether the screen falls within smartphone view or not
+  bool get isWithinPhoneView => _type.index <= ScreenType.phone.index;
+
+  /// Checks if the shortest side of the screen is within the phone view.
+  /// This is useful for determining if the screen should be treated as a
+  /// phone, even if it is in landscape mode.
+  bool get isWithinActualPhoneView {
+    final shortestSide = _width < _height ? _width : _height;
+    return shortestSide <= 600;
+  }
+
+  /// Whether the screen falls within the tablet view or not
+  bool get isWithinTabletView => _type.index <= ScreenType.tablet.index;
+
+  /// Whether the screen is desktop view or not — on web, any desktop-sized
+  /// viewport; natively, a desktop-sized screen in landscape orientation.
+  bool get isDesktopView {
+    if (kIsWeb) {
+      return _type == ScreenType.desktop;
+    }
+    return _type == ScreenType.desktop && _orientation == Orientation.landscape;
+  }
+
+  /// Button, TextField, DropdownButton adaptive height according to the screen type
+  double get actionHeight => 50;
+
+  /// Navigation Bar height
+  double get bottomNavigationHeight => 50;
 
   /// Spacing between the items in the grid view
-  double gridViewSpace = 20;
+  double gridSpace() => valueForCompactOrPhone(base: 20, mobile: 16);
+
+  /// Width of each grid item — 12 columns for desktop, 4 for tablet/mobile.
+  double gridWidth() {
+    final crossAxisCount = isDesktopView ? 12 : 4;
+    return (availableWidth() - (gridSpace() * (crossAxisCount - 1))) /
+        crossAxisCount;
+  }
 
   /// View horizontal padding
-  double get horizontalSpace => _isPhoneScreen ? widthPart(5.55, max: 20) : 24;
+  double get horizontalSpace =>
+      isWithinPhoneView ? widthPart(5.55, max: 20) : 24;
 
   /// View vertical padding
-  double get verticalSpace => _isPhoneScreen ? 24 : 32;
+  double get verticalSpace => isWithinPhoneView ? 24 : 32;
 
   /// View horizontal padding
   EdgeInsets get horizontalPadding =>

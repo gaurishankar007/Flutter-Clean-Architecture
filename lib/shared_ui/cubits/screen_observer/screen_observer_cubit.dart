@@ -13,13 +13,13 @@ class ScreenObserverCubit extends BaseCubit<ScreenObserverState> {
 
   void update() {
     final oldScreenType = ScreenUtil.I.type;
-    final wasDesktop = ScreenUtil.I.isWebDesktopScreen;
+    final wasDesktop = ScreenUtil.I.isDesktopView;
 
     // Update screen dimensions and type
     ScreenUtil.I.configureScreen();
 
     final newScreenType = ScreenUtil.I.type;
-    final isDesktop = ScreenUtil.I.isWebDesktopScreen;
+    final isDesktop = ScreenUtil.I.isDesktopView;
 
     // Determine if a state update is needed
     final hasScreenTypeChanged = oldScreenType != newScreenType;

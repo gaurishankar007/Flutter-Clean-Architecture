@@ -1,6 +1,6 @@
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/domain/use_cases/use_case.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:clean_architecture/features/{{feature.snakeCase()}}/domain/repositories/{{feature.snakeCase()}}_repository.dart';
 import 'package:injectable/injectable.dart';
 

@@ -107,7 +107,7 @@ void main() {
     ).thenAnswer((_) async => SuccessState(data: userData));
     when(
       () => mockSaveUserDataUseCase.call(any()),
-    ).thenAnswer((_) async => const SuccessState(data: true));
+    ).thenAnswer((_) async => SuccessState.nil);
 
     final mockScreenObserverCubit = MockScreenObserverCubit();
     when(
@@ -157,8 +157,12 @@ void main() {
     await $.tester.tap(find.byType(ElevatedButton));
     await $.pumpAndSettle();
 
-    verify(() => mockLoginUseCase.call(any())).called(1);
+    // The login button uses `LoginCubit.fakeLogin`, a backend-free stand-in
+    // for `login` (see its doc comment) - the real login use case is never
+    // hit from this widget.
+    verifyNever(() => mockLoginUseCase.call(any()));
     verify(() => mockSetSessionUseCase.call(any())).called(1);
+    verify(() => mockSaveUserDataUseCase.call(any())).called(1);
     verify(() => mockNavigationClient.replaceAllRoute(any())).called(1);
   });
 }

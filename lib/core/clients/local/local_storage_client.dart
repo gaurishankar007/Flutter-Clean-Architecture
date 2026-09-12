@@ -2,7 +2,7 @@ import 'dart:convert' show jsonDecode, jsonEncode;
 
 import 'package:clean_architecture/core/data/models/encrypted_data.dart';
 import 'package:clean_architecture/core/services/encryption_service.dart';
-import 'package:clean_architecture/core/utils/type_defs.dart';
+import 'package:clean_architecture/core/types/types.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -54,7 +54,7 @@ final class LocalStorageClientImpl implements LocalStorageClient {
     if (encodedEncryption == null) {
       return null;
     }
-    final encryptionMap = jsonDecode(encodedEncryption) as MapDynamic;
+    final encryptionMap = jsonDecode(encodedEncryption) as JsonMap;
     final encryptedData = EncryptedData.fromJson(encryptionMap);
     return _encryptionService.decrypt(encryptedData);
   }
