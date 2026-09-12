@@ -1,4 +1,4 @@
-import 'package:clean_architecture/core/clients/remote/internet_client.dart';
+import 'package:clean_architecture/core/clients/remote/connectivity_client.dart';
 import 'package:clean_architecture/core/data/operations/repository_fetcher.dart';
 import 'package:clean_architecture/core/types/types.dart';
 import 'package:clean_architecture/features/{{feature.snakeCase()}}/data/data_sources/{{feature.snakeCase()}}_local_data_source.dart';

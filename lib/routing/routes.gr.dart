@@ -9,6 +9,7 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+
 import 'package:auto_route/auto_route.dart' as _i6;
 import 'package:clean_architecture/features/auth/presentation/pages/login/login_page.dart'
     as _i4;
