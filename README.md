@@ -141,8 +141,8 @@ Follow these steps to get the project up and running on your local machine.
 
 Ensure you have the following software installed:
 
-- Flutter SDK (version `3.38.1`)
-- Dart SDK (version `3.10.0`)
+- Flutter SDK (version `3.47.0`)
+- Dart SDK (version `3.13.0`)
 - Android Studio (for Android development)
 - Xcode (for iOS development)
 - Java 17 (Recommended, but optional)
