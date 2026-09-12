@@ -1,5 +1,5 @@
 import 'package:clean_architecture/core/data/models/domain_convertible.dart';
-import 'package:clean_architecture/features/{{feature.snakeCase()}}/domain/entities/test_user.dart';
+import 'package:clean_architecture/features/{{feature.snakeCase()}}/domain/entities/{{#entity}}{{name.snakeCase()}}{{/entity}}.dart';
 
 {{#entity}}
 class {{name.pascalCase()}}Response implements DomainConvertible<{{name.pascalCase()}}> {
