@@ -1,6 +1,6 @@
 import 'package:clean_architecture/core/constants/app_icons.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:patrol/patrol.dart';
 
 import 'helpers/test_app.dart' as app;

@@ -5,7 +5,7 @@ import 'package:clean_architecture/features/dashboard/presentation/pages/home/wi
 import 'package:clean_architecture/shared_ui/ui/base/app_bar/base_app_bar.dart';
 import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
 import 'package:clean_architecture/shared_ui/ui/base_title.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 @RoutePage()
 class HomePage extends StatelessWidget {

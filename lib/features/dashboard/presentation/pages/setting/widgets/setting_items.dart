@@ -4,7 +4,7 @@ import 'package:clean_architecture/core/constants/app_icons.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class SettingItems extends StatelessWidget {
   const SettingItems({super.key});

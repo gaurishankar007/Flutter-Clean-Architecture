@@ -4,8 +4,8 @@ import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:clean_architecture/shared_ui/cubits/base/base_cubit.dart';
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_sliding_toast/flutter_sliding_toast.dart';
+import 'package:material_ui/material_ui.dart';
 
 abstract interface class ToastUtil {
   static final _navigationClient = NavigationUtil.I;

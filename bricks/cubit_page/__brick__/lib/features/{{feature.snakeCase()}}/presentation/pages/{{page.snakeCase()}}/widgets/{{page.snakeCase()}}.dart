@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class {{page.pascalCase()}} extends StatelessWidget {
   const {{page.pascalCase()}}({super.key});

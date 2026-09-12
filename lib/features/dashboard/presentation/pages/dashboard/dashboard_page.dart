@@ -5,9 +5,9 @@ import 'package:clean_architecture/features/dashboard/presentation/pages/dashboa
 import 'package:clean_architecture/features/dashboard/presentation/pages/dashboard/widgets/dashboard_drawer.dart';
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:material_ui/material_ui.dart';
 
 @RoutePage()
 class DashboardPage extends StatelessWidget {
