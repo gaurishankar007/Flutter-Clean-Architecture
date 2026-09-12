@@ -5,7 +5,7 @@ import 'package:clean_architecture/shared_ui/ui/base/buttons/base_icon_button.da
 import 'package:clean_architecture/shared_ui/ui/base/text/base_text.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 class BaseAppBar extends StatelessWidget {
   const BaseAppBar({

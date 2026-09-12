@@ -8,8 +8,8 @@ import 'package:clean_architecture/routing/routes.gr.dart';
 import 'package:clean_architecture/shared_ui/ui/base/base_scaffold.dart';
 import 'package:clean_architecture/shared_ui/ui/base/buttons/primary_button.dart';
 import 'package:clean_architecture/shared_ui/utils/ui_helpers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 
 @RoutePage()
 class SettingPage extends StatelessWidget {
@@ -37,9 +37,7 @@ class SettingPage extends StatelessWidget {
                 PrimaryButton(
                   onTap: () async {
                     dashboardCubit.logOut();
-                    await NavigationUtil.I.replaceAllRoute(
-                      const LoginRoute(),
-                    );
+                    await NavigationUtil.I.replaceAllRoute(const LoginRoute());
                   },
                   text: 'Logout',
                   color: AppColors.error,
