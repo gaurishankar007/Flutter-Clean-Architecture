@@ -29,7 +29,7 @@ import 'package:clean_architecture/features/auth/data/data_sources/auth_remote_d
 import 'package:clean_architecture/features/auth/data/data_sources/session_local_data_source.dart'
     as _i16;
 import 'package:clean_architecture/features/auth/data/repositories/auth_repository_impl.dart'
-    as _i526;
+    as _i527;
 import 'package:clean_architecture/features/auth/data/repositories/session_repository_impl.dart'
     as _i943;
 import 'package:clean_architecture/features/auth/domain/repositories/auth_repository.dart'
@@ -156,7 +156,7 @@ extension GetItInjectableX on _i174.GetIt {
       ),
     );
     gh.lazySingleton<_i1003.AuthRepository>(
-      () => _i526.AuthRepositoryImpl(
+      () => _i527.AuthRepositoryImpl(
         internet: gh<_i398.ConnectivityClient>(),
         remoteDataSource: gh<_i141.AuthRemoteDataSource>(),
         localDataSource: gh<_i322.AuthLocalDataSource>(),

@@ -36,7 +36,7 @@ class AppErrorRecorder implements ErrorRecorder {
     StackTrace? stackTrace,
   }) {
     final errorDetails = AppErrorDetails(
-      title: 'vAIolin App Error (${error.runtimeType})',
+      title: 'App Error (${error.runtimeType})',
       message: failureState?.message,
       // Add the failure error if it exists otherwise fallback to the error.
       error: failureState?.error ?? error.toString(),

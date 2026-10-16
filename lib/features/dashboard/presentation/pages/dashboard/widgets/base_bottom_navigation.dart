@@ -39,7 +39,7 @@ class BaseBottomNavigation extends StatelessWidget {
               return BaseIconButton(
                 onPressed: () {
                   context.read<DashboardCubit>().setIndex(index);
-                  NavigationUtil.I.replaceAllRoute(_routes[index]);
+                  NavigationUtil.I.replaceAllRoute([_routes[index]]);
                 },
                 visualDensity: VisualDensity.standard,
                 padding: const EdgeInsets.all(10),

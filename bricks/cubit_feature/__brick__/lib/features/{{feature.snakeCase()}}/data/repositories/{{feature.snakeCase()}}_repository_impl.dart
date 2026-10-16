@@ -10,14 +10,12 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: {{feature.pascalCase()}}Repository)
 final class {{feature.pascalCase()}}RepositoryImpl implements {{feature.pascalCase()}}Repository {
   {{feature.pascalCase()}}RepositoryImpl({
-    required InternetClient internet,
-    required {{feature.pascalCase()}}RemoteDataSource remoteDataSource,
-    required {{feature.pascalCase()}}LocalDataSource localDataSource,
-  })  : _internet = internet,
-        _remoteDataSource = remoteDataSource,
-        _localDataSource = localDataSource;
+    required this._internet,
+    required this._remoteDataSource,
+    required this._localDataSource,
+  });
 
-  final InternetClient _internet;
+  final ConnectivityClient _internet;
   final {{feature.pascalCase()}}RemoteDataSource _remoteDataSource;
   final {{feature.pascalCase()}}LocalDataSource _localDataSource;
 }

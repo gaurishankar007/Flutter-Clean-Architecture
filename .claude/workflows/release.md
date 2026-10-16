@@ -1,58 +1,66 @@
-# Release Workflow: Firebase App Distribution
+# Release Workflow
 
-This document describes how a release actually reaches testers today, so an
-agent doesn't invent steps that don't exist in this repo's CI.
+How a build actually reaches testers in this repo, so an agent doesn't invent
+steps that don't exist. Nothing is distributed on push: a release always
+starts on purpose, from the GitHub workflows or fastlane.
 
 ## How it works
 
-`.github/workflows/firebase_app_distribution.yml` builds and distributes the
-app automatically:
-
-- **Trigger:** any push to the `staging` or `master` branch, or a manual
-  `workflow_dispatch` run (optionally with a custom `release_notes` input).
-- **`staging` branch** → builds the `staging` flavor
-  (`flutter build apk --release --flavor staging --target lib/main_stg.dart`)
-  and distributes it via Firebase App Distribution to the `testers` tester
-  group, using `FIREBASE_APP_ID_STAGING`.
-- **`master` branch** → builds the `production` flavor
-  (`--flavor production --target lib/main.dart`) and distributes it the same
-  way, using `FIREBASE_APP_ID_PRODUCTION`.
-- Both jobs run `flutter analyze` and `flutter test` as part of the build
-  action (`.github/actions/build-android/action.yml`) — a release build
-  fails if analysis isn't clean or a test fails.
-- Release notes come from the `release_notes` workflow-dispatch input if
-  provided, otherwise from the static `RELEASE_NOTES` block in the workflow
-  file's `env:` section — **that block needs to be updated by hand** before a
-  push-triggered release if the notes should describe what actually changed.
-  Use the `•` bullet character (not `-`), since a line starting with `-` can
-  be misread as a new YAML list item by the release-notes action.
-- Required secrets (`BASE_PRODUCTION_URL`, `BASE_STAGING_URL`,
-  `BASE_DEVELOPMENT_URL`, `ENCRYPTION_KEY`, `FIREBASE_APP_ID_STAGING`,
-  `FIREBASE_APP_ID_PRODUCTION`, `CREDENTIAL_FILE_CONTENT`) must be configured
-  under **Settings → Secrets and variables → Actions** — see the README's
-  "CI/CD & Release" section for what each one is for.
-- There is **no automatic build-number/version bump** in CI. `pubspec.yaml`'s
-  `version:` field is not touched by this workflow. If a release needs a new
-  version, that's a manual step — **ask the user** how they want it handled
-  if a task seems to require bumping it; don't guess a scheme.
-- The distributed APK is currently signed with the **debug key**
-  (`android/app/build.gradle.kts` has a `// TODO: Add your own signing
-  config` placeholder) — fine for internal testers via App Distribution, but
-  flag this if a task is about a real production release: don't assume
-  release signing is already wired up.
+- **GitHub Actions** (manual-only, `workflow_dispatch`):
+  - `.github/workflows/staging_app_distribution.yml` builds the `staging`
+    flavor (`lib/main_stg.dart`).
+  - `.github/workflows/production_app_distribution.yml` builds the
+    `production` flavor (`lib/main.dart`) and only runs from `master`.
+  - Inputs: `release_notes` (overrides the file's `RELEASE_NOTES` block),
+    `skip_tests`, and `platform` (`android`/`ios`/`all`, default `android`).
+  - Android: `flutter build apk` → Firebase App Distribution (`testers`
+    group). iOS: manual signing from the Apple secrets → `flutter build ipa`
+    → TestFlight.
+  - Both run `flutter analyze` and `flutter test` (the `flutter-test` action)
+    unless `skip_tests` is set.
+- **Fastlane** (local, `fastlane/Fastfile`):
+  - `bundle exec fastlane <android|ios> <staging|production>`.
+  - Reads the release notes from the matching workflow's `RELEASE_NOTES`
+    block (unless `notes:"..."` is passed) and the credentials from
+    `fastlane/.env` and `fastlane/keys/` (gitignored; see
+    `fastlane/.env.example`).
+  - Refuses to build from a dirty working tree unless `allow_dirty:true`.
+- **Versioning:** `pubspec.yaml`'s `version:` is the single source; the iOS
+  Runner target reads it through `$(FLUTTER_BUILD_NUMBER)`. Neither CI nor
+  fastlane bumps it.
+- **Signing:** Android release builds use `android/key.properties` when it
+  exists (CI writes it from `ANDROID_KEYSTORE_FILE`/`ANDROID_KEY_PROPERTIES_FILE`),
+  otherwise the debug key. Flag this if a task is about a real store
+  release: don't assume release signing is configured.
+- **Secrets:** see the README's "Required Secrets" table.
 
 ## When asked to prepare/ship a release
 
-1. Confirm the target branch (`staging` for a tester build, `master` for
-   production) and get the release notes from the user — do not write your
-   own summary of commits into `RELEASE_NOTES` without the user reviewing it
-   first, since testers see this text.
-2. Update the `RELEASE_NOTES` block in
-   `.github/workflows/firebase_app_distribution.yml` if the push-triggered
-   path is being used (skip this if the user will use the manual
-   `workflow_dispatch` input instead).
-3. Run `flutter analyze` and `flutter test` locally first — don't rely on CI
-   to catch it.
-4. Push to `staging`/`master` (or trigger the workflow manually) only once
-   the user has explicitly asked for that push — this affects real testers'
-   installed builds.
+1. **Check Flutter version parity:** compare `flutter --version` with
+   `flutter-version` in `.github/actions/setup-flutter/action.yml`, and update
+   the action to match the local version exactly if they differ.
+2. **Validate:** run `flutter analyze` and `flutter test`; both must be clean.
+3. **Bump the version** only if the user wants one: increment the build
+   number in `pubspec.yaml` (e.g. `1.0.0+1` → `1.0.0+2`). Ask how they want it
+   handled if it's unclear; don't guess a scheme.
+4. **Draft release notes** from the commits since the previous release.
+   - Only include user-visible changes. Leave out refactors, dependency
+     bumps, CI/tooling, tests, logging, and internal architecture/DI changes.
+   - Start each line with `- `; the workflows write the notes to a file, so
+     there's no YAML-list ambiguity.
+   - **Show them to the user and wait for approval** before writing them
+     anywhere, since testers see this text.
+5. **Update `RELEASE_NOTES`** in both
+   `.github/workflows/staging_app_distribution.yml` and
+   `.github/workflows/production_app_distribution.yml`.
+6. **Commit and push** only when the user asks for it, e.g.
+   `chore: bump build number to <VERSION> and update release notes`.
+7. **Distribute** only when the user explicitly asks, since this reaches
+   real testers' devices:
+   - With fastlane: from a clean tree at the pushed commit, run the lanes
+     one after the other, **iOS first, then Android**
+     (`bundle exec fastlane ios staging`, then
+     `bundle exec fastlane android staging`).
+   - Or with GitHub: `gh workflow run staging_app_distribution.yml -f platform=all`.
+   - If a lane or run fails, stop and report the error instead of retrying
+     or switching to the other route.

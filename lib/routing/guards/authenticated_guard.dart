@@ -12,6 +12,8 @@ final class AuthenticatedGuard extends AutoRouteGuard {
       return resolver.next();
     }
 
+    // Settle the intercepted navigation before redirecting.
+    resolver.next(false);
     router.replaceAll([const LoginRoute()]);
   }
 }

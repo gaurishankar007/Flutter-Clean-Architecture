@@ -1,0 +1,89 @@
+name: "Create Files"
+description: "Create the .env file and the platform signing files."
+
+inputs:
+  base_production:
+    description: "The production base URL"
+    required: true
+  base_development:
+    description: "The development base URL"
+    required: true
+  base_staging:
+    description: "The staging base URL"
+    required: true
+  encryption_key:
+    description: "The AES key for encrypting sensitive data"
+    required: true
+  android_keystore_file:
+    description: "The base64 encoded upload keystore (.jks)"
+    required: false
+    default: ""
+  android_key_properties_file:
+    description: "The base64 encoded android/key.properties"
+    required: false
+    default: ""
+  apple_team_id:
+    description: "The Apple Team ID"
+    required: false
+    default: ""
+  ios_bundle_id:
+    description: "The iOS Bundle ID"
+    required: false
+    default: ""
+  ios_provisioning_profile_name:
+    description: "The name of the provisioning profile"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create .env File
+      shell: bash
+      run: |
+        echo "BASE_PRODUCTION=${{ inputs.base_production }}" > .env
+        echo "BASE_DEVELOPMENT=${{ inputs.base_development }}" >> .env
+        echo "BASE_STAGING=${{ inputs.base_staging }}" >> .env
+        echo "ENCRYPTION_KEY=${{ inputs.encryption_key }}" >> .env
+
+    # Without these, android/app/build.gradle.kts signs the release with the debug key.
+    - name: Create Android Signing Files
+      shell: bash
+      if: ${{ inputs.android_keystore_file != '' && inputs.android_key_properties_file != '' }}
+      run: |
+        printf "%s" "${{ inputs.android_keystore_file }}" | base64 --decode > android/app/upload-keystore.jks
+        printf "%s" "${{ inputs.android_key_properties_file }}" | base64 --decode > android/key.properties
+
+    - name: Create iOS ExportOptions.plist
+      shell: bash
+      if: ${{ inputs.apple_team_id != '' && inputs.ios_bundle_id != '' && inputs.ios_provisioning_profile_name != '' }}
+      run: |
+        cat > ios/ExportOptions.plist <<'PLIST'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>APPLE_TEAM_ID_PLACEHOLDER</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>provisioningProfiles</key>
+            <dict>
+                <key>IOS_BUNDLE_ID_PLACEHOLDER</key>
+                <string>IOS_PROVISIONING_PROFILE_NAME_PLACEHOLDER</string>
+            </dict>
+        </dict>
+        </plist>
+        PLIST
+        # Inputs can't expand inside a quoted heredoc, so substitute them after.
+        sed -i '' \
+          -e "s|APPLE_TEAM_ID_PLACEHOLDER|${{ inputs.apple_team_id }}|g" \
+          -e "s|IOS_BUNDLE_ID_PLACEHOLDER|${{ inputs.ios_bundle_id }}|g" \
+          -e "s|IOS_PROVISIONING_PROFILE_NAME_PLACEHOLDER|${{ inputs.ios_provisioning_profile_name }}|g" \
+          ios/ExportOptions.plist

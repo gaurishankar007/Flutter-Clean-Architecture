@@ -8,10 +8,9 @@ abstract interface class {{feature.pascalCase()}}LocalDataSource {}
 @LazySingleton(as: {{feature.pascalCase()}}LocalDataSource)
 final class {{feature.pascalCase()}}LocalDataSourceImpl implements {{feature.pascalCase()}}LocalDataSource {
   const {{feature.pascalCase()}}LocalDataSourceImpl({
-    required ErrorHandler errorHandler,
-    required LocalStorageClient localDatabase,
-  }) : _errorHandler = errorHandler,
-       _localDatabase = localDatabase;
+    required this._errorHandler,
+    required this._localDatabase,
+  });
 
   final ErrorHandler _errorHandler;
   final LocalStorageClient _localDatabase;

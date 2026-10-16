@@ -32,7 +32,7 @@ class LoginButton extends StatelessWidget {
           password: passwordController.text,
         );
         if (success) {
-          await NavigationUtil.I.replaceAllRoute(const HomeRoute());
+          await NavigationUtil.I.replaceAllRoute([const HomeRoute()]);
         }
       },
       text: 'LOGIN',

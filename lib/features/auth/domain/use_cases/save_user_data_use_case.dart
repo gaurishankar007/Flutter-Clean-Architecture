@@ -6,8 +6,7 @@ import 'package:injectable/injectable.dart';
 
 @LazySingleton()
 class SaveUserDataUseCase implements UseCase<void, UserData> {
-  SaveUserDataUseCase({required AuthRepository authRepository})
-    : _authRepository = authRepository;
+  SaveUserDataUseCase({required this._authRepository});
   final AuthRepository _authRepository;
 
   @override

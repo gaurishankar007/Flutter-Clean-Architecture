@@ -37,10 +37,9 @@ abstract interface class ErrorHandler {
 
 final class ErrorHandlerImpl implements ErrorHandler {
   ErrorHandlerImpl({
-    required List<ErrorTranslator<Object>> errorTranslators,
-    required List<ErrorRecorder> errorReporters,
-  }) : _errorTranslators = errorTranslators,
-       _errorReporters = errorReporters;
+    required this._errorTranslators,
+    required this._errorReporters,
+  });
 
   final List<ErrorTranslator> _errorTranslators;
   final List<ErrorRecorder> _errorReporters;

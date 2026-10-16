@@ -1,5 +1,5 @@
 ---
-name: clean-architecture-codegen
+name: codegen
 description: Automates code generation (build_runner) for this project
 ---
 

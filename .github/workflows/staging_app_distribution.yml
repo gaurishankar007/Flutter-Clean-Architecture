@@ -1,0 +1,173 @@
+name: "Distribute Staging Mobile Apps"
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_notes:
+        type: string
+        required: false
+        default: ""
+        description: "Release Notes"
+      skip_tests:
+        type: boolean
+        required: false
+        default: false
+        description: "Skip analysis and Unit & Widget tests"
+      platform:
+        type: choice
+        required: false
+        default: "android"
+        description: "Platform to deploy"
+        options:
+          - all
+          - android
+          - ios
+
+env:
+  RELEASE_NOTES: |
+    - Bug fixes and performance improvements.
+  GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx3072m -XX:MaxMetaspaceSize=512m"
+  TESTER_GROUP: testers
+  SKIP_TESTS: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  distribute_android_app:
+    name: Distribute Staging Android App to Firebase
+    runs-on: ubuntu-latest
+    if: ${{ inputs.platform == 'android' || inputs.platform == 'all' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter
+
+      - name: Create ENV and Signing Files
+        uses: ./.github/actions/create-files
+        with:
+          base_production: ${{ secrets.BASE_PRODUCTION_URL }}
+          base_development: ${{ secrets.BASE_DEVELOPMENT_URL }}
+          base_staging: ${{ secrets.BASE_STAGING_URL }}
+          encryption_key: ${{ secrets.ENCRYPTION_KEY }}
+          android_keystore_file: ${{ secrets.ANDROID_KEYSTORE_FILE }}
+          android_key_properties_file: ${{ secrets.ANDROID_KEY_PROPERTIES_FILE }}
+
+      - name: Perform Analysis and Unit & Widget tests
+        if: ${{ inputs.skip_tests != true && env.SKIP_TESTS != 'true' }}
+        uses: ./.github/actions/flutter-test
+
+      - name: Build Android Staging App
+        run: flutter build apk --release --flavor staging --target lib/main_stg.dart
+
+      - name: Create Firebase Service Account File
+        run: |
+          echo '${{ secrets.CREDENTIAL_FILE_CONTENT }}' > firebase-service-account.json
+
+      - name: Write Release Notes to File
+        env:
+          NOTES: ${{ inputs.release_notes || env.RELEASE_NOTES }}
+        run: printf '%s' "$NOTES" > release_notes.txt
+
+      - name: Send App To Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.7.1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_STAGING }}
+          serviceCredentialsFile: firebase-service-account.json
+          groups: ${{ env.TESTER_GROUP }}
+          file: build/app/outputs/flutter-apk/app-staging-release.apk
+          releaseNotesFile: release_notes.txt
+
+  distribute_ios_app:
+    name: Distribute Staging iOS App To TestFlight
+    runs-on: macos-26
+    if: ${{ inputs.platform == 'ios' || inputs.platform == 'all' }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup Flutter
+        uses: ./.github/actions/setup-flutter
+
+      - name: Create ENV and Config Files
+        uses: ./.github/actions/create-files
+        with:
+          base_production: ${{ secrets.BASE_PRODUCTION_URL }}
+          base_development: ${{ secrets.BASE_DEVELOPMENT_URL }}
+          base_staging: ${{ secrets.BASE_STAGING_URL }}
+          encryption_key: ${{ secrets.ENCRYPTION_KEY }}
+          apple_team_id: ${{ secrets.APPLE_TEAM_ID }}
+          ios_bundle_id: ${{ secrets.APPLE_IOS_STAGING_BUNDLE_ID }}
+          ios_provisioning_profile_name: ${{ secrets.APPLE_STAGING_PROVISIONING_PROFILE_NAME }}
+
+      - name: Perform Analysis and Unit & Widget tests
+        if: ${{ inputs.skip_tests != true && env.SKIP_TESTS != 'true' }}
+        uses: ./.github/actions/flutter-test
+
+      - name: Install Apple Certificate
+        uses: apple-actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+
+      - name: Install Provisioning Profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "${{ secrets.APPLE_STAGING_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode \
+            > ~/Library/MobileDevice/Provisioning\ Profiles/staging.mobileprovision
+
+      - name: Update Xcode project for manual signing
+        env:
+          PROVISIONING_PROFILE_NAME: ${{ secrets.APPLE_STAGING_PROVISIONING_PROFILE_NAME }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          ruby -e "
+            require 'xcodeproj'
+            project = Xcodeproj::Project.open('ios/Runner.xcodeproj')
+
+            project.targets.each do |target|
+              next unless target.name == 'Runner'
+              target.build_configurations.each do |config|
+                config.build_settings['CODE_SIGN_STYLE']                   = 'Manual'
+                config.build_settings['CODE_SIGN_IDENTITY']                = 'Apple Distribution'
+                config.build_settings['CODE_SIGN_IDENTITY[sdk=iphoneos*]'] = 'Apple Distribution'
+                config.build_settings['PROVISIONING_PROFILE_SPECIFIER']    = ENV['PROVISIONING_PROFILE_NAME']
+                config.build_settings['DEVELOPMENT_TEAM']                  = ENV['APPLE_TEAM_ID']
+              end
+            end
+
+            project.root_object.attributes['TargetAttributes']&.each do |_, attrs|
+              attrs['ProvisioningStyle'] = 'Manual'
+            end
+
+            project.save
+          "
+
+      - name: Build iOS Staging App
+        run: |
+          flutter build ipa \
+            --release \
+            --flavor staging \
+            --target lib/main_stg.dart \
+            --export-options-plist=ios/ExportOptions.plist
+
+      - name: Get IPA Path
+        id: ipa_path
+        run: |
+          IPA_PATH=$(find build/ios/ipa -name "*.ipa" | head -1)
+          echo "path=$IPA_PATH" >> $GITHUB_OUTPUT
+
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v5
+        with:
+          app-path: ${{ steps.ipa_path.outputs.path }}
+          issuer-id: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          api-key-id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          api-private-key: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
+          release-notes: ${{ inputs.release_notes || env.RELEASE_NOTES }}
+          wait-for-processing: true

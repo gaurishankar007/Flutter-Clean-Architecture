@@ -17,10 +17,9 @@ abstract interface class AuthLocalDataSource {
 @LazySingleton(as: AuthLocalDataSource)
 final class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   const AuthLocalDataSourceImpl({
-    required ErrorHandler errorHandler,
-    required LocalStorageClient localDatabase,
-  }) : _errorHandler = errorHandler,
-       _localDatabase = localDatabase;
+    required this._errorHandler,
+    required this._localDatabase,
+  });
 
   final ErrorHandler _errorHandler;
   final LocalStorageClient _localDatabase;

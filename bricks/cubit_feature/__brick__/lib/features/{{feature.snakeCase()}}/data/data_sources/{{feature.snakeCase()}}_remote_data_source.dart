@@ -8,8 +8,8 @@ abstract interface class {{feature.pascalCase()}}RemoteDataSource {}
 @LazySingleton(as: {{feature.pascalCase()}}RemoteDataSource)
 final class {{feature.pascalCase()}}RemoteDataSourceImpl implements {{feature.pascalCase()}}RemoteDataSource {
   const {{feature.pascalCase()}}RemoteDataSourceImpl({
-    required HttpClient httpClient,
-  }) : _httpClient = httpClient;
+    required this._httpClient,
+  });
 
   final HttpClient _httpClient;
 }

@@ -11,7 +11,7 @@ interface class HttpAuthInterceptor extends Interceptor {
   LocalStorageClient get _localStorageClient => GetIt.I<LocalStorageClient>();
   NavigationClient get _navigationClient => GetIt.I<NavigationClient>();
 
-  final Dio _dio = Dio();
+  final Dio _dio = Dio()..httpClientAdapter = createHttpClientAdapter();
 
   /// This flag is to prevent multiple refresh token requests. If the request
   /// is in progress then other token refresh requests are discarded
@@ -37,10 +37,13 @@ interface class HttpAuthInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    /// Add authorization token if the user is logged in
+    final hasAuthToken = options.headers.hasValue(HttpKeys.authorization);
+    final excludeAuth = options.extra.getBool(HttpKeys.excludeAuth);
+
+    // Add the user's token unless the caller set one or opted out.
     final token = _userData?.accessToken;
-    if (token != null && token.isNotEmpty) {
-      options.headers.addAll({'Authorization': 'Bearer $token'});
+    if (!hasAuthToken && !excludeAuth && token != null && token.isNotEmpty) {
+      options.headers.addAll({HttpKeys.authorization: 'Bearer $token'});
     }
 
     return super.onRequest(options, handler);
@@ -135,15 +138,15 @@ interface class HttpAuthInterceptor extends Interceptor {
 
   void _clearSessionData() {
     _localStorageClient.remove(LocalDbKeys.userData);
-    _navigationClient.replaceAllRoute(const LoginRoute());
+    _navigationClient.replaceAllRoute([const LoginRoute()]);
   }
 
   Future<Response<dynamic>> _retryRequest(RequestOptions requestOptions) {
     /// Reset authorization header
-    requestOptions.headers.remove('Authorization');
+    requestOptions.headers.remove(HttpKeys.authorization);
     final token = _userData?.accessToken;
     if (token != null) {
-      requestOptions.headers.addAll({'Authorization': 'Bearer $token'});
+      requestOptions.headers.addAll({HttpKeys.authorization: 'Bearer $token'});
     }
 
     /// RequestOptions with the same method, path, data,

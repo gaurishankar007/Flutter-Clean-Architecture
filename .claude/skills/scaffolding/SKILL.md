@@ -1,5 +1,5 @@
 ---
-name: clean-architecture-scaffolding
+name: scaffolding
 description: Automates code scaffolding (Mason) for features and pages in this project
 ---
 
@@ -78,7 +78,7 @@ mason make cubit_page -c config.json
   intended names before executing any `mason make` command.
 - The generated data source/repository/use-case files are skeletons with the
   correct client types wired in (`HttpClient`, `LocalStorageClient`,
-  `InternetClient`) but empty/placeholder method bodies — fill in the actual
+  `ConnectivityClient`) but empty/placeholder method bodies — fill in the actual
   endpoints and mapping logic. See the `api_integration` skill for the
   patterns to follow.
 - After scaffolding, run the `codegen` skill if the new files involve

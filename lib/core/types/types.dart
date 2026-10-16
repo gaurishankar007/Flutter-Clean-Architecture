@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:clean_architecture/core/data/states/data_state.dart';
 
 // <==================== Data State ====================>
+/// A [DataState] containing a [List] of [T].
+typedef DataList<T> = DataState<List<T>>;
+
 /// An asynchronous operation that completes with a [DataState] containing [T].
 typedef FutureData<T> = Future<DataState<T>>;
 
 /// An asynchronous operation that completes with a [DataState] containing a [List] of [T].
-typedef FutureList<T> = Future<DataState<List<T>>>;
+typedef FutureList<T> = Future<DataList<T>>;
 
 /// An asynchronous operation that completes with a [DataState] containing a [String].
 typedef FutureString = Future<DataState<String>>;
@@ -21,6 +26,18 @@ typedef FutureVoid = Future<DataState<void>>;
 
 /// A [DataState] representing an operation with no return payload (`void`).
 typedef Void = DataState<void>;
+
+/// A stream of [DataState] events containing [T].
+typedef StreamData<T> = Stream<DataState<T>>;
+
+/// A stream of [DataState] events containing a [List] of [T].
+typedef StreamList<T> = Stream<DataList<T>>;
+
+/// A stream subscription of [DataState] events containing [T].
+typedef StreamDataSubscription<T> = StreamSubscription<DataState<T>>;
+
+/// A stream subscription of [DataState] events containing a [List] of [T].
+typedef StreamListSubscription<T> = StreamSubscription<DataList<T>>;
 
 // <==================== Map ====================>
 /// Represents a decoded JSON object or key-value request/response payload.

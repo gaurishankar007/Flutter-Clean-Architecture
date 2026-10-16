@@ -3,6 +3,7 @@ import 'package:clean_architecture/core/clients/remote/connectivity_client.dart'
 import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:clean_architecture/shared_ui/cubits/screen_observer/screen_observer_cubit.dart';
 import 'package:clean_architecture/shared_ui/themes/theme.dart';
+import 'package:clean_architecture/shared_ui/utils/frame_callback.dart';
 import 'package:clean_architecture/shared_ui/utils/screen_util/screen_util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -26,9 +27,7 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
     _screenObserverCubit = GetIt.I<ScreenObserverCubit>();
     WidgetsBinding.instance.addObserver(this);
     // Listen for internet connectivity changes.
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => ConnectivityProvider.I.subscribeConnectivity(),
-    );
+    runAfterBuild(ConnectivityProvider.I.subscribeConnectivity);
   }
 
   @override
@@ -42,7 +41,7 @@ class _CleanArchitectureSampleState extends State<CleanArchitectureSample>
   void didChangeMetrics() {
     super.didChangeMetrics();
     // Schedule the screen size update to happen after the current frame is built.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    runAfterBuild(() {
       // Don't update if this context is already unmounted.
       if (mounted) {
         _screenObserverCubit.update();

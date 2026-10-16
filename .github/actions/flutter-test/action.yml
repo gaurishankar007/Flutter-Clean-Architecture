@@ -1,0 +1,13 @@
+name: "Test Flutter Codes"
+description: "Analyzes the code and runs the unit and widget tests."
+
+runs:
+  using: "composite"
+  steps:
+    - name: Analyze Code
+      shell: bash
+      run: flutter analyze
+
+    - name: Unit & Widget Test
+      shell: bash
+      run: flutter test

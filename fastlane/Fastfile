@@ -1,0 +1,166 @@
+# Local alternative to the GitHub distribution workflows. Usage:
+#   bundle exec fastlane android staging
+#   bundle exec fastlane ios production notes:"- Fixed ..."
+# Options: notes:"...", allow_dirty:true, test:true,
+#          skip_waiting:true (iOS; TestFlight then won't show the notes).
+
+require "shellwords"
+require "yaml"
+
+opt_out_usage
+
+ROOT = File.expand_path("..", __dir__)
+
+FLAVORS = {
+  "staging" => {
+    target: "lib/main_stg.dart",
+    tester_group: "testers",
+    firebase_app_id_env: "FIREBASE_APP_ID_STAGING",
+    workflow: ".github/workflows/staging_app_distribution.yml",
+  },
+  "production" => {
+    target: "lib/main.dart",
+    tester_group: "testers",
+    firebase_app_id_env: "FIREBASE_APP_ID_PRODUCTION",
+    workflow: ".github/workflows/production_app_distribution.yml",
+  },
+}.freeze
+
+def require_env(name)
+  value = ENV[name].to_s.strip
+  if value.empty?
+    UI.user_error!("#{name} is not set. Add it to fastlane/.env (see fastlane/.env.example).")
+  end
+  value
+end
+
+def project_path(path)
+  File.expand_path(path, ROOT)
+end
+
+def require_file_env(name)
+  path = project_path(require_env(name))
+  UI.user_error!("#{name} points to a missing file: #{path}") unless File.exist?(path)
+  path
+end
+
+# Same notes the GitHub workflow would send, unless overridden with notes:"...".
+def release_notes(options, config)
+  notes = options[:notes].to_s.strip
+  return notes unless notes.empty?
+
+  workflow = YAML.load_file(project_path(config[:workflow]))
+  notes = workflow.dig("env", "RELEASE_NOTES").to_s.strip
+  UI.user_error!("No RELEASE_NOTES in #{config[:workflow]}; pass notes:\"...\".") if notes.empty?
+  notes
+end
+
+def flutter(*args)
+  Dir.chdir(ROOT) { sh("flutter", *args) }
+end
+
+def app_version
+  YAML.load_file(project_path("pubspec.yaml"))["version"]
+end
+
+# Shared pre-build steps; validation runs before this so a missing key fails fast.
+def prepare_build(options, flavor)
+  ensure_git_status_clean unless options[:allow_dirty]
+  UI.important("Building #{flavor} #{app_version} from branch '#{git_branch}'")
+  flutter("pub", "get")
+  return unless options[:test]
+
+  flutter("analyze")
+  flutter("test")
+end
+
+platform :android do
+  desc "Build the staging APK and send it to Firebase App Distribution"
+  lane :staging do |options|
+    distribute(options.merge(flavor: "staging"))
+  end
+
+  desc "Build the production APK and send it to Firebase App Distribution"
+  lane :production do |options|
+    distribute(options.merge(flavor: "production"))
+  end
+
+  private_lane :distribute do |options|
+    flavor = options[:flavor]
+    config = FLAVORS.fetch(flavor)
+    app_id = require_env(config[:firebase_app_id_env])
+    credentials_file = require_file_env("FIREBASE_SERVICE_ACCOUNT_FILE")
+    notes = release_notes(options, config)
+
+    prepare_build(options, flavor)
+    flutter("build", "apk", "--release", "--flavor", flavor, "--target", config[:target])
+
+    firebase_app_distribution(
+      app: app_id,
+      service_credentials_file: credentials_file,
+      android_artifact_type: "APK",
+      android_artifact_path: project_path("build/app/outputs/flutter-apk/app-#{flavor}-release.apk"),
+      groups: config[:tester_group],
+      release_notes: notes,
+    )
+  end
+end
+
+platform :ios do
+  desc "Build the staging IPA and upload it to TestFlight"
+  lane :staging do |options|
+    distribute(options.merge(flavor: "staging"))
+  end
+
+  desc "Build the production IPA and upload it to TestFlight"
+  lane :production do |options|
+    distribute(options.merge(flavor: "production"))
+  end
+
+  private_lane :distribute do |options|
+    flavor = options[:flavor]
+    config = FLAVORS.fetch(flavor)
+    key_id = require_env("APP_STORE_CONNECT_API_KEY_ID")
+    issuer_id = require_env("APP_STORE_CONNECT_ISSUER_ID")
+    key_path = require_file_env("APP_STORE_CONNECT_API_KEY_PATH")
+    notes = release_notes(options, config)
+
+    api_key = app_store_connect_api_key(
+      key_id: key_id,
+      issuer_id: issuer_id,
+      key_filepath: key_path,
+    )
+
+    prepare_build(options, flavor)
+    # Generates the Flutter build settings for the flavor; gym does the signed archive.
+    flutter("build", "ios", "--release", "--flavor", flavor, "--target", config[:target],
+            "--no-codesign", "--config-only")
+
+    # Automatic signing via the API key, so the Xcode project stays untouched.
+    signing_args = [
+      "-allowProvisioningUpdates",
+      "-authenticationKeyPath", key_path,
+      "-authenticationKeyID", key_id,
+      "-authenticationKeyIssuerID", issuer_id,
+    ].shelljoin
+
+    ipa_path = build_app(
+      workspace: project_path("ios/Runner.xcworkspace"),
+      scheme: flavor,
+      configuration: "Release-#{flavor}",
+      export_method: "app-store",
+      output_directory: project_path("build/ios/fastlane"),
+      output_name: "clean-architecture-#{flavor}.ipa",
+      # gym also passes xcargs to the export step; repeating them there
+      # makes xcodebuild reject the duplicated -authenticationKey* options.
+      xcargs: signing_args,
+    )
+
+    upload_to_testflight(
+      api_key: api_key,
+      ipa: ipa_path,
+      changelog: notes,
+      skip_waiting_for_build_processing: options[:skip_waiting] == true,
+    )
+  end
+end

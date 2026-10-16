@@ -52,3 +52,15 @@ app.*.map.json
 # Patrol Testing
 /playwright-report
 /test-results
+# iOS export options (written by CI from secrets)
+/ios/ExportOptions.plist
+
+# fastlane
+fastlane/.env
+fastlane/keys/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+vendor/bundle/
+.bundle/

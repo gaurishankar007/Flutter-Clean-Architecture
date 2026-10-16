@@ -7,9 +7,7 @@ part 'dashboard_state.dart';
 
 @injectable
 class DashboardCubit extends BaseCubit<DashboardState> {
-  DashboardCubit({required DashboardCubitUseCases useCases})
-    : _useCases = useCases,
-      super(DashboardState.initial());
+  DashboardCubit({required this._useCases}) : super(DashboardState.initial());
 
   final DashboardCubitUseCases _useCases;
   int _activeIndex = 0;

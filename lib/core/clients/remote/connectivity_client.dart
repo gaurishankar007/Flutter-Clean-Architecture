@@ -1,12 +1,3 @@
-// © 2026 vAIolin LLC. All rights reserved.
-//
-// This software and its associated materials are the intellectual
-// property of vAIolin LLC. Unauthorized copying, modification,
-// distribution, or use of this code, in whole or in part, without
-// express written permission from vAIolin LLC is strictly prohibited.
-//
-// For licensing inquiries, contact: snehesh@vaiolin.ai
-
 import 'dart:async' show StreamSubscription;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -29,8 +20,7 @@ abstract class ConnectivityClientModule {
 /// Check whether the device is online or offline
 @LazySingleton(as: ConnectivityClient)
 final class ConnectivityClientImpl implements ConnectivityClient {
-  ConnectivityClientImpl({required Connectivity connectivity})
-    : _connectivity = connectivity;
+  ConnectivityClientImpl({required this._connectivity});
 
   final Connectivity _connectivity;
   Stream<List<ConnectivityResult>>? _connectivityStream;

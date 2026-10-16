@@ -44,7 +44,7 @@ class PrimaryButton extends HookWidget {
 
       /// If the button is not loadable
       if (!loadableButton) {
-        return onTap();
+        return await onTap();
       }
 
       loadingNotifier.value = true;

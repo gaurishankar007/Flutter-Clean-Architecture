@@ -54,6 +54,8 @@ For more details on specific commands and guidelines, refer to the following doc
       - [Unit \& Widget Tests](#unit--widget-tests)
       - [Integration Tests (Patrol)](#integration-tests-patrol)
   - [CI/CD \& Release](#cicd--release)
+    - [GitHub Actions](#github-actions)
+    - [Fastlane](#fastlane)
     - [Required Secrets](#required-secrets)
 
 ## Introduction
@@ -141,11 +143,12 @@ Follow these steps to get the project up and running on your local machine.
 
 Ensure you have the following software installed:
 
-- Flutter SDK (version `3.47.0`)
-- Dart SDK (version `3.13.0`)
+- Flutter SDK (version `3.47.7`, the version CI is pinned to)
+- Dart SDK (version `3.13.5`, `>=3.12.0` is required for private named parameters)
 - Android Studio (for Android development)
 - Xcode (for iOS development)
 - Java 17 (Recommended, but optional)
+- Ruby + Bundler (only for releasing with [fastlane](#fastlane))
 - Add Flutter's pub cache to your shell's `PATH`. For Zsh, add this to your `~/.zshrc` file: `export PATH="$PATH":"$HOME/.pub-cache/bin"`.
 
 ### Installation & Setup
@@ -223,7 +226,7 @@ lib/
 ```
 
 - **`config/`**: Environment and platform setup (flavor configs), dependency injection (`injector/`), and any Pigeon-generated platform bindings. `app_config.dart` holds flavor-specific values (base URLs, feature flags).
-- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core clients (HTTP client, local storage, connectivity/InternetClient), and general-purpose utilities. `types/types.dart` holds the shared typedefs (`FutureData<T>`, `FutureVoid`, `JsonMap`, etc.) used across every layer.
+- **`core/`**: App-wide building blocks and reusable utilities. Contains constants, `DataState`/error types, core clients (HTTP client, local storage, connectivity (`ConnectivityClient`)), and general-purpose utilities. `types/types.dart` holds the shared typedefs (`FutureData<T>`, `FutureVoid`, `JsonMap`, etc.) used across every layer.
 - **`features/`**: Each feature follows Clean Architecture and is self-contained with three layers:
   - **`data/`**: Remote and local data sources (including repository pattern for session management), DTOs/models, and concrete repository implementations that map to domain entities.
   - **`domain/`**: Pure business logic (entities, use cases/interactors, and abstract repository interfaces). No Flutter or external deps here.
@@ -245,7 +248,8 @@ Notes:
 - The app uses **Bloc** (specifically Cubit) for state management within the Presentation Layer of its Clean Architecture.
 - Every Cubit extends `BaseCubit<T>` (`shared_ui/cubits/base/base_cubit.dart`), and its state extends `BaseState`, which carries a `StateStatus` (`initial`/`loading`/`loaded`/`noInternet`/`error`) and a one-shot `StateMessage? message` (`SuccessMessage`/`ErrorMessage`/`WarningMessage`).
 - **Cubits never show messages or navigate themselves** — both are UI-layer concerns. A Cubit reports an outcome by setting `state.message`, typically derived from a `DataState` via `stateMessageFromDataState(dataState, {message: '...'})`. A state's `copyWith`/constructor must **never** preserve the previous `message` (`message: message`, never `message ?? this.message`), so a message is shown exactly once.
-- The page providing the Cubit wires `useCubitMessageListener(cubit)` (`shared_ui/utils/cubit_message_listener.dart`, a `flutter_hooks` hook) to actually display that message via `ToastUtil` — never a raw `SnackBar`.
+- The page providing the Cubit wires `useCubitMessageListener(cubit)` (`shared_ui/utils/cubit_message_listener.dart`, a `flutter_hooks` hook) to actually display that message via `ToastUtil` — never a raw `SnackBar`. Use `NormalMessage` for a neutral, informational message.
+- `ToastUtil` shows toasts one at a time (`flutter_sliding_toast`'s `ToastDisplayMode.oneByOne`): a new toast waits until the shown one closes, and one with the same text and type as the toast right before it is skipped. Tapping a toast opens its full message in a toast-styled dialog (`showDialogOnTap`), scrollable if long.
 - A Cubit method that used to navigate itself instead returns a result — typically `Future<bool>` (did it succeed), or an `enum` for more than one outcome — and the calling widget awaits it and navigates via `NavigationUtil.I`. See `LoginCubit`/`LoginPage` (and `login_button.dart`) for a worked example, and [`docs/testing.md`](docs/testing.md) for how to test both halves of the split.
 
 ## App Flavors
@@ -260,7 +264,7 @@ The app supports three flavors: `production`, `staging`, and `development` for b
 
 - Uses a custom `ScreenUtil` to manage screen size, types, and responsive values (e.g., width, padding).
 - `ScreenObserverCubit`: A Bloc `cubit` that enhances responsiveness by observing screen size changes. It leverages `ScreenUtil` to determine the current screen type (e.g., mobile, tablet, desktop). To prevent unnecessary widget rebuilds during the build cycle, it updates its state only after the current frame has been rendered. This ensures that listeners are notified of screen type or desktop layout changes (e.g., switching from mobile to desktop view) efficiently, allowing widgets to rebuild selectively for optimized responsive UI adjustments.
-- The root widget, `CleanArchitectureSample`, uses `WidgetsBindingObserver` to listen for `didChangeMetrics`. When the screen size changes, it schedules an update to the `ScreenObserverCubit` using `WidgetsBinding.instance.addPostFrameCallback`, ensuring the UI is rebuilt safely and efficiently in response to layout changes.
+- The root widget, `CleanArchitectureSample`, uses `WidgetsBindingObserver` to listen for `didChangeMetrics`. When the screen size changes, it schedules an update to the `ScreenObserverCubit` using `runAfterBuild` (`shared_ui/utils/frame_callback.dart`, a thin wrapper over `WidgetsBinding.instance.addPostFrameCallback` — use it instead of calling that directly), ensuring the UI is rebuilt safely and efficiently in response to layout changes.
 
 ```mermaid
 graph TD
@@ -269,7 +273,7 @@ graph TD
     end
 
     subgraph "Runtime Update Cycle"
-        A -- "on didChangeMetrics" --> C["addPostFrameCallback"]
+        A -- "on didChangeMetrics" --> C["runAfterBuild"]
         C -- "safely notifies" --> D[Screen Observer Cubit]
         D -- "1. updates" --> B
         D -- "2. emits new state" --> E((Rebuild UI))
@@ -283,11 +287,13 @@ graph TD
 ### HTTP Client
 
 - `HttpClient` (using Dio) handles HTTP requests.
-- `HttpAuthInterceptor` adds authentication tokens and can be extended for caching or retries.
+- `HttpAuthInterceptor` adds authentication tokens (unless the request already sets an `Authorization` header or passes `Options(extra: {HttpKeys.excludeAuth: true})`) and refreshes an expired token. It can be extended for caching or retries.
+- Header names and per-request flags live in `HttpKeys` (`core/constants/http_keys.dart`) instead of raw strings; `MapDynamicExtension` (`core/utils/extensions/map_extension.dart`) reads them safely (`hasValue`, `getBool`, ...).
+- Dio's adapter is chosen per platform by `createHttpClientAdapter()` (`core/clients/remote/http/http_client_adapter.dart`): `IOHttpClientAdapter` on mobile, and `BrowserHttpClientAdapter(enableCORSWarning: false)` on web. Every request sends `Content-Type: application/json`, so on web each one is CORS-preflighted by design; Dio's per-request "not a CORS simple request" warning is silenced, while a real CORS failure is still reported in the `DioException.connectionError` message.
 
 ### Internet Status
 
-- `InternetClient` tracks connectivity and exposes a stream for UI updates.
+- `ConnectivityClient` tracks connectivity and exposes a stream for UI updates.
 - API calls are blocked and return a network `FailureState` if offline.
 
 ### Navigation
@@ -359,7 +365,7 @@ flowchart TD
 1. **UI calls Cubit, which calls UseCase**
 2. **UseCase calls Repository**
 3. **Repository coordinates data fetch** using `RepositoryFetcher`
-4. **RepositoryFetcher checks Internet availability** using `InternetClient`
+4. **RepositoryFetcher checks Internet availability** using `ConnectivityClient`
 5. If online (or using `fetchWithFallback`):
    - Calls `RemoteDataSource`
    - `RemoteDataSource` uses `ApiExecutor.call` to execute requests via `HttpClient`
@@ -391,9 +397,8 @@ flowchart TD
 ```dart
 @injectable
 class LoginCubit extends BaseCubit<LoginState> {
-  LoginCubit({required LoginCubitUseCases useCases})
-    : _useCases = useCases,
-      super(const LoginState.initial());
+  LoginCubit({required this._useCases})
+    : super(const LoginState.initial());
 
   final LoginCubitUseCases _useCases;
 
@@ -430,7 +435,7 @@ onTap: () async {
     password: passwordController.text,
   );
   if (success) {
-    await NavigationUtil.I.replaceAllRoute(const HomeRoute());
+    await NavigationUtil.I.replaceAllRoute([const HomeRoute()]);
   }
 },
 ```
@@ -562,32 +567,57 @@ Ensure an emulator or physical device is running before executing these tests.
 
 ## CI/CD & Release
 
-Android APK builds are delivered via GitHub Actions to
-[Firebase App Distribution](https://firebase.google.com/docs/app-distribution):
+Builds reach testers through [Firebase App Distribution](https://firebase.google.com/docs/app-distribution) (Android) and TestFlight (iOS), either from GitHub Actions or locally with fastlane. Neither runs on push: a release is always started on purpose.
 
-- **`.github/actions/build-android/action.yml`**: a composite action that
-  sets up Java/Flutter, writes `.env` from secrets, runs `flutter analyze`
-  and `flutter test`, then `flutter build apk --release --flavor <flavor>
-  --target <entrypoint>`.
-- **`.github/workflows/firebase_app_distribution.yml`**:
-  - Push to `staging` → builds the `staging` flavor (`lib/main_stg.dart`) and distributes it.
-  - Push to `master` → builds the `production` flavor (`lib/main.dart`) and distributes it.
-  - Can also be triggered manually (`workflow_dispatch`) with custom release notes.
+### GitHub Actions
+
+- **Composite actions** (`.github/actions/`):
+  - `setup-flutter`: sets up Java 17 and the pinned Flutter version, then runs `flutter pub get`.
+  - `create-files`: writes `.env` from secrets, plus the Android signing files (`android/key.properties`, `android/app/upload-keystore.jks`) and `ios/ExportOptions.plist` when their secrets are given.
+  - `flutter-test`: runs `flutter analyze` and `flutter test`.
+- **Workflows** (`.github/workflows/`), both manual-only (`workflow_dispatch`) with `release_notes`, `skip_tests` and `platform` (`android`/`ios`/`all`, default `android`) inputs:
+  - `staging_app_distribution.yml`: builds the `staging` flavor (`lib/main_stg.dart`).
+  - `production_app_distribution.yml`: builds the `production` flavor (`lib/main.dart`); only runs from `master`.
+  - Android: `flutter build apk` → Firebase App Distribution (`testers` group). iOS: manual signing with the certificate/provisioning profile secrets → `flutter build ipa` → TestFlight.
+  - Release notes come from the `release_notes` input, or else the `RELEASE_NOTES` block in the workflow's `env:`.
+- Keep `flutter-version` in `.github/actions/setup-flutter/action.yml` in sync with the local `flutter --version`.
+- Release builds are signed with the key from `android/key.properties` when it exists, otherwise with the debug key (see `android/app/build.gradle.kts`). The debug key is fine for internal testers, but not for a store release.
+
+### Fastlane
+
+A local alternative to the workflows, sending the same builds with the same release notes (read from the workflow's `RELEASE_NOTES` block unless overridden).
+
+1. Install the gems once: `bundle config set --local path vendor/bundle && bundle install`.
+2. Copy `fastlane/.env.example` to `fastlane/.env` and fill it in. Put the key files in `fastlane/keys/`; both are gitignored.
+3. Run a lane from a clean working tree:
+
+   ```bash
+   bundle exec fastlane android staging
+   bundle exec fastlane ios production notes:"- Fixed ..."
+   ```
+
+   Options: `notes:"..."`, `allow_dirty:true`, `test:true` (runs `flutter analyze` and `flutter test` first), `skip_waiting:true` (iOS; TestFlight then won't show the notes).
+
+The iOS lanes sign automatically with the App Store Connect API key, so the Xcode project isn't touched. Set your own bundle IDs and team in Xcode first.
 
 ### Required Secrets
 
-Configure these under **Settings → Secrets and variables → Actions** before the workflow can run:
+Configure these under **Settings → Secrets and variables → Actions**:
 
-| Secret                        | Purpose                                                          |
-| ------------------------------ | ----------------------------------------------------------------- |
-| `BASE_PRODUCTION_URL`          | Production API base URL, written into `.env` (`BASE_PRODUCTION`)  |
-| `BASE_STAGING_URL`             | Staging API base URL, written into `.env` (`BASE_STAGING`)        |
-| `BASE_DEVELOPMENT_URL`         | Development API base URL, written into `.env` (`BASE_DEVELOPMENT`)|
-| `ENCRYPTION_KEY`               | AES key used by `EncryptionService`, written into `.env`           |
-| `FIREBASE_APP_ID_STAGING`      | Firebase App ID for the staging Android app                       |
-| `FIREBASE_APP_ID_PRODUCTION`   | Firebase App ID for the production Android app                    |
-| `CREDENTIAL_FILE_CONTENT`      | Contents of a Firebase service account JSON with App Distribution access |
-
-The distributed APK is signed with the debug key by default (see
-`android/app/build.gradle.kts`) — add your own release signing config before
-distributing to real testers/users.
+| Secret | Purpose |
+| --- | --- |
+| `BASE_PRODUCTION_URL` | Production API base URL, written into `.env` (`BASE_PRODUCTION`) |
+| `BASE_STAGING_URL` | Staging API base URL, written into `.env` (`BASE_STAGING`) |
+| `BASE_DEVELOPMENT_URL` | Development API base URL, written into `.env` (`BASE_DEVELOPMENT`) |
+| `ENCRYPTION_KEY` | AES key used by `EncryptionService`, written into `.env` |
+| `FIREBASE_APP_ID_STAGING` | Firebase App ID for the staging Android app |
+| `FIREBASE_APP_ID_PRODUCTION` | Firebase App ID for the production Android app |
+| `CREDENTIAL_FILE_CONTENT` | Contents of a Firebase service account JSON with App Distribution access |
+| `ANDROID_KEYSTORE_FILE` | *(Optional)* Base64 upload keystore (`.jks`) |
+| `ANDROID_KEY_PROPERTIES_FILE` | *(Optional)* Base64 `key.properties` (`storeFile=upload-keystore.jks`, `storePassword`, `keyAlias`, `keyPassword`) |
+| `APPLE_TEAM_ID` | *(iOS)* Apple Developer Team ID |
+| `APPLE_IOS_STAGING_BUNDLE_ID` / `APPLE_IOS_PRODUCTION_BUNDLE_ID` | *(iOS)* Bundle ID per flavor |
+| `APPLE_STAGING_PROVISIONING_PROFILE_NAME` / `APPLE_PRODUCTION_PROVISIONING_PROFILE_NAME` | *(iOS)* App Store provisioning profile name per flavor |
+| `APPLE_STAGING_PROVISIONING_PROFILE_BASE64` / `APPLE_PRODUCTION_PROVISIONING_PROFILE_BASE64` | *(iOS)* Base64 provisioning profile per flavor |
+| `APPLE_CERTIFICATE_BASE64` / `APPLE_CERTIFICATE_PASSWORD` | *(iOS)* Base64 Apple Distribution `.p12` and its password |
+| `APP_STORE_CONNECT_API_KEY_ID` / `APP_STORE_CONNECT_ISSUER_ID` / `APP_STORE_CONNECT_API_PRIVATE_KEY` | *(iOS)* App Store Connect API key for the TestFlight upload |

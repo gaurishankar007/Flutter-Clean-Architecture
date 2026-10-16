@@ -2,16 +2,18 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:alice/alice.dart';
-import 'package:alice/model/alice_configuration.dart';
 import 'package:alice_dio/alice_dio_adapter.dart';
 import 'package:clean_architecture/config/app_config.dart';
 import 'package:clean_architecture/core/clients/local/local_storage_client.dart';
+import 'package:clean_architecture/core/clients/remote/http/http_client_adapter.dart';
 import 'package:clean_architecture/core/constants/api_endpoints.dart';
+import 'package:clean_architecture/core/constants/http_keys.dart';
 import 'package:clean_architecture/core/constants/local_db_keys.dart';
 import 'package:clean_architecture/core/data/models/requests/refresh_token_request.dart';
 import 'package:clean_architecture/core/data/models/responses/api_response.dart';
 import 'package:clean_architecture/core/data/models/responses/refresh_token_response.dart';
 import 'package:clean_architecture/core/types/types.dart';
+import 'package:clean_architecture/core/utils/extensions/map_extension.dart';
 import 'package:clean_architecture/features/auth/data/models/responses/user_data_response.dart';
 import 'package:clean_architecture/routing/navigation_client.dart';
 import 'package:clean_architecture/routing/routes.gr.dart';
@@ -80,7 +82,7 @@ abstract interface class HttpClient {
 @module
 abstract class HttpClientModule {
   @lazySingleton
-  Dio get dio => Dio();
+  Dio get dio => Dio()..httpClientAdapter = createHttpClientAdapter();
 
   @injectable
   bool get addInterceptors => false;
@@ -89,18 +91,18 @@ abstract class HttpClientModule {
 @LazySingleton(as: HttpClient)
 final class HttpClientImpl implements HttpClient {
   HttpClientImpl({
-    required Dio dio,
+    required this._dio,
     required AppConfig appConfig,
     required HttpAuthInterceptor authInterceptor,
     required NavigationClient navigationClient,
     bool addInterceptors = false,
-  }) : _dio = dio {
+  }) {
     _dio.options = BaseOptions(
       baseUrl: appConfig.apiBaseUrl,
       connectTimeout: const Duration(seconds: 15),
       receiveTimeout: const Duration(seconds: 15),
       sendTimeout: const Duration(seconds: 15),
-      headers: {'Content-Type': 'application/json'},
+      headers: {HttpKeys.contentType: 'application/json'},
     );
 
     if (addInterceptors) {

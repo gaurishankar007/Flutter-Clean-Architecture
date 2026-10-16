@@ -38,6 +38,11 @@ class WarningMessage extends StateMessage {
   const WarningMessage(super.text);
 }
 
+/// A neutral, informational message (neither success, error nor warning).
+class NormalMessage extends StateMessage {
+  const NormalMessage(super.text);
+}
+
 abstract class BaseState extends Equatable {
   const BaseState({this.status = StateStatus.initial, this.message});
   final StateStatus status;

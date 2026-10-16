@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:clean_architecture/core/data/states/data_state.dart';
 import 'package:clean_architecture/core/domain/entities/user.dart';
@@ -56,6 +57,7 @@ void main() {
     );
     registerFallbackValue(const Authentication(username: '', password: ''));
     registerFallbackValue(const MockPageRouteInfo());
+    registerFallbackValue(<PageRouteInfo>[]);
     registerFallbackValue(userData);
   });
 

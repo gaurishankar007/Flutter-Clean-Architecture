@@ -17,6 +17,7 @@
 ## 2. Mandatory Rules (Never Violate)
 
 - **BEFORE** performing any task, **ALWAYS** consult `README.md` (Project Structure, State Management, Data Handling sections) and `docs/` (`testing.md` for test conventions, `solid_principles.md` for the SOLID rationale) for established patterns. Only read what's needed to minimize context usage.
+- **AFTER** a code change is finalized and validated by the user, update the relevant docs (`README.md`, `docs/`) to reflect it. Do **NOT** update docs while the change is still being iterated on (the user is reviewing it, asking for tweaks, or follow-up revisions are expected) — update them in one pass once the implementation is confirmed. A self-contained task with no expected follow-up (e.g. a one-off doc fix) updates docs immediately, as normal.
 - **NEVER** use relative imports. Always use package imports (enforced by the `always_use_package_imports` lint rule):
   ```dart
   // ✅ Correct
@@ -39,6 +40,8 @@ This project uses `leancode_lint` (see `analysis_options.yaml`) plus a few extra
 - **Constants:** Prefer `const` constructors and declarations wherever possible.
 - **Control flow:** Always put `if`, `for`, and `while` bodies on a new line.
 - **Constructors:** Always sort constructors first in class declarations.
+- **Private fields:** Initialize them with private named parameters (`Foo({required this._bar})`), not an initializer list (`Foo({required Bar bar}) : _bar = bar`). Callers still pass `bar:` (enforced by `prefer_initializing_formals`; needs Dart `>=3.12`).
+- **Post-frame callbacks:** Use `runAfterBuild(...)` (`shared_ui/utils/frame_callback.dart`) instead of calling `WidgetsBinding.instance.addPostFrameCallback` directly.
 - **Lambdas:** Avoid unnecessary lambdas; prefer method tearoffs.
 - **Comments:** Keep them short, straight to the point, and single-line wherever possible. Don't write multi-line prose explaining what the code already shows — only note the non-obvious "why" (an edge case, a workaround, a load-bearing ordering), and say it in as few words as it takes.
 
@@ -57,10 +60,10 @@ This project uses `leancode_lint` (see `analysis_options.yaml`) plus a few extra
 Cubits never call `ToastUtil` or navigate directly — both are UI-layer concerns:
 
 - A Cubit reports outcomes by setting `BaseState.message` (a `StateMessage?`:
-  `SuccessMessage`/`ErrorMessage`/`WarningMessage`). Derive it from a
+  `SuccessMessage`/`ErrorMessage`/`WarningMessage`/`NormalMessage`). Derive it from a
   `DataState` with `stateMessageFromDataState(dataState, {message: '...'})`,
-  or construct `SuccessMessage`/`ErrorMessage`/`WarningMessage` directly for a
-  manual message. A state's `copyWith`/constructor must **never** preserve
+  or construct `SuccessMessage`/`ErrorMessage`/`WarningMessage`/`NormalMessage`
+  directly for a manual message. A state's `copyWith`/constructor must **never** preserve
   the previous `message` (`message: message`, never `message ?? this.message`)
   so a message is shown exactly once.
 - The page that provides the Cubit wires `useCubitMessageListener(cubit)`
@@ -74,6 +77,9 @@ Cubits never call `ToastUtil` or navigate directly — both are UI-layer concern
   `NavigationUtil.I`. See `LoginCubit`/`login_button.dart` and
   `DashboardCubit`/its drawer/bottom-nav/setting-page call sites for worked
   examples.
+- `ToastUtil` shows toasts one at a time (queued) and skips one identical to
+  the toast right before it, so don't de-duplicate or delay messages
+  yourself. Tapping a toast shows its full text in a dialog.
 - **`StateMessage` subclasses must stay `Equatable`** — this matters for
   testing (see `docs/testing.md`); don't remove that if you touch
   `base_state.dart`.
@@ -123,7 +129,8 @@ Other rules:
 - Data models implement `DomainConvertible<R>` (`R toDomain()`, see
   `core/data/models/domain_convertible.dart`); repositories call
   `.toDomain()` on the fetched model to map it to the domain entity.
-- Always check connectivity via `InternetClient.isConnected` before making
+- Use `HttpKeys` (`core/constants/http_keys.dart`) for header names and per-request `Options(extra: ...)` flags (e.g. `HttpKeys.excludeAuth`), never raw strings.
+- Always check connectivity via `ConnectivityClient.isConnected` before making
   API calls, and pass it to `RepositoryFetcher`.
 - Use `ApiExecutor` for HTTP responses and `RepositoryFetcher.fetchWithFallback(And Map)` for offline-first data flows.
 - **Always** use `SuccessState.nil` as the return value for `FutureVoid`-typed methods that succeed. **NEVER** use `SuccessState(data: null)` or `SuccessState(data: true)`.
@@ -165,6 +172,10 @@ This project **has** a real test suite (`test/`, `testing/`, `patrol_test/`) —
 see [`docs/testing.md`](docs/testing.md) before writing any tests. In short:
 
 - Unit/widget tests live in `test/`, mirroring `lib/`'s directory structure.
+- **Issue regression tests** are the one exception: they go in
+  `test/regression/`, one `issue_<number>_<short_name>_test.dart` per GitHub
+  issue, tagged `@Tags(['regression'])`. See "Regression tests" in
+  `docs/testing.md`.
 - Mock with `mocktail` (never mockito/generated mocks); shared mocks live in
   `testing/mocks/`, shared helpers in `testing/helpers/`.
 - Cubit tests use `bloc_test`; widget tests use `patrol_finders`
@@ -177,6 +188,11 @@ see [`docs/testing.md`](docs/testing.md) before writing any tests. In short:
   happens there).
 - If test coverage requirements are ambiguous, ask the user rather than
   inventing a convention.
+- **While a code change is still being iterated on** (the user is reviewing
+  it, asking for tweaks, or follow-up revisions are expected), do **NOT**
+  update or rewrite the affected tests on every pass. Get the implementation
+  validated first, then update the tests in one pass. A self-contained task
+  ("fix this bug and add a test for it") updates tests immediately, as normal.
 
 ---
 
@@ -199,26 +215,34 @@ The following agent skills are available in `.agents/skills/`:
 - **`codegen`** — Runs `build_runner` code generation.
 - **`scaffolding`** — Uses `mason` to scaffold features and pages.
 - **`api_integration`** — Automates integrating a new API endpoint through the data source → repository → domain layers.
+- **`testing`** — Runs the unit, widget, regression, and Patrol integration test suites.
 
 `.agents/workflows/release.md` documents how a release actually reaches
-testers via the Firebase App Distribution CI — consult it before proposing
+testers (manual GitHub workflows or fastlane) — consult it before proposing
 or invoking any release step (see the CI/CD section below).
 
 ---
 
 ## 9. CI/CD
 
-- `.github/actions/build-android/action.yml`: composite action — sets up
-  Java/Flutter, writes `.env` from secrets, runs `flutter analyze` and
-  `flutter test`, then `flutter build apk --release --flavor <flavor>
-  --target <entrypoint>`.
-- `.github/workflows/firebase_app_distribution.yml`: on push to `staging`
-  builds and distributes the staging APK; on push to `master` builds and
-  distributes the production APK; both to Firebase App Distribution. Also
-  runnable manually (`workflow_dispatch`) with custom release notes.
-- Keep the workflow's pinned Flutter version in sync with the version this
-  repo is actually developed against (check `flutter --version` locally
-  before bumping it).
+- Composite actions in `.github/actions/`: `setup-flutter` (Java 17, pinned
+  Flutter, `pub get`), `create-files` (`.env`, plus Android signing files and
+  `ios/ExportOptions.plist` when their secrets are set) and `flutter-test`
+  (`flutter analyze` + `flutter test`).
+- `.github/workflows/staging_app_distribution.yml` /
+  `production_app_distribution.yml`: **manual-only** (`workflow_dispatch`),
+  with `release_notes`, `skip_tests` and `platform` inputs. Android goes to
+  Firebase App Distribution, iOS to TestFlight; production only runs from
+  `master`. Nothing is distributed on push.
+- `fastlane/Fastfile`: the local alternative (`bundle exec fastlane
+  <android|ios> <staging|production>`), reading the same `RELEASE_NOTES`
+  block from the matching workflow and credentials from `fastlane/.env` +
+  `fastlane/keys/` (both gitignored, never commit them).
+- Keep the pinned Flutter version in `.github/actions/setup-flutter/action.yml`
+  in sync with the version this repo is actually developed against (check
+  `flutter --version` locally before bumping it).
+- See `.agents/workflows/release.md` before proposing or running any release
+  step.
 
 ---
 
@@ -256,3 +280,6 @@ flutter test
 | Call a use case/repository from a widget            | Route it through a Cubit                                                      |
 | Hardcode a `TextStyle` in a widget                  | Use `BaseText`'s factories                                                    |
 | Extract a widget as a private `_buildX()` method    | Extract it as its own widget class                                            |
+| Assign private fields in an initializer list        | Use private named parameters (`required this._field`)                         |
+| Hardcode header names / request flags              | Use `HttpKeys`                                                                |
+| Commit `fastlane/.env` or `fastlane/keys/`          | Keep them local (gitignored); CI uses GitHub secrets                          |

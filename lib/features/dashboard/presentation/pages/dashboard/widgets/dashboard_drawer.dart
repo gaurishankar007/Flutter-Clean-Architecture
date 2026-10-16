@@ -35,7 +35,7 @@ class DashboardDrawer extends StatelessWidget {
                       ListTile(
                         onTap: () {
                           context.read<DashboardCubit>().setIndex(0);
-                          NavigationUtil.I.replaceAllRoute(const HomeRoute());
+                          NavigationUtil.I.replaceAllRoute([const HomeRoute()]);
                         },
                         visualDensity: VisualDensity.standard,
                         horizontalTitleGap: 8,
@@ -56,9 +56,9 @@ class DashboardDrawer extends StatelessWidget {
                       ListTile(
                         onTap: () {
                           context.read<DashboardCubit>().setIndex(1);
-                          NavigationUtil.I.replaceAllRoute(
+                          NavigationUtil.I.replaceAllRoute([
                             const SettingRoute(),
-                          );
+                          ]);
                         },
                         visualDensity: VisualDensity.standard,
                         horizontalTitleGap: 8,

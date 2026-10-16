@@ -16,7 +16,7 @@ abstract interface class NavigationClient {
   Future<bool> maybePop<T extends Object?>([T? result]);
   Future<bool> maybePopTop<T extends Object?>([T? result]);
   void back();
-  Future<void> replaceAllRoute(PageRouteInfo route);
+  Future<void> replaceAllRoute(List<PageRouteInfo> routes);
   Future<T?> pushRoute<T>(PageRouteInfo<T> route);
   Future<T?> pushPlatformRoute<T>({
     PageRouteInfo<T>? androidRoute,
@@ -35,7 +35,7 @@ abstract class NavigationClientModule {
 
 @LazySingleton(as: NavigationClient)
 final class NavigationClientImpl implements NavigationClient {
-  NavigationClientImpl({required AppRouter appRouter}) : _appRouter = appRouter;
+  NavigationClientImpl({required this._appRouter});
 
   final AppRouter _appRouter;
 
@@ -90,10 +90,10 @@ final class NavigationClientImpl implements NavigationClient {
   @override
   void back() => _appRouter.back();
 
-  /// Replace all previous routes the new route
+  /// Replaces all previous routes with [routes]
   @override
-  Future<void> replaceAllRoute(PageRouteInfo route) =>
-      ErrorHandlerProvider.I.executeSafe(() => _appRouter.replaceAll([route]));
+  Future<void> replaceAllRoute(List<PageRouteInfo> routes) =>
+      ErrorHandlerProvider.I.executeSafe(() => _appRouter.replaceAll(routes));
 
   /// Adds the corresponding page to the given route
   @override
@@ -128,7 +128,7 @@ final class NavigationClientImpl implements NavigationClient {
       if (routeToPush == null) {
         return null;
       }
-      return _appRouter.push(routeToPush);
+      return await _appRouter.push(routeToPush);
     }, valueOnError: null);
   }
 

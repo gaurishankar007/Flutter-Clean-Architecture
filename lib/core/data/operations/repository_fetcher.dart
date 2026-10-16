@@ -25,7 +25,7 @@ abstract final class RepositoryFetcher {
     }
 
     // 2. Fallback to local data source or return no internet error
-    return localCallback?.call() ?? FailureState.noInternet();
+    return await localCallback?.call() ?? FailureState.noInternet();
   }
 
   /// Fetches a DTO from remote/local and maps it to a domain model.

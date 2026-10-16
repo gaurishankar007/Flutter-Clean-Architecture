@@ -21,7 +21,7 @@ class SettingPage extends StatelessWidget {
     return BaseScaffold(
       onPopInvokedWithResult: () {
         dashboardCubit.setIndex(0);
-        NavigationUtil.I.replaceAllRoute(const HomeRoute());
+        NavigationUtil.I.replaceAllRoute([const HomeRoute()]);
       },
       isScrollable: false,
       usePadding: false,
@@ -37,7 +37,9 @@ class SettingPage extends StatelessWidget {
                 PrimaryButton(
                   onTap: () async {
                     dashboardCubit.logOut();
-                    await NavigationUtil.I.replaceAllRoute(const LoginRoute());
+                    await NavigationUtil.I.replaceAllRoute([
+                      const LoginRoute(),
+                    ]);
                   },
                   text: 'Logout',
                   color: AppColors.error,

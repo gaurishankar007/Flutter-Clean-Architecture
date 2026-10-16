@@ -78,7 +78,7 @@ void main() {
     const route = MockPageRouteInfo();
     when(() => mockAppRouter.replaceAll([route])).thenAnswer((_) async {});
 
-    await navigationClient.replaceAllRoute(route);
+    await navigationClient.replaceAllRoute([route]);
 
     verify(() => mockAppRouter.replaceAll([route])).called(1);
   });
@@ -132,7 +132,7 @@ void main() {
     when(() => mockAppRouter.replaceAll([route])).thenThrow(Exception('fail'));
 
     // Should not throw
-    await navigationClient.replaceAllRoute(route);
+    await navigationClient.replaceAllRoute([route]);
 
     verify(() => mockAppRouter.replaceAll([route])).called(1);
   });

@@ -13,12 +13,10 @@ import 'package:injectable/injectable.dart';
 @LazySingleton(as: AuthRepository)
 final class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
-    required ConnectivityClient internet,
-    required AuthRemoteDataSource remoteDataSource,
-    required AuthLocalDataSource localDataSource,
-  }) : _localDataSource = localDataSource,
-       _remoteDataSource = remoteDataSource,
-       _internet = internet;
+    required this._internet,
+    required this._remoteDataSource,
+    required this._localDataSource,
+  });
 
   final ConnectivityClient _internet;
   final AuthRemoteDataSource _remoteDataSource;

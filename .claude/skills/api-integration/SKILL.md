@@ -1,5 +1,5 @@
 ---
-name: clean-architecture-api-integration
+name: api-integration
 description: Automates the integration of a new API endpoint through the data source, repository, and domain layers in this project.
 ---
 
@@ -130,7 +130,7 @@ Location: `lib/features/<feature>/data/repositories/<feature>_repository_impl.da
 implementing `lib/features/<feature>/domain/repositories/<feature>_repository.dart`
 (domain models only in the interface's signatures).
 
-**Always** check connectivity via `InternetClient.isConnected` and pass it as
+**Always** check connectivity via `ConnectivityClient.isConnected` and pass it as
 the **named** `isInternetConnected` argument:
 
 ```dart
