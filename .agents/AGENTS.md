@@ -214,7 +214,7 @@ The following agent skills are available in `.agents/skills/`:
 
 - **`codegen`** — Runs `build_runner` code generation.
 - **`scaffolding`** — Uses `mason` to scaffold features and pages.
-- **`api_integration`** — Automates integrating a new API endpoint through the data source → repository → domain layers.
+- **`api-integration`** — Automates integrating a new API endpoint through the data source → repository → domain layers.
 - **`testing`** — Runs the unit, widget, regression, and Patrol integration test suites.
 
 `.agents/workflows/release.md` documents how a release actually reaches

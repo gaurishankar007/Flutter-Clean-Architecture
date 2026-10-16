@@ -79,7 +79,7 @@ mason make cubit_page -c config.json
 - The generated data source/repository/use-case files are skeletons with the
   correct client types wired in (`HttpClient`, `LocalStorageClient`,
   `ConnectivityClient`) but empty/placeholder method bodies — fill in the actual
-  endpoints and mapping logic. See the `api_integration` skill for the
+  endpoints and mapping logic. See the `api-integration` skill for the
   patterns to follow.
 - After scaffolding, run the `codegen` skill if the new files involve
   injectable dependencies or new routes.

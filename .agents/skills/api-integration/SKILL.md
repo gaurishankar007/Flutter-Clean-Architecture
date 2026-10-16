@@ -1,5 +1,5 @@
 ---
-name: api_integration
+name: api-integration
 description: Automates the integration of a new API endpoint through the data source, repository, and domain layers in this project.
 ---
 
